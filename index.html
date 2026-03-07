@@ -99,14 +99,18 @@
 const SUPABASE_URL="https://fdvhrfivrjjfsuvvhbyh.supabase.co";
 const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkdmhyZml2cmpqZnN1dnZoYnloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTIzOTQsImV4cCI6MjA4ODQ2ODM5NH0.YEanEtUa2rorgBdxXJcCbqnIjYekVz1gQu7OEpx0Isg";
 let sb=null;
-// Lazy-load Supabase — app renders immediately, DB syncs after
+// Load Supabase dynamically so app never blocks
 function loadSupabase(){
-  return new Promise((resolve)=>{
-    if(window.supabase){sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);resolve();return;}
-    const s=document.createElement('script');
+  return new Promise(function(resolve){
+    if(window.supabase){
+      sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+      resolve();
+      return;
+    }
+    var s=document.createElement('script');
     s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-    s.onload=()=>{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);resolve();};
-    s.onerror=()=>{console.error('Supabase CDN failed');resolve();};
+    s.onload=function(){sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);resolve();};
+    s.onerror=function(){resolve();};
     document.head.appendChild(s);
   });
 }
