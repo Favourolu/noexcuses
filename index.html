@@ -2,711 +2,490 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="theme-color" content="#0f0f13"/>
-  <title>NoExcuses</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
-    :root {
-      --bg:#0f0f13; --surface:#17171f; --surface2:#1e1e2a; --border:rgba(255,255,255,0.07);
-      --text:#eeeef5; --text2:#8080a0; --text3:#3a3a55;
-      --accent:#7c6af7; --accent2:#a78bfa;
-      --green:#34d399; --red:#f87171; --orange:#fb923c;
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-    html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;}
-    #app{height:100vh;height:100dvh;display:flex;flex-direction:column;background:var(--bg);max-width:480px;margin:0 auto;position:relative;}
-    ::-webkit-scrollbar{display:none;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
-    @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    @keyframes fadeUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
-    @keyframes bounce3{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-    @keyframes glow{0%,100%{opacity:0.7}50%{opacity:1}}
-    .screen{flex:1;overflow-y:auto;padding-bottom:100px;}
-    .screen-full{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-    .top-bar{padding:16px 20px 12px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
-    .brand{font-family:'DM Serif Display',Georgia,serif;font-size:21px;color:var(--text);}
-    .brand em{color:var(--accent2);font-style:italic;}
-    .status-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 9px;font-size:11px;font-weight:600;}
-    .bottom-nav{position:absolute;bottom:0;left:0;right:0;background:rgba(15,15,19,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;padding:8px 4px 22px;z-index:100;}
-    .nav-btn{background:none;border:none;color:var(--text3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 12px;transition:all 0.2s;}
-    .nav-btn svg{width:20px;height:20px;transition:all 0.2s;}
-    .nav-btn span{font-size:9px;font-weight:600;letter-spacing:0.3px;}
-    .nav-btn.active{color:var(--accent2);}
-    .add-btn{background:linear-gradient(145deg,var(--accent),var(--accent2));color:#fff;border:none;width:48px;height:48px;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(124,106,247,0.45);margin-top:-4px;transition:transform 0.15s;}
-    .add-btn:active{transform:scale(0.93);}
-    .page-pad{padding:20px 18px;}
-    .hero{background:linear-gradient(145deg,#141428 0%,#1a1535 60%,#0f1a3a 100%);border:1px solid rgba(124,106,247,0.18);border-radius:22px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden;animation:fadeUp 0.3s ease;}
-    .hero::after{content:'';position:absolute;bottom:-40px;right:-30px;width:160px;height:160px;background:radial-gradient(circle,rgba(167,139,250,0.1) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
-    .hero-eyebrow{font-size:11px;font-weight:600;color:rgba(167,139,250,0.7);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
-    .hero-amount{font-size:50px;font-weight:700;line-height:1;letter-spacing:-2px;}
-    .hero-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-top:5px;}
-    .bar-bg{height:5px;background:rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;margin-top:16px;}
-    .bar-fill{height:100%;border-radius:10px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
-    .quick-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
-    .quick-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;cursor:pointer;transition:all 0.18s;display:flex;align-items:center;gap:10px;}
-    .quick-card:active{background:var(--surface2);transform:scale(0.98);}
-    .quick-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-    .quick-label{font-size:12px;font-weight:600;color:var(--text2);}
-    .section-head{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
-    .cat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:8px;animation:fadeUp 0.2s ease;}
-    .cat-card.over{border-color:rgba(248,113,113,0.3);}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px 20px;margin-bottom:12px;animation:fadeUp 0.2s ease;}
-    .card.accent{border-color:rgba(124,106,247,0.25);background:linear-gradient(135deg,rgba(124,106,247,0.06),var(--surface));}
-    .card.green{border-color:rgba(52,211,153,0.25);}
-    .page-title{font-family:'DM Serif Display',Georgia,serif;font-size:30px;line-height:1.1;margin-bottom:3px;}
-    .page-sub{color:var(--text2);font-size:13px;margin-bottom:22px;}
-    .label{color:var(--text2);font-size:12px;font-weight:500;display:block;margin:16px 0 6px;}
-    input[type=number],input[type=text],input[type=password],select,textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:13px 15px;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:15px;display:block;-webkit-appearance:none;appearance:none;transition:border-color 0.2s,box-shadow 0.2s;}
-    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,106,247,0.12);}
-    textarea{resize:none;}
-    select option{background:var(--surface2);}
-    .btn{width:100%;border:none;padding:15px;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:14px;transition:opacity 0.15s,transform 0.1s;}
-    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 16px rgba(124,106,247,0.3);}
-    .btn-primary:active{opacity:0.88;transform:scale(0.99);}
-    .btn-ghost{background:var(--surface);color:var(--text2);border:1.5px solid var(--border);}
-    .spinner{width:26px;height:26px;border:2px solid var(--surface2);border-top:2px solid var(--accent2);border-radius:50%;animation:spin 0.75s linear infinite;margin:0 auto;}
-    .loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;}
-    .scan-box{border:1.5px dashed rgba(124,106,247,0.25);border-radius:18px;padding:32px 20px;display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:120px;text-align:center;background:rgba(124,106,247,0.03);transition:all 0.2s;}
-    .bubble-ai{background:var(--surface);border:1px solid var(--border);border-radius:18px 18px 18px 5px;padding:12px 16px;max-width:86%;}
-    .bubble-user{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:18px 18px 5px 18px;padding:12px 16px;max-width:86%;margin-left:auto;}
-    .overlay{position:fixed;inset:0;background:rgba(5,5,10,0.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:flex-end;justify-content:center;z-index:999;}
-    .guilt-modal{background:var(--surface);border:1px solid var(--border);border-radius:28px 28px 0 0;padding:24px 22px 36px;width:100%;max-width:480px;animation:slideUp 0.35s cubic-bezier(0.34,1.3,0.64,1);}
-    .verdict-pill{display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;}
-    .ai-label{font-size:10px;font-weight:700;color:var(--accent2);letter-spacing:1px;margin-bottom:8px;display:block;text-transform:uppercase;}
-    .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px;animation:glow 2s infinite;}
-    .history-row{background:var(--surface);border-radius:14px;padding:13px 15px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-left:3px solid transparent;}
-    .divider{height:1px;background:var(--border);margin:16px 0;}
-    .empty{text-align:center;padding:60px 20px;color:var(--text3);}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#111">
+<title>NoExcuses</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#111;color:#f0f0f0;font-family:Inter,system-ui,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative;background:#111}
+::-webkit-scrollbar{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.screen{flex:1;overflow-y:auto;padding-bottom:90px}
+.screen-full{flex:1;display:flex;flex-direction:column;overflow:hidden}
+/* TOP BAR */
+.topbar{padding:16px 18px 12px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-bottom:1px solid #1e1e1e}
+.logo{font-size:18px;font-weight:700;color:#f0f0f0;letter-spacing:-.3px}
+.logo span{color:#a78bfa}
+.badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:#1e1e1e}
+/* BOTTOM NAV */
+.nav{position:absolute;bottom:0;left:0;right:0;background:#111;border-top:1px solid #1e1e1e;display:flex;justify-content:space-around;align-items:center;padding:8px 4px 20px;z-index:100}
+.nb{background:none;border:none;color:#444;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 10px;font-family:Inter,sans-serif}
+.nb svg{width:20px;height:20px}
+.nb span{font-size:9px;font-weight:600}
+.nb.on{color:#a78bfa}
+.addbtn{background:#a78bfa;border:none;width:46px;height:46px;border-radius:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(167,139,250,.4);margin-top:-4px;transition:transform .15s}
+.addbtn:active{transform:scale(.92)}
+/* LAYOUT */
+.pad{padding:18px}
+.title{font-size:26px;font-weight:700;margin-bottom:2px;letter-spacing:-.5px}
+.sub{color:#555;font-size:13px;margin-bottom:20px}
+.sec{font-size:10px;font-weight:700;color:#333;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+/* HERO */
+.hero{background:#1a1a2e;border:1px solid #2a2a3e;border-radius:18px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;bottom:-30px;right:-20px;width:120px;height:120px;background:radial-gradient(circle,rgba(167,139,250,.12) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+.hero-label{font-size:11px;font-weight:600;color:rgba(167,139,250,.7);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.hero-amount{font-size:46px;font-weight:700;line-height:1;letter-spacing:-2px}
+.hero-sub{font-size:13px;color:#555;margin-top:5px}
+.hero-sub b{font-weight:600}
+.prog{height:5px;background:#1e1e1e;border-radius:10px;overflow:hidden;margin-top:14px}
+.prog-fill{height:100%;border-radius:10px;transition:width .6s ease}
+/* CARDS */
+.card{background:#161616;border:1px solid #1e1e1e;border-radius:14px;padding:14px 16px;margin-bottom:8px;animation:fadeUp .2s ease}
+.card.ov{border-color:rgba(248,113,113,.3)}
+/* QUICK ROW */
+.qrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.qcard{background:#161616;border:1px solid #1e1e1e;border-radius:14px;padding:13px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s}
+.qcard:active{background:#1e1e1e}
+.qicon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.qlabel{font-size:12px;font-weight:600;color:#666}
+/* INPUTS */
+.lbl{color:#555;font-size:12px;font-weight:500;display:block;margin:14px 0 5px}
+input[type=number],input[type=text],input[type=password],select,textarea{width:100%;background:#161616;border:1.5px solid #1e1e1e;color:#f0f0f0;padding:12px 14px;border-radius:12px;font-family:Inter,sans-serif;font-size:15px;display:block;-webkit-appearance:none;appearance:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#a78bfa}
+textarea{resize:none}
+select option{background:#161616}
+/* BUTTONS */
+.btn{width:100%;border:none;padding:14px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;margin-top:12px;transition:opacity .15s}
+.btn-p{background:#a78bfa;color:#fff}
+.btn-p:active{opacity:.85}
+.btn-g{background:#161616;color:#555;border:1.5px solid #1e1e1e}
+/* HISTORY */
+.hrow{background:#161616;border-radius:12px;padding:12px 14px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;border-left:3px solid transparent}
+/* CHAT */
+.bai{background:#161616;border:1px solid #1e1e1e;border-radius:16px 16px 16px 4px;padding:11px 14px;max-width:85%}
+.buser{background:#a78bfa;border-radius:16px 16px 4px 16px;padding:11px 14px;max-width:85%;margin-left:auto}
+/* OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;z-index:999}
+.modal{background:#161616;border:1px solid #1e1e1e;border-radius:24px 24px 0 0;padding:22px 20px 36px;width:100%;max-width:480px;animation:slideUp .3s ease}
+.divider{height:1px;background:#1e1e1e;margin:14px 0}
+.empty{text-align:center;padding:60px 20px;color:#333}
+.spinner{width:24px;height:24px;border:2px solid #1e1e1e;border-top:2px solid #a78bfa;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+.ailbl{font-size:10px;font-weight:700;color:#a78bfa;letter-spacing:1px;margin-bottom:6px;display:block;text-transform:uppercase}
+.vpill{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.scan-box{border:1.5px dashed #2a2a2a;border-radius:16px;padding:28px 20px;display:flex;align-items:center;justify-content:center;cursor:pointer;text-align:center;background:rgba(167,139,250,.03);margin-bottom:14px}
+</style>
 </head>
 <body>
-<div id="app"><div class="loading-screen"><div class="spinner"></div><div style="color:var(--text3);font-size:12px;font-weight:500;animation:pulse 1.5s infinite">Loading...</div></div></div>
+<div id="app"></div>
 <script>
-var SUPABASE_URL = "https://fdvhrfivrjjfsuvvhbyh.supabase.co";
-var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkdmhyZml2cmpqZnN1dnZoYnloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTIzOTQsImV4cCI6MjA4ODQ2ODM5NH0.YEanEtUa2rorgBdxXJcCbqnIjYekVz1gQu7OEpx0Isg";
-var sb = null;
-
+// ── STATE (localStorage only, no external deps) ──────────────────────────
 var CATS = [
-{id:“food”, label:“Food & Dining”, icon:“🍔”, color:”#f87171”},
-{id:“shopping”, label:“Shopping”, icon:“🛍”, color:”#fb923c”},
-{id:“transport”, label:“Transport”, icon:“🚗”, color:”#fbbf24”},
-{id:“entertainment”, label:“Entertainment”, icon:“🎬”, color:”#60a5fa”},
-{id:“health”, label:“Health & Fitness”, icon:“💪”, color:”#34d399”},
-{id:“bills”, label:“Bills & Utilities”, icon:“⚡”, color:”#a78bfa”},
-{id:“personal”, label:“Personal Care”, icon:“🪥”, color:”#f472b6”}
+  {id:"food",    label:"Food & Dining",    icon:"🍔", color:"#f87171"},
+  {id:"shopping",label:"Shopping",         icon:"🛍",  color:"#fb923c"},
+  {id:"transport",label:"Transport",       icon:"🚗", color:"#fbbf24"},
+  {id:"entertain",label:"Entertainment",   icon:"🎬", color:"#60a5fa"},
+  {id:"health",  label:"Health & Fitness", icon:"💪", color:"#34d399"},
+  {id:"bills",   label:"Bills & Utilities",icon:"⚡", color:"#a78bfa"},
+  {id:"personal",label:"Personal Care",    icon:"🪥", color:"#f472b6"}
 ];
+var DEF_B = {total:500,food:100,shopping:80,transport:60,entertain:50,health:60,bills:100,personal:50};
+var DEF_S = {food:0,shopping:0,transport:0,entertain:0,health:0,bills:0,personal:0};
 
-var GUILT = [
-“Looks like you went a little over 😬”,
-“Budget exceeded — let’s talk about it 💸”,
-“Oops, that pushed you over the limit 📊”,
-“Over budget alert — it happens! 👀”
-];
-
-var DEF_BUDGETS = {total:500,food:100,shopping:80,transport:60,entertainment:50,health:60,bills:100,personal:50};
-var DEF_SPENDING = {food:0,shopping:0,transport:0,entertainment:0,health:0,bills:0,personal:0};
-
-var state = {
-apiKey: localStorage.getItem(“ne_key”) || “”,
-budgets: Object.assign({}, DEF_BUDGETS),
-spending: Object.assign({}, DEF_SPENDING),
-transactions: [],
-page: “dashboard”,
-guiltModal: null, guiltRoast: “”, excuseText: “”,
-logAmount: “”, logCat: “food”, logNote: “”,
-scanning: false, scanMsg: null,
-aiInsights: null, aiLoading: false,
-chatMessages: [{role:“ai”, text:“Hey! I am your NoExcuses AI advisor. Ask me anything about your spending and I will give you honest, helpful feedback.”}],
-chatInput: “”, chatLoading: false,
-tempBudgets: Object.assign({}, DEF_BUDGETS),
-dbConnected: false
-};
-
-function loadSupabase() {
-return new Promise(function(resolve) {
-if (window.supabase) {
-sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-resolve();
-return;
-}
-var s = document.createElement(“script”);
-s.src = “https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2”;
-s.onload = function() {
-sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-resolve();
-};
-s.onerror = function() { resolve(); };
-document.head.appendChild(s);
-});
-}
-
-function withTimeout(promise, ms) {
-var timer = new Promise(function(_, reject) {
-setTimeout(function() { reject(new Error(“timeout”)); }, ms);
-});
-return Promise.race([promise, timer]);
-}
-
-async function loadFromDB() {
-if (!sb) { state.dbConnected = false; return; }
+function loadState() {
 try {
-var br = await withTimeout(sb.from(“budgets”).select(”*”), 5000);
-if (br.data && br.data.length > 0) {
-br.data.forEach(function(r) {
-if (r.category === “total”) state.budgets.total = r.amount;
-else state.budgets[r.category] = r.amount;
-});
-state.tempBudgets = Object.assign({}, state.budgets);
-} else {
-try { await withTimeout(initDefaultBudgets(), 4000); } catch(e) {}
-}
-var sr = await withTimeout(sb.from(“spending”).select(”*”), 5000);
-if (sr.data && sr.data.length > 0) {
-sr.data.forEach(function(r) { state.spending[r.category] = parseFloat(r.amount); });
-} else {
-try { await withTimeout(initDefaultSpending(), 4000); } catch(e) {}
-}
-var tr = await withTimeout(sb.from(“transactions”).select(”*”).order(“created_at”, {ascending:false}).limit(100), 5000);
-if (tr.data) {
-state.transactions = tr.data.map(function(r) {
-return {id:r.id, amount:parseFloat(r.amount), cat:r.category, note:r.note||””, date:r.date, over:r.over};
-});
-}
-state.dbConnected = true;
+var b = localStorage.getItem(“ne_budgets”);
+var s = localStorage.getItem(“ne_spending”);
+var t = localStorage.getItem(“ne_txns”);
+var k = localStorage.getItem(“ne_key”) || “”;
+return {
+budgets:   b ? JSON.parse(b) : Object.assign({}, DEF_B),
+spending:  s ? JSON.parse(s) : Object.assign({}, DEF_S),
+txns:      t ? JSON.parse(t) : [],
+apiKey:    k,
+tempB:     b ? JSON.parse(b) : Object.assign({}, DEF_B)
+};
 } catch(e) {
-console.error(“DB error:”, e.message);
-state.dbConnected = false;
+return {budgets:Object.assign({},DEF_B), spending:Object.assign({},DEF_S), txns:[], apiKey:””, tempB:Object.assign({},DEF_B)};
 }
 }
 
-async function initDefaultBudgets() {
-var rows = [{category:“total”, amount:DEF_BUDGETS.total}];
-CATS.forEach(function(c) { rows.push({category:c.id, amount:DEF_BUDGETS[c.id]}); });
-await sb.from(“budgets”).upsert(rows, {onConflict:“category”});
+function saveState() {
+try {
+localStorage.setItem(“ne_budgets”,  JSON.stringify(state.budgets));
+localStorage.setItem(“ne_spending”, JSON.stringify(state.spending));
+localStorage.setItem(“ne_txns”,     JSON.stringify(state.txns.slice(0,200)));
+localStorage.setItem(“ne_key”,      state.apiKey);
+} catch(e) {}
 }
 
-async function initDefaultSpending() {
-var rows = CATS.map(function(c) { return {category:c.id, amount:0}; });
-await sb.from(“spending”).upsert(rows, {onConflict:“category”});
+var saved = loadState();
+var state = {
+budgets:    saved.budgets,
+spending:   saved.spending,
+txns:       saved.txns,
+apiKey:     saved.apiKey,
+tempB:      saved.tempB,
+page:       “home”,
+logAmt:     “”, logCat: “food”, logNote: “”,
+scanning:   false, scanMsg: null,
+aiData:     null, aiLoading: false,
+chatMsgs:   [{role:“ai”, text:“Hey! Ask me anything about your spending.”}],
+chatInput:  “”, chatLoading: false,
+guilt:      null, guiltRoast: “”, excuse: “”,
+newKey:     “”
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function total()   { return Object.values(state.spending).reduce(function(a,b){return a+b;},0); }
+function rem()     { return state.budgets.total - total(); }
+function overAll() { return total() > state.budgets.total; }
+function overN()   { return CATS.filter(function(c){return state.spending[c.id]>state.budgets[c.id];}).length; }
+function pct(s,b)  { return Math.min((s/Math.max(b,.01))*100,100); }
+function ctx() {
+var cs = CATS.map(function(c){return c.label+”:$”+state.spending[c.id].toFixed(0)+”/”+state.budgets[c.id];}).join(”,”);
+var rc = state.txns.slice(0,6).map(function(t){return t.cat+”$”+t.amt;}).join(”,”);
+return “Budget:$”+state.budgets.total+” Spent:$”+total().toFixed(0)+” “+cs+” Recent:”+rc;
 }
 
-async function saveBudgetsToDB() {
-if (!sb) return;
-var rows = [{category:“total”, amount:state.budgets.total}];
-CATS.forEach(function(c) { rows.push({category:c.id, amount:state.budgets[c.id]}); });
-await sb.from(“budgets”).upsert(rows, {onConflict:“category”});
+function el(tag, cls, txt) {
+var e = document.createElement(tag);
+if (cls) e.className = cls;
+if (txt !== undefined) e.textContent = txt;
+return e;
 }
+function div(cls, txt) { return el(“div”, cls, txt); }
+function setPage(p) { state.page = p; render(); }
 
-async function saveSpendingToDB(cat, amt) {
-if (!sb) return;
-await sb.from(“spending”).upsert({category:cat, amount:amt}, {onConflict:“category”});
-}
-
-async function saveTransactionToDB(tx) {
-if (!sb) return;
-await sb.from(“transactions”).insert({amount:tx.amount, category:tx.cat, note:tx.note, date:tx.date, over:tx.over});
-}
-
-async function resetSpendingInDB() {
-if (!sb) return;
-var rows = CATS.map(function(c) { return {category:c.id, amount:0}; });
-await sb.from(“spending”).upsert(rows, {onConflict:“category”});
-await sb.from(“transactions”).delete().neq(“id”, 0);
-}
-
-async function callClaude(messages, system) {
-var res = await fetch(”/.netlify/functions/claude”, {
-method: “POST”,
-headers: {“Content-Type”:“application/json”},
-body: JSON.stringify({model:“claude-sonnet-4-20250514”, max_tokens:800, system:system, messages:messages})
+// ── AI ────────────────────────────────────────────────────────────────────
+async function ai(msgs, sys) {
+var r = await fetch(”/.netlify/functions/claude”, {
+method:“POST”, headers:{“Content-Type”:“application/json”},
+body: JSON.stringify({model:“claude-sonnet-4-20250514”, max_tokens:600, system:sys, messages:msgs})
 });
-var d = await res.json();
+var d = await r.json();
 if (d.error) throw new Error(d.error.message);
-for (var i = 0; i < d.content.length; i++) {
-if (d.content[i].type === “text”) return d.content[i].text;
-}
+var c = d.content || [];
+for (var i=0;i<c.length;i++) { if (c[i].type===“text”) return c[i].text; }
 return “”;
 }
 
-function pct(s, b) { return Math.min((s / Math.max(b, 0.01)) * 100, 100); }
-function totalSpent() { return Object.values(state.spending).reduce(function(a,b){return a+b;}, 0); }
-function remaining() { return state.budgets.total - totalSpent(); }
-function overCount() { return CATS.filter(function(c){return state.spending[c.id] > state.budgets[c.id];}).length; }
-function overTotal() { return totalSpent() > state.budgets.total; }
-function buildCtx() {
-var cats = CATS.map(function(c){return c.label+”: $”+state.spending[c.id].toFixed(2)+” of $”+state.budgets[c.id];}).join(”, “);
-var recent = state.transactions.slice(0,8).map(function(t){return t.cat+” $”+t.amount+” “+t.date;}).join(”, “);
-return “Weekly budget: $”+state.budgets.total+”. Spent: $”+totalSpent().toFixed(2)+”. “+cats+”. Recent: “+(recent||“none”)+”.”;
-}
-
-function el(tag, attrs, text) {
-attrs = attrs || {};
-var e = document.createElement(tag);
-Object.keys(attrs).forEach(function(k) {
-if (k === “class”) e.className = attrs[k];
-else if (k === “style”) e.style.cssText = attrs[k];
-else e.setAttribute(k, attrs[k]);
-});
-if (text !== undefined) e.textContent = text;
-return e;
-}
-
-function setPage(p) { state.page = p; render(); }
-
-async function addSpend() {
-var amt = parseFloat(state.logAmount);
+// ── ACTIONS ───────────────────────────────────────────────────────────────
+function addSpend() {
+var amt = parseFloat(state.logAmt);
 if (!amt || isNaN(amt)) return;
 var ns = Object.assign({}, state.spending);
-ns[state.logCat] = state.spending[state.logCat] + amt;
+ns[state.logCat] = (ns[state.logCat]||0) + amt;
 var nt = Object.values(ns).reduce(function(a,b){return a+b;},0);
-var catOver = ns[state.logCat] > state.budgets[state.logCat];
-var totOver = nt > state.budgets.total;
-var tx = {amount:amt, cat:state.logCat, note:state.logNote, date:new Date().toLocaleDateString(), over:catOver||totOver};
+var catOv = ns[state.logCat] > state.budgets[state.logCat];
+var totOv = nt > state.budgets.total;
+var tx = {id:Date.now(), amt:amt, cat:state.logCat, note:state.logNote, date:new Date().toLocaleDateString(), over:catOv||totOv};
 state.spending = ns;
-state.transactions = [{id:Date.now(), amount:amt, cat:state.logCat, note:state.logNote, date:tx.date, over:tx.over}].concat(state.transactions);
-state.logAmount = “”; state.logNote = “”; state.scanMsg = null;
-saveSpendingToDB(state.logCat, ns[state.logCat]);
-saveTransactionToDB(tx);
-if (catOver || totOver) {
-var gcat = CATS.find(function(c){return c.id===state.logCat;});
-state.guiltModal = {
-msg: GUILT[Math.floor(Math.random()*GUILT.length)],
-catOver:catOver, totOver:totOver,
-catName: gcat ? gcat.label : “”,
-catSpent:ns[state.logCat], catBudget:state.budgets[state.logCat],
-totalSpent:nt, totalBudget:state.budgets.total
-};
-state.guiltRoast = “”; state.excuseText = “”;
-render(); fetchGuiltRoast();
-} else {
-render();
-}
+state.txns = [tx].concat(state.txns);
+state.logAmt = “”; state.logNote = “”; state.scanMsg = null;
+saveState();
+if (catOv || totOv) {
+var gc = CATS.find(function(c){return c.id===state.logCat;});
+state.guilt = {catOv:catOv, totOv:totOv, catName:gc?gc.label:””, catSpent:ns[state.logCat], catBudget:state.budgets[state.logCat], totSpent:nt};
+state.guiltRoast = “”; state.excuse = “”;
+render(); fetchRoast();
+} else { render(); }
 }
 
-async function fetchGuiltRoast() {
-if (!state.apiKey) { state.guiltRoast = “Time to review your spending habits!”; render(); return; }
+async function fetchRoast() {
+if (!state.apiKey) { state.guiltRoast = “Time to review those spending habits!”; render(); return; }
 try {
-var gd = state.guiltModal;
-var text = await callClaude(
-[{role:“user”, content:“User overspent on “+gd.catName+” by $”+Math.max(0,gd.catSpent-gd.catBudget).toFixed(2)+”. One honest friendly insight, max 20 words. Context: “+buildCtx()}],
-“Helpful honest financial advisor. One sentence only.”
-);
-state.guiltRoast = text.trim().replace(/^”|”$/g, “”);
-} catch(e) { state.guiltRoast = “Consider reviewing your spending habits.”; }
+var g = state.guilt;
+var t = await ai([{role:“user”,content:“Overspent on “+g.catName+” by $”+Math.max(0,g.catSpent-g.catBudget).toFixed(0)+”. One friendly honest insight, max 15 words. “+ctx()}], “Helpful financial advisor. One sentence.”);
+state.guiltRoast = t.trim().replace(/^”|”$/g,””);
+} catch(e) { state.guiltRoast = “Consider adjusting your budget for next week.”; }
 render();
 }
 
 async function runAI() {
-if (!state.apiKey) { alert(“Add your Anthropic API key in Settings to use AI features.”); return; }
-state.aiLoading = true; state.aiInsights = null; render();
+if (!state.apiKey) { alert(“Add your API key in Settings first.”); return; }
+state.aiLoading = true; state.aiData = null; render();
 try {
-var text = await callClaude(
-[{role:“user”, content:’Analyze and return ONLY valid JSON: {“prediction”:“one sentence”,“verdict”:“SAFE or WARNING or DANGER”,“topRisk”:“category id”,“roast”:“one friendly insight”,“tip”:“one specific tip”,“patterns”:[“p1”,“p2”,“p3”]}. Data: ’+buildCtx()}],
-“Helpful financial analyst. Return only valid JSON.”
-);
-state.aiInsights = JSON.parse(text.trim());
+var t = await ai([{role:“user”,content:’Return ONLY valid JSON no markdown: {“verdict”:“SAFE or WARNING or DANGER”,“prediction”:“one sentence”,“tip”:“one tip”,“roast”:“one insight”,“patterns”:[“x”,“y”,“z”]}. Data: ’+ctx()}], “Financial analyst. Return only valid JSON.”);
+state.aiData = JSON.parse(t.trim());
 } catch(e) {
-state.aiInsights = {prediction:“Unable to analyze right now.”,verdict:“WARNING”,topRisk:“food”,roast:“Keep tracking your spending.”,tip:“Set a daily spending limit.”,patterns:[]};
+state.aiData = {verdict:“WARNING”,prediction:“Could not analyze. Try again.”,tip:“Keep tracking daily.”,roast:“Data is too limited for insights.”,patterns:[]};
 }
 state.aiLoading = false; render();
 }
 
 async function sendChat() {
-var msg = state.chatInput.trim();
-if (!msg) return;
-if (!state.apiKey) {
-state.chatMessages = state.chatMessages.concat([{role:“ai”, text:“Please add your Anthropic API key in Settings first!”}]);
-render(); return;
-}
-state.chatMessages = state.chatMessages.concat([{role:“user”, text:msg}]);
-state.chatInput = “”; state.chatLoading = true; render(); scrollChatDown();
+var msg = state.chatInput.trim(); if (!msg) return;
+if (!state.apiKey) { state.chatMsgs = state.chatMsgs.concat([{role:“ai”,text:“Add your API key in Settings to use AI!”}]); render(); return; }
+state.chatMsgs = state.chatMsgs.concat([{role:“user”,text:msg}]);
+state.chatInput = “”; state.chatLoading = true; render(); scrollChat();
 try {
-var apiMsgs = state.chatMessages.map(function(m){return {role:m.role===“user”?“user”:“assistant”, content:m.text};});
-var text = await callClaude(apiMsgs, “Friendly helpful financial advisor. User data: “+buildCtx()+”. Be honest but supportive. Max 80 words.”);
-state.chatMessages = state.chatMessages.concat([{role:“ai”, text:text}]);
-} catch(e) {
-state.chatMessages = state.chatMessages.concat([{role:“ai”, text:“Sorry, connection error. Please try again.”}]);
-}
-state.chatLoading = false; render(); setTimeout(scrollChatDown, 100);
+var apiMsgs = state.chatMsgs.map(function(m){return {role:m.role===“user”?“user”:“assistant”,content:m.text};});
+var t = await ai(apiMsgs, “Friendly financial advisor. Context: “+ctx()+”. Max 70 words.”);
+state.chatMsgs = state.chatMsgs.concat([{role:“ai”,text:t}]);
+} catch(e) { state.chatMsgs = state.chatMsgs.concat([{role:“ai”,text:“Connection error. Try again.”}]); }
+state.chatLoading = false; render(); setTimeout(scrollChat,80);
 }
 
-function scrollChatDown() {
-var e = document.getElementById(“chat-scroll”);
-if (e) e.scrollTop = e.scrollHeight;
-}
+function scrollChat() { var e=document.getElementById(“cs”); if(e) e.scrollTop=e.scrollHeight; }
 
 async function scanReceipt(file) {
-if (!state.apiKey) { state.scanMsg = {type:“error”, text:“Add API key in Settings to scan receipts.”}; render(); return; }
+if (!state.apiKey) { state.scanMsg={type:“error”,text:“Add API key in Settings to scan receipts.”}; render(); return; }
 state.scanning = true; state.scanMsg = null; render();
 var reader = new FileReader();
 reader.onload = async function() {
-var base64 = reader.result.split(”,”)[1];
+var b64 = reader.result.split(”,”)[1];
 try {
-var res = await fetch(”/.netlify/functions/claude”, {
-method:“POST”, headers:{“Content-Type”:“application/json”},
-body:JSON.stringify({model:“claude-sonnet-4-20250514”,max_tokens:300,messages:[{role:“user”,content:[
-{type:“image”,source:{type:“base64”,media_type:file.type,data:base64}},
-{type:“text”,text:‘Scan receipt. Return ONLY raw JSON: {“amount”:24.50,“category”:“food”,“note”:“Store name”}. Categories: food,shopping,transport,entertainment,health,bills,personal. Not a receipt: {“error”:“x”}.’}
-]}]})
-});
-var d = await res.json();
-var text = “”;
-for (var i=0;i<d.content.length;i++){if(d.content[i].type===“text”){text=d.content[i].text;break;}}
-var parsed = JSON.parse(text.trim());
-if (parsed.error) { state.scanMsg = {type:“error”, text:“Could not read receipt. Enter manually.”}; }
-else { state.logAmount = String(parsed.amount||””); state.logCat = parsed.category||“food”; state.logNote = parsed.note||””; state.scanMsg = {type:“success”, text:“Receipt scanned!”}; }
-} catch(e) { state.scanMsg = {type:“error”, text:“Scan failed. Please enter manually.”}; }
-state.scanning = false; render();
+var r = await fetch(”/.netlify/functions/claude”,{method:“POST”,headers:{“Content-Type”:“application/json”},body:JSON.stringify({model:“claude-sonnet-4-20250514”,max_tokens:200,messages:[{role:“user”,content:[{type:“image”,source:{type:“base64”,media_type:file.type,data:b64}},{type:“text”,text:‘Scan receipt. Return ONLY JSON: {“amount”:9.99,“category”:“food”,“note”:“store”}. Categories: food,shopping,transport,entertain,health,bills,personal. Not receipt: {“error”:“x”}’}]}]})});
+var d = await r.json();
+var txt = “”; for(var i=0;i<(d.content||[]).length;i++){if(d.content[i].type===“text”){txt=d.content[i].text;break;}}
+var p = JSON.parse(txt.trim());
+if (p.error) state.scanMsg={type:“error”,text:“Could not read receipt.”};
+else { state.logAmt=String(p.amount||””); state.logCat=p.category||“food”; state.logNote=p.note||””; state.scanMsg={type:“ok”,text:“Receipt scanned!”}; }
+} catch(e){ state.scanMsg={type:“error”,text:“Scan failed. Enter manually.”}; }
+state.scanning=false; render();
 };
 reader.readAsDataURL(file);
 }
 
-function dashPage() {
-var s = el(“div”,{class:“screen”}), wrap = el(“div”,{class:“page-pad”});
-var ts = totalSpent(), rem = remaining(), over = overTotal();
-var hour = new Date().getHours();
-wrap.appendChild(el(“div”,{style:“font-size:13px;color:var(–text2);margin-bottom:14px;font-weight:500”}, hour<12?“Good morning ☀”:hour<17?“Good afternoon ⛅”:“Good evening 🌙”));
-var hero = el(“div”,{class:“hero”});
-hero.innerHTML = ‘<div class="hero-eyebrow">Weekly Spending</div>’
-+ ‘<div class=“hero-amount” style=“color:’+(over?“var(–red)”:“var(–text)”)+’”>$’+ts.toFixed(2)+’</div>’
-+ ‘<div class="hero-sub">’+(over?’<span style="color:var(--red);font-weight:600">$’+Math.abs(rem).toFixed(2)+’ over limit</span>’:’<span style="color:var(--green);font-weight:600">$’+rem.toFixed(2)+’</span> remaining of $’+state.budgets.total)+’</div>’
-+ ‘<div class="bar-bg"><div class=“bar-fill” style=“width:’+pct(ts,state.budgets.total)+’%;background:’+(over?“var(–red)”:“linear-gradient(90deg,var(–accent),var(–green))”)+’”></div></div>’;
-wrap.appendChild(hero);
-var qrow = el(“div”,{class:“quick-row”});
-var qa = el(“div”,{class:“quick-card”});
-qa.innerHTML = ‘<div class="quick-icon" style="background:rgba(124,106,247,0.15)">🤖</div><div class="quick-label">AI Analysis</div>’;
-qa.onclick = function(){setPage(“ai”);};
-var qc = el(“div”,{class:“quick-card”});
-qc.innerHTML = ‘<div class="quick-icon" style="background:rgba(167,139,250,0.15)">💬</div><div class="quick-label">AI Advisor</div>’;
-qc.onclick = function(){setPage(“chat”);};
-qrow.appendChild(qa); qrow.appendChild(qc); wrap.appendChild(qrow);
-var syncRow = el(“div”,{style:“display:flex;align-items:center;margin-bottom:14px”});
-syncRow.innerHTML = ‘<span class="sync-dot"></span><span style="color:var(--text3);font-size:11px;font-weight:500">’+(state.dbConnected?“Synced to cloud”:“Offline mode”)+’</span>’;
-wrap.appendChild(syncRow);
-wrap.appendChild(el(“div”,{class:“section-head”},“Categories”));
-CATS.forEach(function(cat) {
-var spent = state.spending[cat.id], budget = state.budgets[cat.id], ov = spent > budget;
-var card = el(“div”,{class:“cat-card”+(ov?” over”:””)});
-card.innerHTML = ‘<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">’
-+ ‘<div style="display:flex;align-items:center;gap:11px">’
-+ ‘<div style="width:38px;height:38px;border-radius:11px;background:'+cat.color+'18;display:flex;align-items:center;justify-content:center;font-size:18px">’+cat.icon+’</div>’
-+ ‘<div><div style="font-size:13px;font-weight:600">’+cat.label+’</div>’
-+ ‘<div style=“font-size:11px;color:’+(ov?“var(–red)”:“var(–text3)”)+’;margin-top:1px”>’+(ov?”$”+(spent-budget).toFixed(2)+” over”:”$”+(budget-spent).toFixed(2)+” left”)+’</div></div></div>’
-+ ‘<div style="text-align:right"><div style=“font-size:18px;font-weight:700;color:’+(ov?“var(–red)”:“var(–text)”)+’”>$’+spent.toFixed(0)+’</div>’
-+ ‘<div style="font-size:11px;color:var(--text3)">of $’+budget+’</div></div></div>’
-+ ‘<div class="bar-bg"><div class=“bar-fill” style=“width:’+pct(spent,budget)+’%;background:’+(ov?“var(–red)”:cat.color)+’”></div></div>’;
-wrap.appendChild(card);
+// ── PAGES ─────────────────────────────────────────────────────────────────
+function homePage() {
+var s=el(“div”,“screen”), w=el(“div”,“pad”);
+var hr=new Date().getHours();
+w.appendChild(div(””,hr<12?“Good morning ☀”:hr<17?“Good afternoon ⛅”:“Good evening 🌙”)).style.cssText=“font-size:13px;color:#444;margin-bottom:14px;font-weight:500”;
+
+// Hero
+var ts=total(),r=rem(),ov=overAll();
+var hero=div(“hero”);
+var amtEl=div(“hero-amount”); amtEl.style.color=ov?”#f87171”:”#f0f0f0”; amtEl.textContent=”$”+ts.toFixed(2);
+var subEl=div(“hero-sub”);
+if(ov){ var sb=el(“b”); sb.style.color=”#f87171”; sb.textContent=”$”+Math.abs(r).toFixed(2)+” over limit”; subEl.appendChild(sb); }
+else { subEl.innerHTML=’<b style="color:#34d399">$’+r.toFixed(2)+’</b> remaining of $’+state.budgets.total; }
+var prog=div(“prog”); var fill=div(“prog-fill”); fill.style.cssText=“width:”+pct(ts,state.budgets.total)+”%;background:”+(ov?”#f87171”:“linear-gradient(90deg,#7c6af7,#34d399)”);
+prog.appendChild(fill); hero.appendChild(div(“hero-label”,“Weekly Spending”)); hero.appendChild(amtEl); hero.appendChild(subEl); hero.appendChild(prog);
+w.appendChild(hero);
+
+// Quick
+var qr=div(“qrow”);
+var q1=div(“qcard”); q1.innerHTML=’<div class="qicon" style="background:rgba(124,106,247,.15)">🤖</div><div class="qlabel">AI Analysis</div>’; q1.onclick=function(){setPage(“ai”);};
+var q2=div(“qcard”); q2.innerHTML=’<div class="qicon" style="background:rgba(167,139,250,.15)">💬</div><div class="qlabel">AI Advisor</div>’; q2.onclick=function(){setPage(“chat”);};
+qr.appendChild(q1); qr.appendChild(q2); w.appendChild(qr);
+w.appendChild(div(“sec”,“Categories”));
+
+CATS.forEach(function(cat){
+var sp=state.spending[cat.id]||0, bu=state.budgets[cat.id], cov=sp>bu;
+var card=div(“card”+(cov?” ov”:””));
+card.innerHTML=’<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">’
++’<div style="display:flex;align-items:center;gap:10px">’
++’<div style="width:36px;height:36px;border-radius:10px;background:'+cat.color+'18;display:flex;align-items:center;justify-content:center;font-size:17px">’+cat.icon+’</div>’
++’<div><div style="font-size:13px;font-weight:600">’+cat.label+’</div>’
++’<div style=“font-size:11px;color:’+(cov?”#f87171”:”#333”)+’;margin-top:1px”>’+(cov?”$”+(sp-bu).toFixed(2)+” over”:”$”+(bu-sp).toFixed(2)+” left”)+’</div></div></div>’
++’<div style="text-align:right"><div style=“font-size:17px;font-weight:700;color:’+(cov?”#f87171”:”#f0f0f0”)+’”>$’+sp.toFixed(0)+’</div>’
++’<div style="font-size:11px;color:#333">of $’+bu+’</div></div></div>’
++’<div class="prog"><div class=“prog-fill” style=“width:’+pct(sp,bu)+’%;background:’+(cov?”#f87171”:cat.color)+’”></div></div>’;
+w.appendChild(card);
 });
-s.appendChild(wrap); return s;
+s.appendChild(w); return s;
 }
 
 function logPage() {
-var s = el(“div”,{class:“screen”}), wrap = el(“div”,{class:“page-pad”});
-wrap.appendChild(el(“div”,{class:“page-title”},“Log Spend”));
-wrap.appendChild(el(“div”,{class:“page-sub”},“Track every transaction, big or small.”));
-var scanB = el(“div”,{class:“scan-box”,style:“margin-bottom:16px”});
-if (state.scanning) {
-scanB.innerHTML = ‘<div style="display:flex;flex-direction:column;align-items:center;gap:12px"><div class="spinner"></div><div style="color:var(--text2);font-size:12px;font-weight:500">Reading receipt…</div></div>’;
-} else {
-scanB.innerHTML = ‘<div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="font-size:36px">📷</div><div style="color:var(--text2);font-size:13px;font-weight:600">Scan a receipt</div><div style="color:var(--text3);font-size:11px">AI auto-fills amount and category</div></div>’;
-scanB.onclick = function() {
-var fi = document.createElement(“input”); fi.type=“file”; fi.accept=“image/*”;
-fi.onchange = function(e) { if (e.target.files[0]) scanReceipt(e.target.files[0]); };
-fi.click();
-};
-}
-wrap.appendChild(scanB);
-if (state.scanMsg) {
-var sc = state.scanMsg.type === “success”;
-wrap.appendChild(el(“div”,{style:“background:”+(sc?“rgba(52,211,153,0.08)”:“rgba(248,113,113,0.08)”)+”;border:1px solid “+(sc?“rgba(52,211,153,0.3)”:“rgba(248,113,113,0.3)”)+”;border-radius:12px;padding:11px 14px;margin-bottom:14px;color:”+(sc?“var(–green)”:“var(–red)”)+”;font-size:13px;font-weight:500”}, state.scanMsg.text));
-}
-wrap.appendChild(el(“span”,{class:“label”},“Amount ($)”));
-var amtInp = el(“input”,{type:“number”,placeholder:“0.00”,style:“font-size:24px;font-weight:700”});
-amtInp.value = state.logAmount;
-amtInp.oninput = function(e){state.logAmount=e.target.value;};
-wrap.appendChild(amtInp);
-wrap.appendChild(el(“span”,{class:“label”},“Category”));
-var catSel = el(“select”);
-CATS.forEach(function(c){
-var o = el(“option”,{value:c.id}, c.icon+”  “+c.label);
-if (c.id === state.logCat) o.selected = true;
-catSel.appendChild(o);
-});
-catSel.onchange = function(e){state.logCat=e.target.value;};
-wrap.appendChild(catSel);
-wrap.appendChild(el(“span”,{class:“label”},“Note (optional)”));
-var noteInp = el(“input”,{type:“text”,placeholder:“What did you buy?”});
-noteInp.value = state.logNote;
-noteInp.oninput = function(e){state.logNote=e.target.value;};
-wrap.appendChild(noteInp);
-var logBtn = el(“button”,{class:“btn btn-primary”},“Add Transaction”);
-logBtn.onclick = addSpend;
-wrap.appendChild(logBtn);
-if (state.transactions.length > 0) {
-wrap.appendChild(el(“div”,{class:“section-head”,style:“margin-top:24px;margin-bottom:12px”},“Recent”));
-state.transactions.slice(0,3).forEach(function(t){
-var cat = CATS.find(function(c){return c.id===t.cat;});
-var row = el(“div”,{class:“history-row”,style:“border-left-color:”+(t.over?“var(–red)”:(cat?cat.color:“var(–accent)”))});
-row.innerHTML = ‘<div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">’+(cat?cat.icon:””)+’</span><div style="font-size:13px;font-weight:500;color:var(--text2)">’+(cat?cat.label:””)+’</div></div><div style=“font-size:15px;font-weight:700;color:’+(t.over?“var(–red)”:“var(–text)”)+’”>$’+Number(t.amount).toFixed(2)+’</div>’;
-wrap.appendChild(row);
+var s=el(“div”,“screen”), w=el(“div”,“pad”);
+w.appendChild(div(“title”,“Log Spend”));
+w.appendChild(div(“sub”,“Track every transaction.”));
+
+var sb=div(“scan-box”);
+if(state.scanning){sb.innerHTML=’<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><div class="spinner"></div><div style="color:#444;font-size:12px">Reading receipt…</div></div>’;}
+else{sb.innerHTML=’<div style="display:flex;flex-direction:column;align-items:center;gap:7px"><div style="font-size:32px">📷</div><div style="color:#555;font-size:13px;font-weight:500">Scan a receipt</div><div style="color:#333;font-size:11px">AI fills it in for you</div></div>’;sb.onclick=function(){var fi=document.createElement(“input”);fi.type=“file”;fi.accept=“image/*”;fi.onchange=function(e){if(e.target.files[0])scanReceipt(e.target.files[0]);};fi.click();};}
+w.appendChild(sb);
+
+if(state.scanMsg){var sm=div(””,state.scanMsg.text);sm.style.cssText=“background:”+(state.scanMsg.type===“ok”?“rgba(52,211,153,.08)”:“rgba(248,113,113,.08)”)+”;border:1px solid “+(state.scanMsg.type===“ok”?“rgba(52,211,153,.3)”:“rgba(248,113,113,.3)”)+”;border-radius:10px;padding:10px 13px;margin-bottom:12px;color:”+(state.scanMsg.type===“ok”?”#34d399”:”#f87171”)+”;font-size:13px;font-weight:500”;w.appendChild(sm);}
+
+w.appendChild(el(“span”,“lbl”,“Amount ($)”));
+var ai2=el(“input”); ai2.type=“number”; ai2.placeholder=“0.00”; ai2.value=state.logAmt; ai2.style.cssText=“font-size:22px;font-weight:700”; ai2.oninput=function(e){state.logAmt=e.target.value;}; w.appendChild(ai2);
+w.appendChild(el(“span”,“lbl”,“Category”));
+var cs=el(“select”); CATS.forEach(function(c){var o=el(“option”);o.value=c.id;o.textContent=c.icon+” “+c.label;if(c.id===state.logCat)o.selected=true;cs.appendChild(o);}); cs.onchange=function(e){state.logCat=e.target.value;}; w.appendChild(cs);
+w.appendChild(el(“span”,“lbl”,“Note (optional)”));
+var ni=el(“input”); ni.type=“text”; ni.placeholder=“What did you buy?”; ni.value=state.logNote; ni.oninput=function(e){state.logNote=e.target.value;}; w.appendChild(ni);
+var lb=el(“button”,“btn btn-p”,“Add Transaction”); lb.onclick=addSpend; w.appendChild(lb);
+
+if(state.txns.length>0){
+w.appendChild(div(“sec”,“Recent”)).style.marginTop=“20px”;
+state.txns.slice(0,3).forEach(function(t){
+var ct=CATS.find(function(c){return c.id===t.cat;});
+var row=div(“hrow”); row.style.borderLeftColor=t.over?”#f87171”:(ct?ct.color:”#a78bfa”);
+row.innerHTML=’<div style="display:flex;align-items:center;gap:9px"><span style="font-size:17px">’+(ct?ct.icon:””)+’</span><div style="font-size:13px;color:#555">’+(ct?ct.label:””)+’</div></div><div style=“font-size:15px;font-weight:700;color:’+(t.over?”#f87171”:”#f0f0f0”)+’”>$’+Number(t.amt).toFixed(2)+’</div>’;
+w.appendChild(row);
 });
 }
-s.appendChild(wrap); return s;
+s.appendChild(w); return s;
 }
 
 function aiPage() {
-var s = el(“div”,{class:“screen”}), wrap = el(“div”,{class:“page-pad”});
-wrap.appendChild(el(“div”,{class:“page-title”},“AI Analysis”));
-wrap.appendChild(el(“div”,{class:“page-sub”},“Predictions, patterns and personalised tips.”));
-if (state.aiLoading) {
-var ctr = el(“div”,{style:“display:flex;flex-direction:column;align-items:center;padding:60px 0;gap:14px”});
-ctr.appendChild(el(“div”,{class:“spinner”}));
-ctr.appendChild(el(“div”,{style:“color:var(–text2);font-size:13px;font-weight:500;animation:pulse 1.5s infinite”},“Analysing your spending…”));
-wrap.appendChild(ctr);
-} else if (!state.aiInsights) {
-var ctr2 = el(“div”,{style:“display:flex;flex-direction:column;align-items:center;padding:40px 0;gap:12px;text-align:center”});
-ctr2.innerHTML = ‘<div style="font-size:56px;margin-bottom:8px">🤖</div><div style="font-size:16px;font-weight:600">Get your spending analysis</div><div style="font-size:13px;color:var(--text2);line-height:1.6;max-width:260px;margin-top:4px">Predict your week, find patterns and get personalised tips.</div>’;
-var ab = el(“button”,{class:“btn btn-primary”,style:“margin-top:8px;max-width:240px”},“Run Analysis”);
-ab.onclick = runAI; ctr2.appendChild(ab); wrap.appendChild(ctr2);
-} else {
-var ins = state.aiInsights;
-var vc = ins.verdict===“DANGER”?“var(–red)”:ins.verdict===“WARNING”?“var(–orange)”:“var(–green)”;
-var vcbg = ins.verdict===“DANGER”?“rgba(248,113,113,0.1)”:ins.verdict===“WARNING”?“rgba(251,146,60,0.1)”:“rgba(52,211,153,0.1)”;
-var riskCat = CATS.find(function(c){return c.id===ins.topRisk;});
-var pred = el(“div”,{class:“card”});
-pred.innerHTML = ‘<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px"><span class="ai-label">Prediction</span><span class="verdict-pill" style="background:'+vcbg+';color:'+vc+'">’+ins.verdict+’</span></div><p style="font-size:14px;line-height:1.6">’+ins.prediction+’</p>’;
-wrap.appendChild(pred);
-var insight = el(“div”,{class:“card accent”});
-insight.innerHTML = ‘<span class="ai-label">Insight</span><p style="color:var(--text2);font-size:13px;line-height:1.7;font-style:italic">”’+ins.roast+’”</p>’;
-wrap.appendChild(insight);
-var risk = el(“div”,{class:“card”});
-risk.innerHTML = ‘<span class="ai-label">Highest Risk</span><div style="display:flex;align-items:center;gap:12px"><div style="width:42px;height:42px;border-radius:12px;background:rgba(251,146,60,0.1);display:flex;align-items:center;justify-content:center;font-size:20px">’+(riskCat?riskCat.icon:“💸”)+’</div><span style="color:var(--orange);font-size:16px;font-weight:600">’+(riskCat?riskCat.label:ins.topRisk)+’</span></div>’;
-wrap.appendChild(risk);
-var tip = el(“div”,{class:“card green”});
-tip.innerHTML = ‘<span class="ai-label">Action Tip</span><p style="color:var(--green);font-size:13px;line-height:1.7">’+ins.tip+’</p>’;
-wrap.appendChild(tip);
-if (ins.patterns && ins.patterns.length > 0) {
-var patt = el(“div”,{class:“card”});
-patt.innerHTML = ‘<span class="ai-label">Spending Patterns</span>’;
-ins.patterns.forEach(function(p){
-var row = el(“div”,{style:“padding:10px 12px;background:var(–surface2);border-radius:10px;border-left:2px solid var(–accent);margin-bottom:8px”});
-row.innerHTML = ‘<p style="color:var(--text2);font-size:13px;line-height:1.6">’+p+’</p>’;
-patt.appendChild(row);
-});
-wrap.appendChild(patt);
+var s=el(“div”,“screen”), w=el(“div”,“pad”);
+w.appendChild(div(“title”,“AI Analysis”));
+w.appendChild(div(“sub”,“Predictions and personalised tips.”));
+if(state.aiLoading){var c=div(””);c.style.cssText=“display:flex;flex-direction:column;align-items:center;padding:60px 0;gap:12px”;c.appendChild(div(“spinner”));var ld=div(””,“Analysing…”);ld.style.cssText=“color:#444;font-size:13px;animation:pulse 1.5s infinite”;c.appendChild(ld);w.appendChild(c);}
+else if(!state.aiData){var c2=div(””);c2.style.cssText=“text-align:center;padding:40px 0”;c2.innerHTML=’<div style="font-size:50px;margin-bottom:12px">🤖</div><div style="font-size:16px;font-weight:600;margin-bottom:6px">Spending Analysis</div><div style="font-size:13px;color:#444;line-height:1.6">Get predictions, patterns and tips.</div>’;var ab=el(“button”,“btn btn-p”,“Run Analysis”);ab.style.maxWidth=“200px”;ab.onclick=runAI;c2.appendChild(ab);w.appendChild(c2);}
+else{
+var ins=state.aiData;
+var vc=ins.verdict===“DANGER”?”#f87171”:ins.verdict===“WARNING”?”#fb923c”:”#34d399”;
+var vcb=ins.verdict===“DANGER”?“rgba(248,113,113,.1)”:ins.verdict===“WARNING”?“rgba(251,146,60,.1)”:“rgba(52,211,153,.1)”;
+var p1=div(“card”); p1.innerHTML=’<div style="display:flex;justify-content:space-between;margin-bottom:8px"><span class="ailbl">Prediction</span><span class="vpill" style="background:'+vcb+';color:'+vc+'">’+ins.verdict+’</span></div><p style="font-size:14px;line-height:1.6;color:#ccc">’+ins.prediction+’</p>’; w.appendChild(p1);
+var p2=div(“card”); p2.style.borderColor=“rgba(124,106,247,.2)”; p2.innerHTML=’<span class="ailbl">Insight</span><p style="font-size:13px;line-height:1.7;color:#666;font-style:italic">”’+ins.roast+’”</p>’; w.appendChild(p2);
+var p3=div(“card”); p3.innerHTML=’<span class="ailbl">Action Tip</span><p style="font-size:13px;line-height:1.7;color:#34d399">’+ins.tip+’</p>’; p3.style.borderColor=“rgba(52,211,153,.2)”; w.appendChild(p3);
+if(ins.patterns&&ins.patterns.length>0){var p4=div(“card”);p4.innerHTML=’<span class="ailbl">Patterns</span>’;ins.patterns.forEach(function(pt){var r=div(””);r.style.cssText=“padding:9px 11px;background:#111;border-radius:8px;border-left:2px solid #a78bfa;margin-bottom:7px;font-size:13px;color:#555;line-height:1.6”;r.textContent=pt;p4.appendChild(r);});w.appendChild(p4);}
+var rb=el(“button”,“btn btn-g”,“Run Again”);rb.onclick=runAI;w.appendChild(rb);
 }
-var rerun = el(“button”,{class:“btn btn-ghost”},“Run Again”);
-rerun.onclick = runAI; wrap.appendChild(rerun);
-}
-s.appendChild(wrap); return s;
+s.appendChild(w); return s;
 }
 
 function chatPage() {
-var s = el(“div”,{class:“screen-full”});
-var msgArea = el(“div”,{id:“chat-scroll”,style:“flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:12px”});
-state.chatMessages.forEach(function(m) {
-var row = el(“div”,{style:“display:flex;justify-content:”+(m.role===“user”?“flex-end”:“flex-start”)});
-var bub = el(“div”,{class:m.role===“user”?“bubble-user”:“bubble-ai”});
-if (m.role===“ai”) {
-var lbl = el(“div”,{style:“color:var(–accent2);font-size:9px;font-weight:700;letter-spacing:1px;margin-bottom:5px”},“AI ADVISOR”);
-bub.appendChild(lbl);
-}
-var p = el(“p”,{style:“color:”+(m.role===“user”?”#fff”:“var(–text)”)+”;font-size:13px;line-height:1.65;margin:0”},m.text);
-bub.appendChild(p); row.appendChild(bub); msgArea.appendChild(row);
+var s=el(“div”,“screen-full”);
+var ma=el(“div”); ma.id=“cs”; ma.style.cssText=“flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px”;
+state.chatMsgs.forEach(function(m){
+var row=div(””); row.style.cssText=“display:flex;justify-content:”+(m.role===“user”?“flex-end”:“flex-start”);
+var b=div(m.role===“user”?“buser”:“bai”);
+if(m.role===“ai”){var lbl=div(””,“AI”);lbl.style.cssText=“font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:1px;margin-bottom:4px”;b.appendChild(lbl);}
+var p=el(“p”); p.style.cssText=“font-size:13px;line-height:1.65;margin:0;color:”+(m.role===“user”?”#fff”:”#ccc”); p.textContent=m.text; b.appendChild(p); row.appendChild(b); ma.appendChild(row);
 });
-if (state.chatLoading) {
-var row2 = el(“div”,{style:“display:flex”});
-var bub2 = el(“div”,{class:“bubble-ai”,style:“display:flex;gap:5px;align-items:center;padding:14px 18px”});
-[0,1,2].forEach(function(i){bub2.appendChild(el(“div”,{style:“width:7px;height:7px;border-radius:50%;background:var(–text3);animation:bounce3 1.2s “+(i*0.2)+“s infinite”}));});
-row2.appendChild(bub2); msgArea.appendChild(row2);
-}
-s.appendChild(msgArea);
-var quick = el(“div”,{style:“padding:8px 14px;display:flex;gap:7px;overflow-x:auto;flex-shrink:0;border-top:1px solid var(–border)”});
-[“Will I overspend?”,“Worst category?”,“How to improve?”].forEach(function(q){
-var b = el(“button”,{style:“background:var(–surface);border:1px solid var(–border);color:var(–text2);padding:7px 14px;border-radius:20px;font-size:12px;white-space:nowrap;cursor:pointer;font-family:‘DM Sans’,sans-serif;flex-shrink:0;font-weight:500”},q);
-b.onclick = function(){state.chatInput=q;sendChat();}; quick.appendChild(b);
-});
-s.appendChild(quick);
-var inputRow = el(“div”,{style:“padding:10px 14px 14px;display:flex;gap:8px;flex-shrink:0”});
-var inp = el(“input”,{type:“text”,placeholder:“Ask about your spending…”,style:“flex:1;margin-bottom:0;font-size:14px”});
-inp.value = state.chatInput;
-inp.oninput = function(e){state.chatInput=e.target.value;};
-inp.onkeydown = function(e){if(e.key===“Enter”)sendChat();};
-var sendB = el(“button”,{style:“background:linear-gradient(135deg,var(–accent),var(–accent2));border:none;border-radius:12px;width:44px;height:44px;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center”},“↑”);
-sendB.onclick = sendChat;
-inputRow.appendChild(inp); inputRow.appendChild(sendB); s.appendChild(inputRow);
+if(state.chatLoading){var row2=div(””); row2.style.display=“flex”; var b2=div(“bai”); b2.style.cssText=“display:flex;gap:5px;align-items:center;padding:13px 16px”; [0,1,2].forEach(function(i){var d=div(””); d.style.cssText=“width:6px;height:6px;border-radius:50%;background:#333;animation:bounce 1.2s “+(i*.2)+“s infinite”; b2.appendChild(d);}); row2.appendChild(b2); ma.appendChild(row2);}
+s.appendChild(ma);
+
+var qs=div(””); qs.style.cssText=“padding:7px 12px;display:flex;gap:6px;overflow-x:auto;flex-shrink:0;border-top:1px solid #1e1e1e”;
+[“Will I overspend?”,“Worst category?”,“How to save more?”].forEach(function(q){var b=el(“button”); b.style.cssText=“background:#161616;border:1px solid #1e1e1e;color:#555;padding:6px 13px;border-radius:20px;font-size:12px;white-space:nowrap;cursor:pointer;font-family:Inter,sans-serif;font-weight:500;flex-shrink:0”; b.textContent=q; b.onclick=function(){state.chatInput=q;sendChat();}; qs.appendChild(b);});
+s.appendChild(qs);
+
+var ir=div(””); ir.style.cssText=“padding:10px 12px 14px;display:flex;gap:8px;flex-shrink:0”;
+var inp=el(“input”); inp.type=“text”; inp.placeholder=“Ask about your spending…”; inp.style.cssText=“flex:1;margin-bottom:0;font-size:14px”; inp.value=state.chatInput; inp.oninput=function(e){state.chatInput=e.target.value;}; inp.onkeydown=function(e){if(e.key===“Enter”)sendChat();};
+var sb2=el(“button”); sb2.style.cssText=“background:#a78bfa;border:none;border-radius:11px;width:42px;height:42px;color:#fff;font-size:17px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center”; sb2.textContent=“↑”; sb2.onclick=sendChat;
+ir.appendChild(inp); ir.appendChild(sb2); s.appendChild(ir);
 return s;
 }
 
 function historyPage() {
-var s = el(“div”,{class:“screen”}), wrap = el(“div”,{class:“page-pad”});
-wrap.appendChild(el(“div”,{class:“page-title”},“History”));
-wrap.appendChild(el(“div”,{class:“page-sub”},“All your transactions this week.”));
-if (state.transactions.length === 0) {
-var empty = el(“div”,{class:“empty”});
-empty.innerHTML = ‘<div style="font-size:44px;margin-bottom:12px;opacity:0.5">📭</div><div style="font-size:13px;font-weight:500">No transactions yet.<br>Start logging your spending!</div>’;
-wrap.appendChild(empty);
-} else {
-state.transactions.forEach(function(t){
-var cat = CATS.find(function(c){return c.id===t.cat;});
-var row = el(“div”,{class:“history-row”,style:“border-left-color:”+(t.over?“var(–red)”:(cat?cat.color:“var(–accent)”))});
-row.innerHTML = ‘<div style="display:flex;align-items:center;gap:10px"><div style=“width:36px;height:36px;border-radius:10px;background:’+(cat?cat.color+“18”:”#7c6af718”)+’;display:flex;align-items:center;justify-content:center;font-size:17px”>’+(cat?cat.icon:””)+’</div><div><div style="font-size:13px;font-weight:500">’+(cat?cat.label:””)+’</div><div style="font-size:11px;color:var(--text3);margin-top:1px">’+t.date+(t.note?” · “+t.note:””)+’</div></div></div><div style="text-align:right"><div style=“font-size:16px;font-weight:700;color:’+(t.over?“var(–red)”:“var(–text)”)+’”>$’+Number(t.amount).toFixed(2)+’</div><div style=“font-size:10px;font-weight:600;color:’+(t.over?“var(–red)”:“var(–green)”)+’”>’+( t.over?“Over”:“OK”)+’</div></div>’;
-wrap.appendChild(row);
+var s=el(“div”,“screen”), w=el(“div”,“pad”);
+w.appendChild(div(“title”,“History”));
+w.appendChild(div(“sub”,“All your transactions.”));
+if(state.txns.length===0){var em=div(“empty”); em.innerHTML=’<div style="font-size:40px;margin-bottom:10px;opacity:.4">📭</div><div style="font-size:13px">No transactions yet.</div>’; w.appendChild(em);}
+else{
+state.txns.forEach(function(t){
+var ct=CATS.find(function(c){return c.id===t.cat;});
+var row=div(“hrow”); row.style.borderLeftColor=t.over?”#f87171”:(ct?ct.color:”#a78bfa”);
+row.innerHTML=’<div style="display:flex;align-items:center;gap:9px"><div style=“width:34px;height:34px;border-radius:9px;background:’+(ct?ct.color+“18”:”#a78bfa18”)+’;display:flex;align-items:center;justify-content:center;font-size:16px”>’+(ct?ct.icon:””)+’</div><div><div style="font-size:13px;font-weight:500">’+(ct?ct.label:””)+’</div><div style="font-size:11px;color:#333;margin-top:1px">’+t.date+(t.note?” · “+t.note:””)+’</div></div></div><div style="text-align:right"><div style=“font-size:15px;font-weight:700;color:’+(t.over?”#f87171”:”#f0f0f0”)+’”>$’+Number(t.amt).toFixed(2)+’</div><div style=“font-size:10px;color:’+(t.over?”#f87171”:”#34d399”)+’;font-weight:600”>’+(t.over?“Over”:“OK”)+’</div></div>’;
+w.appendChild(row);
 });
-var clrBtn = el(“button”,{class:“btn btn-ghost”,style:“margin-top:16px”},“Reset Week”);
-clrBtn.onclick = async function(){
-if (confirm(“Reset all spending for a new week?”)) {
-state.spending = Object.assign({}, DEF_SPENDING);
-state.transactions = [];
-await resetSpendingInDB();
-render();
+var rb=el(“button”,“btn btn-g”); rb.style.marginTop=“14px”; rb.textContent=“Reset Week”; rb.onclick=function(){if(confirm(“Reset all spending for a new week?”)){state.spending=Object.assign({},DEF_S);state.txns=[];saveState();render();}};
+w.appendChild(rb);
 }
-};
-wrap.appendChild(clrBtn);
-}
-s.appendChild(wrap); return s;
+s.appendChild(w); return s;
 }
 
 function settingsPage() {
-var s = el(“div”,{class:“screen”}), wrap = el(“div”,{class:“page-pad”});
-wrap.appendChild(el(“div”,{class:“page-title”},“Settings”));
-wrap.appendChild(el(“div”,{class:“page-sub”},“Manage your limits and API key.”));
-var apiCard = el(“div”,{class:“card”,style:“margin-bottom:6px”});
-apiCard.innerHTML = ‘<div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">Anthropic API Key</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style=“width:8px;height:8px;border-radius:50%;background:’+(state.apiKey?“var(–green)”:“var(–red)”)+’”></div><span style=“font-size:12px;color:’+(state.apiKey?“var(–green)”:“var(–red)”)+’;font-weight:500”>’+(state.apiKey?“Key saved — AI features active”:“No key — AI features disabled”)+’</span></div>’;
-var keyInp = el(“input”,{type:“password”,placeholder:state.apiKey?“Enter new key to update”:“sk-ant-api03-…”,style:“margin-bottom:0”});
-keyInp.oninput = function(e){state._newKey=e.target.value;};
-var saveKeyBtn = el(“button”,{class:“btn btn-primary”,style:“margin-top:10px”},“Save API Key”);
-saveKeyBtn.onclick = function(){
-if (state._newKey) { state.apiKey=state._newKey; localStorage.setItem(“ne_key”,state.apiKey); state._newKey=””; render(); }
-};
-apiCard.appendChild(keyInp); apiCard.appendChild(saveKeyBtn); wrap.appendChild(apiCard);
-var dbCard = el(“div”,{class:“card”,style:“margin-bottom:20px”});
-dbCard.innerHTML = ‘<div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Database</div><div style="display:flex;align-items:center;gap:8px"><span class="sync-dot"></span><span style="font-size:13px;color:var(--green);font-weight:500">’+(state.dbConnected?“Connected to Supabase”:“Offline mode”)+’</span></div><div style="font-size:11px;color:var(--text3);margin-top:4px">Data syncs to the cloud automatically</div>’;
-wrap.appendChild(dbCard);
-wrap.appendChild(el(“div”,{class:“section-head”},“Weekly Budgets”));
-wrap.appendChild(el(“span”,{class:“label”,style:“margin-top:4px”},“Total Weekly Budget ($)”));
-var totInp = el(“input”,{type:“number”,style:“font-size:22px;font-weight:700”});
-totInp.value = state.tempBudgets.total;
-totInp.oninput = function(e){state.tempBudgets=Object.assign({},state.tempBudgets,{total:+e.target.value});};
-wrap.appendChild(totInp);
-wrap.appendChild(el(“div”,{class:“divider”}));
+var s=el(“div”,“screen”), w=el(“div”,“pad”);
+w.appendChild(div(“title”,“Settings”));
+w.appendChild(div(“sub”,“API key and weekly budgets.”));
+
+var ac=div(“card”); ac.style.marginBottom=“6px”;
+var astat=div(””); astat.style.cssText=“display:flex;align-items:center;gap:7px;margin-bottom:11px”;
+var dot=div(””); dot.style.cssText=“width:7px;height:7px;border-radius:50%;background:”+(state.apiKey?”#34d399”:”#f87171”);
+var atxt=div(””,””); atxt.style.cssText=“font-size:12px;font-weight:500;color:”+(state.apiKey?”#34d399”:”#f87171”); atxt.textContent=state.apiKey?“Key saved — AI active”:“No key — AI disabled”;
+astat.appendChild(dot); astat.appendChild(atxt);
+var albl=div(””,“Anthropic API Key”); albl.style.cssText=“font-size:12px;font-weight:600;color:#444;margin-bottom:9px”;
+var ki=el(“input”); ki.type=“password”; ki.placeholder=state.apiKey?“Enter new key to update”:“sk-ant-api03-…”; ki.style.marginBottom=“0”; ki.oninput=function(e){state.newKey=e.target.value;};
+var skb=el(“button”,“btn btn-p”); skb.style.marginTop=“9px”; skb.textContent=“Save Key”; skb.onclick=function(){if(state.newKey){state.apiKey=state.newKey;state.newKey=””;saveState();render();}};
+ac.appendChild(albl); ac.appendChild(astat); ac.appendChild(ki); ac.appendChild(skb); w.appendChild(ac);
+
+var divEl=div(“divider”); w.appendChild(divEl);
+w.appendChild(div(“sec”,“Weekly Budgets”));
+w.appendChild(el(“span”,“lbl”,“Total Budget ($)”));
+var ti=el(“input”); ti.type=“number”; ti.value=state.tempB.total; ti.style.cssText=“font-size:20px;font-weight:700”; ti.oninput=function(e){state.tempB=Object.assign({},state.tempB,{total:+e.target.value});};
+w.appendChild(ti);
+w.appendChild(div(“divider”));
+
 CATS.forEach(function(cat){
-var lbl = el(“div”,{style:“display:flex;align-items:center;gap:8px;margin-top:14px;margin-bottom:6px”});
-lbl.innerHTML = ‘<span style="font-size:16px">’+cat.icon+’</span><span style="font-size:12px;font-weight:600;color:var(--text2)">’+cat.label+’</span>’;
-var inp = el(“input”,{type:“number”});
-inp.value = state.tempBudgets[cat.id];
-inp.oninput = function(e){ var upd=Object.assign({},state.tempBudgets); upd[cat.id]=+e.target.value; state.tempBudgets=upd; };
-wrap.appendChild(lbl); wrap.appendChild(inp);
+var rl=div(””); rl.style.cssText=“display:flex;align-items:center;gap:8px;margin-top:12px;margin-bottom:5px”;
+rl.innerHTML=’<span style="font-size:15px">’+cat.icon+’</span><span style="font-size:12px;font-weight:600;color:#444">’+cat.label+’</span>’;
+var ci=el(“input”); ci.type=“number”; ci.value=state.tempB[cat.id]; ci.oninput=function(e){var u=Object.assign({},state.tempB);u[cat.id]=+e.target.value;state.tempB=u;};
+w.appendChild(rl); w.appendChild(ci);
 });
-var saveBtn = el(“button”,{class:“btn btn-primary”},“Save Budgets”);
-saveBtn.onclick = async function(){
-state.budgets = Object.assign({}, state.tempBudgets);
-await saveBudgetsToDB();
-var t = el(“div”,{style:“position:fixed;top:24px;left:50%;transform:translateX(-50%);background:var(–green);color:#000;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;animation:fadeIn 0.2s;white-space:nowrap”});
-t.textContent = “Budgets saved!”;
-document.body.appendChild(t); setTimeout(function(){t.remove();}, 2000);
-render();
-};
-wrap.appendChild(saveBtn); s.appendChild(wrap); return s;
+
+var svb=el(“button”,“btn btn-p”,“Save Budgets”); svb.onclick=function(){state.budgets=Object.assign({},state.tempB);saveState();var t=div(””);t.style.cssText=“position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#34d399;color:#000;padding:9px 20px;border-radius:18px;font-size:13px;font-weight:600;z-index:9999;white-space:nowrap”;t.textContent=“Saved!”;document.body.appendChild(t);setTimeout(function(){t.remove();},1800);render();};
+w.appendChild(svb); s.appendChild(w); return s;
 }
 
 function guiltOverlay() {
-var gd = state.guiltModal;
-var ov = el(“div”,{class:“overlay”});
-var modal = el(“div”,{class:“guilt-modal”});
-modal.innerHTML = ‘<div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px"></div>’
-+ ‘<div style="font-size:40px;text-align:center;margin-bottom:12px">💸</div>’
-+ ‘<h2 style="font-size:22px;text-align:center;margin-bottom:6px">’+gd.msg+’</h2>’
-+ ‘<p style="text-align:center;color:var(--text2);font-size:13px;margin-bottom:16px">Here is what happened</p>’;
-var bd = el(“div”,{style:“background:var(–surface2);border-radius:14px;padding:14px 16px;margin-bottom:14px”});
-if (gd.catOver) {
-var r1 = el(“div”,{style:“display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(–border)”});
-r1.innerHTML = ‘<span style="color:var(--text2);font-size:13px">’+gd.catName+’</span><span style="color:var(--red);font-weight:600;font-size:13px">$’+gd.catSpent.toFixed(2)+’ / $’+gd.catBudget+’</span>’;
-bd.appendChild(r1);
-}
-if (gd.totOver) {
-var r2 = el(“div”,{style:“display:flex;justify-content:space-between;padding:6px 0”});
-r2.innerHTML = ‘<span style="color:var(--text2);font-size:13px">Weekly Total</span><span style="color:var(--red);font-weight:600;font-size:13px">$’+gd.totalSpent.toFixed(2)+’ / $’+gd.totalBudget+’</span>’;
-bd.appendChild(r2);
-}
+var g=state.guilt;
+var ov=div(“overlay”);
+var modal=div(“modal”);
+var handle=div(””); handle.style.cssText=“width:32px;height:3px;background:#2a2a2a;border-radius:2px;margin:0 auto 18px”;
+modal.appendChild(handle);
+var icon=div(””); icon.style.cssText=“font-size:36px;text-align:center;margin-bottom:10px”; icon.textContent=“💸”; modal.appendChild(icon);
+var head=div(””); head.style.cssText=“font-size:20px;font-weight:700;text-align:center;margin-bottom:5px”; head.textContent=g.catOv?“You went over on “+g.catName:“Weekly budget exceeded”;
+modal.appendChild(head);
+
+var bd=div(””); bd.style.cssText=“background:#111;border-radius:12px;padding:12px 14px;margin:12px 0”;
+if(g.catOv){var r1=div(””);r1.style.cssText=“display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #1e1e1e;font-size:13px”;r1.innerHTML=’<span style="color:#444">’+g.catName+’</span><span style="color:#f87171;font-weight:600">$’+g.catSpent.toFixed(2)+’ / $’+g.catBudget+’</span>’;bd.appendChild(r1);}
+if(g.totOv){var r2=div(””);r2.style.cssText=“display:flex;justify-content:space-between;padding:5px 0;font-size:13px”;r2.innerHTML=’<span style="color:#444">Weekly Total</span><span style="color:#f87171;font-weight:600">$’+g.totSpent.toFixed(2)+’ / $’+state.budgets.total+’</span>’;bd.appendChild(r2);}
 modal.appendChild(bd);
-if (state.guiltRoast) {
-var rb = el(“div”,{style:“background:rgba(124,106,247,0.07);border:1px solid rgba(124,106,247,0.2);border-radius:12px;padding:12px 14px;margin-bottom:14px”});
-rb.innerHTML = ‘<div style="font-size:10px;font-weight:700;color:var(--accent2);margin-bottom:5px">AI INSIGHT</div><p style="color:var(--text2);font-size:13px;line-height:1.6">”’+state.guiltRoast+’”</p>’;
-modal.appendChild(rb);
-} else {
-modal.appendChild(el(“div”,{style:“text-align:center;color:var(–text3);font-size:12px;margin-bottom:14px;animation:pulse 1.5s infinite”},“Getting AI insight…”));
-}
-modal.appendChild(el(“div”,{style:“font-size:12px;font-weight:600;color:var(–text2);margin-bottom:6px”},“Add a note (optional)”));
-var ta = document.createElement(“textarea”);
-ta.placeholder = “What happened? (min 5 chars to continue)”;
-ta.style.cssText = “width:100%;padding:12px 14px;border-radius:12px;font-size:13px;font-family:‘DM Sans’,sans-serif;margin-bottom:12px;border:1.5px solid var(–border);background:var(–surface2);color:var(–text);resize:none;”;
-ta.rows = 2; ta.value = state.excuseText;
-var ackBtn = el(“button”,{class:“btn btn-primary”,style:“margin-top:0;opacity:”+(state.excuseText.trim().length>=5?“1”:“0.45”)},“Got it, I will do better”);
-ta.oninput = function(e){ state.excuseText=e.target.value; ackBtn.style.opacity=e.target.value.trim().length>=5?“1”:“0.45”; };
-ackBtn.onclick = function(){ if(state.excuseText.trim().length>=5){ state.guiltModal=null; render(); } };
-modal.appendChild(ta); modal.appendChild(ackBtn); ov.appendChild(modal); return ov;
+
+if(state.guiltRoast){var rb2=div(””);rb2.style.cssText=“background:rgba(124,106,247,.07);border:1px solid rgba(124,106,247,.15);border-radius:10px;padding:10px 13px;margin-bottom:13px”;rb2.innerHTML=’<div style="font-size:10px;font-weight:700;color:#a78bfa;margin-bottom:4px">AI INSIGHT</div><p style="color:#555;font-size:13px;line-height:1.6;margin:0">”’+state.guiltRoast+’”</p>’;modal.appendChild(rb2);}
+else{var ld2=div(””,“Getting insight…”);ld2.style.cssText=“text-align:center;color:#333;font-size:12px;margin-bottom:13px;animation:pulse 1.5s infinite”;modal.appendChild(ld2);}
+
+var nlbl=div(””,“Add a note (optional)”); nlbl.style.cssText=“font-size:12px;font-weight:600;color:#444;margin-bottom:5px”; modal.appendChild(nlbl);
+var ta=document.createElement(“textarea”); ta.placeholder=“What happened? (min 5 chars)”; ta.rows=2; ta.value=state.excuse;
+ta.style.cssText=“width:100%;padding:11px 13px;border-radius:10px;font-size:13px;font-family:Inter,sans-serif;margin-bottom:10px;border:1.5px solid #1e1e1e;background:#111;color:#f0f0f0;resize:none”;
+var okb=el(“button”,“btn btn-p”,“Got it”); okb.style.cssText+=(state.excuse.trim().length>=5?”;opacity:1”:”;opacity:.4”); okb.style.marginTop=“0”;
+ta.oninput=function(e){state.excuse=e.target.value;okb.style.opacity=e.target.value.trim().length>=5?“1”:“0.4”;};
+okb.onclick=function(){if(state.excuse.trim().length>=5){state.guilt=null;render();}};
+modal.appendChild(ta); modal.appendChild(okb); ov.appendChild(modal); return ov;
 }
 
 function bottomNav() {
-var nav = el(“div”,{class:“bottom-nav”});
-var items = [
-{id:“dashboard”, label:“Home”, svg:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>’},
-{id:“history”, label:“History”, svg:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>’},
-{id:“log”, add:true},
-{id:“ai”, label:“AI”, svg:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>’},
-{id:“settings”, label:“More”, svg:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>’}
-];
-items.forEach(function(item){
-if (item.add) {
-var b = el(“div”,{class:“add-btn”});
-b.innerHTML = ‘<svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>’;
-b.onclick = function(){setPage(“log”);}; nav.appendChild(b);
+var nav=el(“div”,“nav”);
+var SVGS = {
+home:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>’,
+history:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>’,
+ai:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>’,
+settings:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>’
+};
+[{id:“home”,label:“Home”,svg:SVGS.home},{id:“history”,label:“History”,svg:SVGS.history},{id:“log”,add:true},{id:“ai”,label:“AI”,svg:SVGS.ai},{id:“settings”,label:“More”,svg:SVGS.settings}].forEach(function(item){
+if(item.add){
+var b=div(“addbtn”); b.innerHTML=’<svg viewBox="0 0 24 24" style="width:18px;height:18px" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>’;
+b.onclick=function(){setPage(“log”);}; nav.appendChild(b);
 } else {
-var b2 = el(“button”,{class:“nav-btn”+(state.page===item.id?” active”:””)});
-b2.innerHTML = item.svg + ‘<span>’+item.label+’</span>’;
-b2.onclick = function(){setPage(item.id);}; nav.appendChild(b2);
+var b2=el(“button”,“nb”+(state.page===item.id?” on”:””)); b2.innerHTML=item.svg+’<span>’+item.label+’</span>’;
+b2.onclick=function(){setPage(item.id);}; nav.appendChild(b2);
 }
 });
 return nav;
 }
 
 function render() {
-var app = document.getElementById(“app”);
-app.innerHTML = “”;
-var shell = el(“div”,{style:“display:flex;flex-direction:column;height:100vh;height:100dvh;”});
-var bar = el(“div”,{class:“top-bar”});
-var brand = el(“div”,{class:“brand”});
-brand.innerHTML = “No<em>Excuses</em>”;
-var over = overTotal(), oc = overCount();
-var sc = over?“var(–red)”:oc>0?“var(–orange)”:“var(–green)”;
-var st = over?“Over budget”:oc>0?oc+” over”:“On track”;
-var pill = el(“div”,{class:“status-pill”});
-pill.innerHTML = ‘<div style="width:6px;height:6px;border-radius:50%;background:'+sc+';animation:glow 2s infinite"></div><span style="color:'+sc+'">’+st+’</span>’;
-bar.appendChild(brand); bar.appendChild(pill); shell.appendChild(bar);
-var pages = {dashboard:dashPage,log:logPage,ai:aiPage,chat:chatPage,history:historyPage,settings:settingsPage};
-shell.appendChild((pages[state.page]||dashPage)());
+var app=document.getElementById(“app”); app.innerHTML=””;
+var shell=div(””); shell.style.cssText=“display:flex;flex-direction:column;height:100vh;height:100dvh”;
+// Top bar
+var tb=div(“topbar”);
+var logo=div(“logo”); logo.innerHTML=“No<span>Excuses</span>”;
+var oc=overN(), oa=overAll();
+var bc=oa?”#f87171”:oc>0?”#fb923c”:”#34d399”;
+var bt=oa?“Over budget”:oc>0?oc+” over”:“On track”;
+var badge=div(“badge”,bt); badge.style.color=bc; badge.style.borderColor=bc+“30”;
+tb.appendChild(logo); tb.appendChild(badge); shell.appendChild(tb);
+var pages={home:homePage,log:logPage,ai:aiPage,chat:chatPage,history:historyPage,settings:settingsPage};
+shell.appendChild((pages[state.page]||homePage)());
 shell.appendChild(bottomNav());
-if (state.guiltModal) shell.appendChild(guiltOverlay());
+if(state.guilt) shell.appendChild(guiltOverlay());
 app.appendChild(shell);
-if (state.page===“chat”) setTimeout(scrollChatDown, 50);
+if(state.page===“chat”) setTimeout(scrollChat,50);
 }
 
-// Start: render immediately, then load DB in background
 render();
-loadSupabase().then(function(){
-return loadFromDB();
-}).then(function(){
-render();
-}).catch(function(e){
-console.error(“Init error:”, e);
-render();
-});
 </script>
 
 </body>
