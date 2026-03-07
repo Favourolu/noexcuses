@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="theme-color" content="#0d0d0d"/>
+  <title>NoExcuses</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: #0d0d0d; color: #fff; font-family: 'Space Mono', 'Courier New', monospace; overflow: hidden; }
+    #app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; background: #0d0d0d; max-width: 480px; margin: 0 auto; position: relative; }
+    ::-webkit-scrollbar { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    @keyframes flicker { 0%,100%{opacity:1} 91%{opacity:1} 92%{opacity:0.5} 93%{opacity:1} 95%{opacity:0.8} 96%{opacity:1} }
+    @keyframes bounce3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .screen { flex: 1; overflow-y: auto; padding-bottom: 90px; animation: fadeIn 0.2s ease; }
+    .screen-full { flex: 1; display: flex; flex-direction: column; overflow: hidden; animation: fadeIn 0.2s ease; }
+    .top-bar { padding: 16px 20px 12px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .brand { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 5px; color: #FF4136; animation: flicker 5s infinite; }
+    .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: #0d0d0d; border-top: 1px solid #1a1a1a; display: flex; justify-content: space-around; align-items: center; padding: 10px 8px 20px; z-index: 100; }
+    .nav-btn { background: none; border: none; color: #3a3a3a; cursor: pointer; font-size: 20px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 8px; transition: color 0.2s; }
+    .nav-btn span { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 1px; }
+    .nav-btn.active { color: #FF4136; }
+    .add-btn { background: #FF4136; color: #fff; border: none; width: 52px; height: 52px; border-radius: 50%; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 0 20px #FF413640; margin-top: -10px; }
+    .page-pad { padding: 20px 18px; }
+    .card { background: #111; border: 1px solid #1e1e1e; border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; }
+    .card-red { border-color: #FF4136; }
+    .card-green { border-color: #2ECC40; }
+    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 4px; line-height: 1; }
+    .label { color: #3a3a3a; font-size: 9px; letter-spacing: 3px; display: block; margin-bottom: 5px; margin-top: 14px; }
+    .micro { color: #333; font-size: 9px; letter-spacing: 2px; }
+    input[type=number], input[type=text], input[type=password], select, textarea {
+      width: 100%; background: #0d0d0d; border: 1px solid #1e1e1e; color: #fff;
+      padding: 12px 14px; border-radius: 8px; font-family: 'Space Mono', monospace;
+      font-size: 15px; display: block; -webkit-appearance: none; appearance: none;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #FF4136; }
+    textarea { resize: none; }
+    .btn-red { width: 100%; background: #FF4136; color: #fff; border: none; padding: 15px; border-radius: 8px; font-size: 12px; letter-spacing: 3px; font-weight: 700; cursor: pointer; font-family: 'Space Mono', monospace; margin-top: 16px; }
+    .btn-ghost { width: 100%; background: #111; color: #444; border: 1px solid #222; padding: 12px; border-radius: 8px; font-size: 11px; letter-spacing: 2px; cursor: pointer; font-family: 'Space Mono', monospace; margin-top: 10px; }
+    .bar-bg { height: 3px; background: #1a1a1a; border-radius: 2px; overflow: hidden; margin-top: 10px; }
+    .bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+    .spinner { width: 28px; height: 28px; border: 2px solid #1a1a1a; border-top: 2px solid #FF4136; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+    .scan-box { border: 1px dashed #222; border-radius: 12px; padding: 36px 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; min-height: 140px; text-align: center; }
+    .bubble-ai { background: #141414; border-radius: 12px 12px 12px 2px; padding: 10px 14px; max-width: 85%; }
+    .bubble-user { background: #FF4136; border-radius: 12px 12px 2px 12px; padding: 10px 14px; max-width: 85%; margin-left: auto; }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
+    .guilt-modal { background: #080000; border: 1px solid #FF4136; border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 420px; animation: slideUp 0.3s ease; }
+    .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; }
+    .ai-tag { font-size: 9px; letter-spacing: 3px; color: #444; margin-bottom: 10px; display: block; }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #2ECC40; display: inline-block; margin-right: 6px; animation: pulse 2s infinite; }
+  </style>
+</head>
+<body>
+<div id="app"><div class="loading-screen"><div class="spinner"></div><div style="color:#333;font-size:10px;letter-spacing:3px;animation:pulse 1.5s infinite">CONNECTING TO DATABASE...</div></div></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────
+const SUPABASE_URL = "https://fdvhrfivrjjfsuvvhbyh.supabase.co";
+const SUPABASE_KEY = "sb_publishable_ZkO15E-HdCxt2NS3CHL3KQ_gb7DFPYe";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const CATS = [
+  { id:"food",    label:"Food & Dining",    icon:"🍔", color:"#FF4136" },
+  { id:"shopping",label:"Shopping",          icon:"🛍️", color:"#FF851B" },
+  { id:"transport",label:"Transport",        icon:"🚗", color:"#FFDC00" },
+  { id:"entertainment",label:"Entertainment",icon:"🎬", color:"#7FDBFF" },
+  { id:"health",  label:"Health & Fitness",  icon:"💪", color:"#2ECC40" },
+  { id:"bills",   label:"Bills & Utilities", icon:"⚡", color:"#B10DC9" },
+  { id:"personal",label:"Personal Care",     icon:"🪥", color:"#F012BE" },
+];
+
+const GUILT = ["YOU BLEW IT. AGAIN.","SERIOUSLY? ALREADY?","THIS IS EXACTLY WHY YOU'RE BROKE.","NO WILLPOWER. NONE.","CONGRATS. YOU FAILED YOURSELF.","DID YOU EVEN TRY?"];
+const DEF_BUDGETS = { total:500, food:100, shopping:80, transport:60, entertainment:50, health:60, bills:100, personal:50 };
+const DEF_SPENDING = { food:0, shopping:0, transport:0, entertainment:0, health:0, bills:0, personal:0 };
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let state = {
+  apiKey: localStorage.getItem("ne_anthropic_key") || "",
+  budgets: { ...DEF_BUDGETS },
+  spending: { ...DEF_SPENDING },
+  transactions: [],
+  page: "dashboard",
+  guiltModal: null, guiltRoast: "", excuseText: "",
+  logAmount: "", logCat: "food", logNote: "",
+  scanning: false, scanMsg: null,
+  aiInsights: null, aiLoading: false,
+  chatMessages: [{ role:"ai", text:"I'm your NoExcuses AI advisor. Zero sympathy, zero patience. Ask me about your spending — or prepare to be judged." }],
+  chatInput: "", chatLoading: false,
+  tempBudgets: { ...DEF_BUDGETS },
+  dbConnected: false, syncing: false,
+};
+
+// ── SUPABASE FUNCTIONS ────────────────────────────────────────────────────
+async function loadFromDB() {
+  try {
+    // Load budgets
+    const { data: budgetRows } = await sb.from("budgets").select("*");
+    if (budgetRows && budgetRows.length > 0) {
+      budgetRows.forEach(r => {
+        if (r.category === "total") state.budgets.total = r.amount;
+        else state.budgets[r.category] = r.amount;
+      });
+      state.tempBudgets = { ...state.budgets };
+    } else {
+      await initDefaultBudgets();
+    }
+
+    // Load spending
+    const { data: spendRows } = await sb.from("spending").select("*");
+    if (spendRows && spendRows.length > 0) {
+      spendRows.forEach(r => { state.spending[r.category] = r.amount; });
+    } else {
+      await initDefaultSpending();
+    }
+
+    // Load transactions
+    const { data: txRows } = await sb.from("transactions").select("*").order("created_at", { ascending: false }).limit(100);
+    if (txRows) {
+      state.transactions = txRows.map(r => ({
+        id: r.id, amount: r.amount, cat: r.category,
+        note: r.note || "", date: r.date, over: r.over,
+      }));
+    }
+
+    state.dbConnected = true;
+  } catch(e) {
+    console.error("DB load error:", e);
+    state.dbConnected = false;
+  }
+}
+
+async function initDefaultBudgets() {
+  const rows = [{ category:"total", amount:DEF_BUDGETS.total }];
+  CATS.forEach(c => rows.push({ category:c.id, amount:DEF_BUDGETS[c.id] }));
+  await sb.from("budgets").upsert(rows, { onConflict:"category" });
+}
+
+async function initDefaultSpending() {
+  const rows = CATS.map(c => ({ category:c.id, amount:0 }));
+  await sb.from("spending").upsert(rows, { onConflict:"category" });
+}
+
+async function saveBudgetsToDB() {
+  const rows = [{ category:"total", amount:state.budgets.total }];
+  CATS.forEach(c => rows.push({ category:c.id, amount:state.budgets[c.id] }));
+  await sb.from("budgets").upsert(rows, { onConflict:"category" });
+}
+
+async function saveSpendingToDB(category, amount) {
+  await sb.from("spending").upsert({ category, amount }, { onConflict:"category" });
+}
+
+async function saveTransactionToDB(tx) {
+  const { data } = await sb.from("transactions").insert({
+    amount: tx.amount, category: tx.cat,
+    note: tx.note, date: tx.date, over: tx.over,
+  }).select().single();
+  return data?.id;
+}
+
+async function resetSpendingInDB() {
+  const rows = CATS.map(c => ({ category:c.id, amount:0 }));
+  await sb.from("spending").upsert(rows, { onConflict:"category" });
+  await sb.from("transactions").delete().neq("id", 0);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function pct(s, b) { return Math.min((s / Math.max(b,0.01)) * 100, 100); }
+function totalSpent() { return Object.values(state.spending).reduce((a,b)=>a+b,0); }
+function remaining() { return state.budgets.total - totalSpent(); }
+function overCount() { return CATS.filter(c => state.spending[c.id] > state.budgets[c.id]).length; }
+function overTotal() { return totalSpent() > state.budgets.total; }
+
+function buildCtx() {
+  const cats = CATS.map(c=>`${c.label}: $${state.spending[c.id].toFixed(2)} of $${state.budgets[c.id]}`).join(", ");
+  const recent = state.transactions.slice(0,8).map(t=>`${t.cat} $${t.amount} ${t.date}`).join(", ");
+  return `Weekly budget: $${state.budgets.total}. Spent: $${totalSpent().toFixed(2)}. ${cats}. Recent: ${recent||"none"}.`;
+}
+
+async function callClaude(messages, system) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json","x-api-key":state.apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true" },
+    body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:800, system, messages })
+  });
+  const d = await res.json();
+  return d.content?.find(b=>b.type==="text")?.text || "";
+}
+
+function el(tag, attrs={}, text) {
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)) {
+    if (k==="class") e.className=v;
+    else if (k==="style") e.style.cssText=v;
+    else e.setAttribute(k,v);
+  }
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function btn(text, onclick, style) {
+  const b = el("button", { style }); b.textContent=text; b.onclick=onclick; return b;
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────
+function setPage(p) { state.page=p; render(); }
+
+async function addSpend() {
+  const amt = parseFloat(state.logAmount);
+  if (!amt || isNaN(amt)) return;
+  const ns = { ...state.spending, [state.logCat]: state.spending[state.logCat] + amt };
+  const nt = Object.values(ns).reduce((a,b)=>a+b,0);
+  const catOver = ns[state.logCat] > state.budgets[state.logCat];
+  const totOver = nt > state.budgets.total;
+  const tx = { amount:amt, cat:state.logCat, note:state.logNote, date:new Date().toLocaleDateString(), over:catOver||totOver };
+
+  state.spending = ns;
+  state.transactions = [{ id:Date.now(), ...tx }, ...state.transactions];
+  state.logAmount=""; state.logNote=""; state.scanMsg=null;
+
+  // Save to Supabase
+  saveSpendingToDB(state.logCat, ns[state.logCat]);
+  saveTransactionToDB(tx);
+
+  if (catOver || totOver) {
+    state.guiltModal = {
+      msg: GUILT[Math.floor(Math.random()*GUILT.length)],
+      catOver, totOver,
+      catName: CATS.find(c=>c.id===state.logCat)?.label,
+      catSpent: ns[state.logCat], catBudget: state.budgets[state.logCat],
+      totalSpent: nt, totalBudget: state.budgets.total,
+    };
+    state.guiltRoast=""; state.excuseText="";
+    render();
+    fetchGuiltRoast();
+  } else { render(); }
+}
+
+async function fetchGuiltRoast() {
+  if (!state.apiKey) { state.guiltRoast="Your wallet is suffering. You should feel bad."; render(); return; }
+  try {
+    const gd = state.guiltModal;
+    const text = await callClaude(
+      [{ role:"user", content:`User overspent on ${gd.catName} by $${Math.max(0,gd.catSpent-gd.catBudget).toFixed(2)}. ONE brutal specific roast, max 18 words. Context: ${buildCtx()}` }],
+      "Brutally honest. One sentence only."
+    );
+    state.guiltRoast = text.trim().replace(/^"|"$/g,"");
+  } catch { state.guiltRoast="Your wallet is crying. So should you."; }
+  render();
+}
+
+async function runAI() {
+  if (!state.apiKey) { alert("Add your Anthropic API key in Settings first."); return; }
+  state.aiLoading=true; state.aiInsights=null; render();
+  try {
+    const text = await callClaude(
+      [{ role:"user", content:`Analyze and return ONLY valid JSON (no markdown): {"prediction":"one sentence","verdict":"SAFE or WARNING or DANGER","topRisk":"category id","roast":"one brutal sentence","tip":"one actionable tip","patterns":["p1","p2","p3"]}. Data: ${buildCtx()}` }],
+      "Brutally honest financial analyst. Return only valid JSON."
+    );
+    state.aiInsights = JSON.parse(text.trim());
+  } catch { state.aiInsights={ prediction:"Analysis failed — check your API key.", verdict:"WARNING", topRisk:"food", roast:"Even your data is a mess.", tip:"Start tracking.", patterns:[] }; }
+  state.aiLoading=false; render();
+}
+
+async function sendChat() {
+  const msg=state.chatInput.trim(); if(!msg) return;
+  if (!state.apiKey) { state.chatMessages=[...state.chatMessages,{role:"ai",text:"Go to Settings and add your Anthropic API key to use the AI advisor."}]; render(); return; }
+  state.chatMessages=[...state.chatMessages,{role:"user",text:msg}];
+  state.chatInput=""; state.chatLoading=true; render();
+  scrollChatDown();
+  try {
+    const apiMsgs=state.chatMessages.map(m=>({role:m.role==="user"?"user":"assistant",content:m.text}));
+    const text=await callClaude(apiMsgs,`Brutally honest financial advisor. User data: ${buildCtx()}. Direct, max 70 words.`);
+    state.chatMessages=[...state.chatMessages,{role:"ai",text}];
+  } catch { state.chatMessages=[...state.chatMessages,{role:"ai",text:"API error. Check your key in Settings."}]; }
+  state.chatLoading=false; render();
+  setTimeout(scrollChatDown,100);
+}
+
+function scrollChatDown() {
+  const el=document.getElementById("chat-scroll"); if(el) el.scrollTop=el.scrollHeight;
+}
+
+async function scanReceipt(file) {
+  if (!state.apiKey) { state.scanMsg={type:"error",text:"Add Anthropic API key in Settings to use receipt scanning."}; render(); return; }
+  state.scanning=true; state.scanMsg=null; render();
+  const reader=new FileReader();
+  reader.onload=async()=>{
+    const base64=reader.result.split(",")[1];
+    try {
+      const res=await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","x-api-key":state.apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,
+          messages:[{role:"user",content:[
+            {type:"image",source:{type:"base64",media_type:file.type,data:base64}},
+            {type:"text",text:`Scan receipt. Return ONLY raw JSON: {"amount":24.50,"category":"food","note":"Store name"}. Categories: food,shopping,transport,entertainment,health,bills,personal. Not receipt: {"error":"x"}.`}
+          ]}]
+        })
+      });
+      const d=await res.json();
+      const text=d.content?.find(b=>b.type==="text")?.text||"";
+      const parsed=JSON.parse(text.trim());
+      if(parsed.error){state.scanMsg={type:"error",text:"Couldn't read receipt. Enter manually."};}
+      else{state.logAmount=parsed.amount?.toString()||"";state.logCat=parsed.category||"food";state.logNote=parsed.note||"";state.scanMsg={type:"success",text:"✓ Receipt scanned!"};}
+    } catch{state.scanMsg={type:"error",text:"Scan failed. Enter manually."};}
+    state.scanning=false; render();
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── PAGES ─────────────────────────────────────────────────────────────────
+function dashPage() {
+  const s=el("div",{class:"screen"});
+  const wrap=el("div",{class:"page-pad"});
+  const ts=totalSpent(),rem=remaining(),over=overTotal();
+
+  // Sync status
+  const syncBar=el("div",{style:"display:flex;align-items:center;margin-bottom:14px"});
+  syncBar.innerHTML=`<span class="sync-dot"></span><span style="color:#2a2a2a;font-size:9px;letter-spacing:2px">SYNCED TO CLOUD</span>`;
+  wrap.appendChild(syncBar);
+
+  // Total card
+  const total=el("div",{class:`card${over?" card-red":""}`,style:"margin-bottom:16px"});
+  total.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px">
+      <div>
+        <div class="micro" style="margin-bottom:4px">WEEKLY TOTAL</div>
+        <div style="font-size:38px;font-weight:700;color:${over?"#FF4136":"#fff"};font-family:'Space Mono',monospace;line-height:1">$${ts.toFixed(2)}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="micro">LIMIT</div>
+        <div style="font-size:18px;color:#444;font-family:'Space Mono',monospace">$${state.budgets.total}</div>
+      </div>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:${pct(ts,state.budgets.total)}%;background:${over?"#FF4136":"#2ECC40"}"></div></div>
+    ${over?`<div style="color:#FF4136;font-size:9px;letter-spacing:2px;margin-top:8px">🚨 OVER BY $${Math.abs(rem).toFixed(2)}</div>`:`<div style="color:#2ECC40;font-size:9px;letter-spacing:2px;margin-top:8px">$${rem.toFixed(2)} REMAINING</div>`}
+  `;
+  wrap.appendChild(total);
+
+  // AI quick buttons
+  const qrow=el("div",{style:"display:flex;gap:10px;margin-bottom:20px"});
+  const qa=btn("🤖 AI ANALYSIS",()=>setPage("ai"),"flex:1;background:#111;border:1px solid #1e1e1e;color:#555;padding:10px 8px;border-radius:8px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Space Mono',monospace");
+  const qc=btn("💬 ADVISOR",()=>setPage("chat"),"flex:1;background:#111;border:1px solid #1e1e1e;color:#555;padding:10px 8px;border-radius:8px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Space Mono',monospace");
+  qrow.append(qa,qc); wrap.appendChild(qrow);
+
+  wrap.appendChild(el("div",{style:"color:#2a2a2a;font-size:9px;letter-spacing:4px;margin-bottom:12px"},"CATEGORIES"));
+
+  CATS.forEach(cat=>{
+    const spent=state.spending[cat.id],budget=state.budgets[cat.id],ov=spent>budget;
+    const card=el("div",{class:"card",style:`border-color:${ov?"#FF4136":"#1e1e1e"};margin-bottom:10px`});
+    card.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:22px">${cat.icon}</span>
+          <div>
+            <div style="color:#888;font-size:11px;letter-spacing:1px">${cat.label.toUpperCase()}</div>
+            ${ov?`<div style="color:#FF4136;font-size:8px;letter-spacing:2px">OVER BUDGET</div>`:""}
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:${ov?"#FF4136":"#fff"};font-size:18px;font-weight:700;font-family:'Space Mono',monospace">$${spent.toFixed(0)}</div>
+          <div style="color:#333;font-size:10px">/ $${budget}</div>
+        </div>
+      </div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${pct(spent,budget)}%;background:${ov?"#FF4136":cat.color};box-shadow:0 0 6px ${ov?"#FF413650":cat.color+"40"}"></div></div>
+    `;
+    wrap.appendChild(card);
+  });
+
+  s.appendChild(wrap); return s;
+}
+
+function logPage() {
+  const s=el("div",{class:"screen"});
+  const wrap=el("div",{class:"page-pad"});
+  wrap.appendChild(el("div",{class:"page-title",style:"margin-bottom:4px"},"LOG SPEND"));
+  wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"EVERY DOLLAR. NO EXCEPTIONS."));
+
+  const scanB=el("div",{class:"scan-box",style:"margin-bottom:16px"});
+  if(state.scanning){
+    scanB.innerHTML=`<div><div class="spinner"></div><div style="color:#444;margin-top:12px;font-size:10px;letter-spacing:2px">AI READING RECEIPT...</div></div>`;
+  } else {
+    scanB.innerHTML=`<div><div style="font-size:44px;margin-bottom:10px">📷</div><div style="color:#333;font-size:11px;letter-spacing:2px">TAP TO SCAN RECEIPT</div><div style="color:#222;font-size:9px;margin-top:6px;letter-spacing:1px">AI AUTO-DETECTS AMOUNT & CATEGORY</div></div>`;
+    scanB.onclick=()=>{const fi=document.createElement("input");fi.type="file";fi.accept="image/*";fi.onchange=e=>{if(e.target.files[0])scanReceipt(e.target.files[0]);};fi.click();};
+  }
+  wrap.appendChild(scanB);
+
+  if(state.scanMsg){
+    wrap.appendChild(el("div",{style:`background:${state.scanMsg.type==="success"?"#0a1a0a":"#1a0a0a"};border:1px solid ${state.scanMsg.type==="success"?"#2ECC40":"#FF4136"};border-radius:8px;padding:10px 14px;margin-bottom:14px;color:${state.scanMsg.type==="success"?"#2ECC40":"#FF4136"};font-size:12px;letter-spacing:1px`},state.scanMsg.text));
+  }
+
+  wrap.appendChild(el("span",{class:"label"},"AMOUNT ($)"));
+  const amtInp=el("input",{type:"number",placeholder:"0.00",value:state.logAmount,style:"margin-bottom:0"});
+  amtInp.oninput=e=>{state.logAmount=e.target.value;};
+  wrap.appendChild(amtInp);
+
+  wrap.appendChild(el("span",{class:"label"},"CATEGORY"));
+  const catSel=el("select",{style:"margin-bottom:0"});
+  CATS.forEach(c=>{const o=el("option",{value:c.id},`${c.icon} ${c.label}`);if(c.id===state.logCat)o.selected=true;catSel.appendChild(o);});
+  catSel.onchange=e=>{state.logCat=e.target.value;};
+  wrap.appendChild(catSel);
+
+  wrap.appendChild(el("span",{class:"label"},"NOTE (OPTIONAL)"));
+  const noteInp=el("input",{type:"text",placeholder:"What did you buy?",value:state.logNote,style:"margin-bottom:0"});
+  noteInp.oninput=e=>{state.logNote=e.target.value;};
+  wrap.appendChild(noteInp);
+
+  const logBtn=el("button",{class:"btn-red"},"LOG THIS SPEND →");
+  logBtn.onclick=addSpend;
+  wrap.appendChild(logBtn);
+
+  if(state.transactions.length>0){
+    wrap.appendChild(el("div",{style:"color:#2a2a2a;font-size:9px;letter-spacing:4px;margin:20px 0 12px"},"RECENT"));
+    state.transactions.slice(0,3).forEach(t=>{
+      const cat=CATS.find(c=>c.id===t.cat);
+      const row=el("div",{style:`display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;margin-bottom:8px;background:#111;border-left:2px solid ${t.over?"#FF4136":cat?.color||"#333"}`});
+      row.innerHTML=`<span style="color:#666;font-size:12px">${cat?.icon} ${cat?.label}</span><span style="color:${t.over?"#FF4136":"#fff"};font-family:'Space Mono',monospace;font-size:14px;font-weight:700">$${t.amount.toFixed(2)}</span>`;
+      wrap.appendChild(row);
+    });
+  }
+
+  s.appendChild(wrap); return s;
+}
+
+function aiPage() {
+  const s=el("div",{class:"screen"});
+  const wrap=el("div",{class:"page-pad"});
+  wrap.appendChild(el("div",{class:"page-title",style:"margin-bottom:4px"},"AI ANALYSIS"));
+  wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"PREDICTIONS · PATTERNS · ROASTS"));
+
+  if(state.aiLoading){
+    const ctr=el("div",{style:"display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 0;gap:16px"});
+    ctr.appendChild(el("div",{class:"spinner"}));
+    ctr.appendChild(el("div",{style:"color:#333;font-size:10px;letter-spacing:3px;animation:pulse 1.5s infinite"},"AI CRUNCHING YOUR NUMBERS..."));
+    wrap.appendChild(ctr);
+  } else if(!state.aiInsights){
+    const ctr=el("div",{style:"display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0;gap:14px;text-align:center"});
+    ctr.innerHTML=`<div style="font-size:64px;margin-bottom:8px">🤖</div><div style="color:#2a2a2a;font-size:10px;letter-spacing:2px;line-height:2.2">AI WILL ANALYZE YOUR DATA<br>PREDICT YOUR WEEK<br>FIND YOUR PATTERNS<br>AND ROAST YOU</div>`;
+    const b=el("button",{class:"btn-red",style:"margin-top:20px"},"RUN AI ANALYSIS →");
+    b.onclick=runAI; ctr.appendChild(b); wrap.appendChild(ctr);
+  } else {
+    const ins=state.aiInsights;
+    const vc=ins.verdict==="DANGER"?"#FF4136":ins.verdict==="WARNING"?"#FF851B":"#2ECC40";
+    const pred=el("div",{class:"card",style:`border-color:${vc};margin-bottom:12px`});
+    pred.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="ai-tag" style="margin-bottom:0">WEEKLY PREDICTION</span><span style="background:${vc};color:#000;font-size:10px;font-weight:900;letter-spacing:2px;padding:4px 10px;border-radius:4px">${ins.verdict}</span></div><p style="color:#ccc;font-size:13px;line-height:1.6;margin:0">${ins.prediction}</p>`;
+    wrap.appendChild(pred);
+    const roast=el("div",{class:"card",style:"border-color:#FF4136;background:#0e0404;margin-bottom:12px"});
+    roast.innerHTML=`<span class="ai-tag">🔥 AI ROAST</span><p style="color:#FF6B6B;font-size:14px;line-height:1.6;font-style:italic;margin:0">"${ins.roast}"</p>`;
+    wrap.appendChild(roast);
+    const riskCat=CATS.find(c=>c.id===ins.topRisk);
+    const risk=el("div",{class:"card",style:"margin-bottom:12px"});
+    risk.innerHTML=`<span class="ai-tag">⚠ HIGHEST RISK</span><div style="display:flex;align-items:center;gap:12px"><span style="font-size:32px">${riskCat?.icon||"💸"}</span><span style="color:#FF851B;font-size:16px;font-weight:700">${riskCat?.label||ins.topRisk}</span></div>`;
+    wrap.appendChild(risk);
+    const tip=el("div",{class:"card card-green",style:"margin-bottom:12px"});
+    tip.innerHTML=`<span class="ai-tag">💡 ACTION TIP</span><p style="color:#2ECC40;font-size:13px;line-height:1.6;margin:0">${ins.tip}</p>`;
+    wrap.appendChild(tip);
+    if(ins.patterns?.length>0){
+      const patt=el("div",{class:"card",style:"margin-bottom:12px"});
+      patt.innerHTML=`<span class="ai-tag">📊 SPENDING PATTERNS</span>`;
+      ins.patterns.forEach(p=>{const row=el("div",{style:"padding:10px 12px;background:#0d0d0d;border-radius:6px;border-left:2px solid #FF4136;margin-bottom:8px"});row.innerHTML=`<p style="color:#888;font-size:12px;line-height:1.5;margin:0">${p}</p>`;patt.appendChild(row);});
+      wrap.appendChild(patt);
+    }
+    const rerun=el("button",{class:"btn-ghost"},"RE-RUN ANALYSIS");
+    rerun.onclick=runAI; wrap.appendChild(rerun);
+  }
+  s.appendChild(wrap); return s;
+}
+
+function chatPage() {
+  const s=el("div",{class:"screen-full"});
+  const msgArea=el("div",{id:"chat-scroll",style:"flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:12px"});
+  state.chatMessages.forEach(m=>{
+    const row=el("div",{style:`display:flex;justify-content:${m.role==="user"?"flex-end":"flex-start"}`});
+    const bub=el("div",{class:m.role==="user"?"bubble-user":"bubble-ai"});
+    if(m.role==="ai") bub.innerHTML=`<div style="color:#FF4136;font-size:8px;letter-spacing:3px;margin-bottom:5px">NOEXCUSES AI</div>`;
+    bub.appendChild(el("p",{style:`color:${m.role==="user"?"#fff":"#bbb"};font-size:13px;line-height:1.6;margin:0`},m.text));
+    row.appendChild(bub); msgArea.appendChild(row);
+  });
+  if(state.chatLoading){
+    const row=el("div",{style:"display:flex;justify-content:flex-start"});
+    const bub=el("div",{class:"bubble-ai",style:"display:flex;gap:5px;align-items:center;padding:12px 16px"});
+    [0,1,2].forEach(i=>{bub.appendChild(el("div",{style:`width:7px;height:7px;border-radius:50%;background:#333;animation:bounce3 1s ${i*0.2}s infinite`}));});
+    row.appendChild(bub); msgArea.appendChild(row);
+  }
+  s.appendChild(msgArea);
+  const quick=el("div",{style:"padding:8px 12px;display:flex;gap:6px;overflow-x:auto;border-top:1px solid #141414;flex-shrink:0"});
+  ["Will I overspend?","Worst category?","How to improve?"].forEach(q=>{
+    const b=el("button",{style:"background:#111;border:1px solid #1e1e1e;color:#555;padding:7px 12px;border-radius:20px;font-size:10px;white-space:nowrap;cursor:pointer;font-family:'Space Mono',monospace;flex-shrink:0"},q);
+    b.onclick=()=>{state.chatInput=q;sendChat();};
+    quick.appendChild(b);
+  });
+  s.appendChild(quick);
+  const inputRow=el("div",{style:"padding:10px 12px 12px;border-top:1px solid #1a1a1a;display:flex;gap:8px;flex-shrink:0"});
+  const inp=el("input",{type:"text",placeholder:"Ask about your spending...",value:state.chatInput,style:"flex:1;margin-bottom:0;font-size:13px"});
+  inp.oninput=e=>{state.chatInput=e.target.value;};
+  inp.onkeydown=e=>{if(e.key==="Enter")sendChat();};
+  const sendB=el("button",{style:"background:#FF4136;border:none;border-radius:8px;padding:0 16px;color:#fff;font-size:18px;cursor:pointer;font-weight:700"},"↑");
+  sendB.onclick=sendChat;
+  inputRow.append(inp,sendB); s.appendChild(inputRow);
+  return s;
+}
+
+function historyPage() {
+  const s=el("div",{class:"screen"});
+  const wrap=el("div",{class:"page-pad"});
+  wrap.appendChild(el("div",{class:"page-title",style:"margin-bottom:4px"},"HISTORY"));
+  wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"EVERY TRANSACTION. NO HIDING."));
+  if(state.transactions.length===0){
+    wrap.appendChild(el("div",{style:"text-align:center;padding:60px 0;color:#222;font-size:11px;letter-spacing:3px"},"NO TRANSACTIONS YET."));
+  } else {
+    state.transactions.forEach(t=>{
+      const cat=CATS.find(c=>c.id===t.cat);
+      const row=el("div",{style:`background:#111;border-radius:10px;padding:12px 14px 12px 16px;margin-bottom:8px;border-left:3px solid ${t.over?"#FF4136":cat?.color||"#2ECC40"}`});
+      row.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">${cat?.icon}</span><div><div style="color:#888;font-size:11px;letter-spacing:1px">${cat?.label}</div><div style="color:#444;font-size:10px;margin-top:2px">${t.date}${t.note?` · ${t.note}`:""}</div></div></div><div style="text-align:right"><div style="color:${t.over?"#FF4136":"#fff"};font-size:16px;font-weight:700;font-family:'Space Mono',monospace">$${Number(t.amount).toFixed(2)}</div>${t.over?`<div style="color:#FF4136;font-size:8px;letter-spacing:2px">OVER</div>`:`<div style="color:#2ECC40;font-size:8px;letter-spacing:2px">OK</div>`}</div></div>`;
+      wrap.appendChild(row);
+    });
+    const clrBtn=el("button",{class:"btn-ghost",style:"margin-top:10px"},"RESET WEEK");
+    clrBtn.onclick=async()=>{
+      if(confirm("Reset all spending for a new week?")){
+        state.spending={...DEF_SPENDING}; state.transactions=[];
+        await resetSpendingInDB(); render();
+      }
+    };
+    wrap.appendChild(clrBtn);
+  }
+  s.appendChild(wrap); return s;
+}
+
+function settingsPage() {
+  const s=el("div",{class:"screen"});
+  const wrap=el("div",{class:"page-pad"});
+  wrap.appendChild(el("div",{class:"page-title",style:"margin-bottom:4px"},"SETTINGS"));
+  wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"LIMITS & API KEY"));
+
+  // API Key section
+  const apiCard=el("div",{class:"card",style:"margin-bottom:20px"});
+  apiCard.innerHTML=`<div style="color:#444;font-size:9px;letter-spacing:3px;margin-bottom:10px">ANTHROPIC API KEY (FOR AI FEATURES)</div>${state.apiKey?`<div style="color:#2ECC40;font-size:10px;letter-spacing:2px;margin-bottom:8px">✓ KEY SAVED</div>`:`<div style="color:#FF4136;font-size:10px;letter-spacing:2px;margin-bottom:8px">⚠ NO KEY — AI DISABLED</div>`}`;
+  const keyInp=el("input",{type:"password",placeholder:"sk-ant-...",style:"margin-bottom:0"});
+  if(state.apiKey) keyInp.placeholder="Enter new key to update";
+  keyInp.oninput=e=>{state._newKey=e.target.value;};
+  const saveKeyBtn=el("button",{class:"btn-red",style:"margin-top:10px"},"SAVE API KEY");
+  saveKeyBtn.onclick=()=>{if(state._newKey){state.apiKey=state._newKey;localStorage.setItem("ne_anthropic_key",state.apiKey);state._newKey="";render();}};
+  apiCard.append(keyInp,saveKeyBtn);
+  wrap.appendChild(apiCard);
+
+  // DB status
+  const dbCard=el("div",{class:"card",style:"margin-bottom:20px"});
+  dbCard.innerHTML=`<div style="color:#444;font-size:9px;letter-spacing:3px;margin-bottom:8px">DATABASE STATUS</div><div style="display:flex;align-items:center;gap:8px"><span class="sync-dot"></span><span style="color:#2ECC40;font-size:11px;letter-spacing:2px">CONNECTED TO SUPABASE</span></div><div style="color:#2a2a2a;font-size:9px;margin-top:6px;letter-spacing:1px">All data syncs automatically to the cloud</div>`;
+  wrap.appendChild(dbCard);
+
+  // Budgets
+  wrap.appendChild(el("div",{style:"color:#2a2a2a;font-size:9px;letter-spacing:4px;margin-bottom:14px"},"WEEKLY BUDGETS"));
+  wrap.appendChild(el("span",{class:"label",style:"margin-top:0"},"TOTAL WEEKLY BUDGET ($)"));
+  const totInp=el("input",{type:"number",value:state.tempBudgets.total,style:"font-size:22px;font-weight:700;margin-bottom:0"});
+  totInp.oninput=e=>{state.tempBudgets={...state.tempBudgets,total:+e.target.value};};
+  wrap.appendChild(totInp);
+  wrap.appendChild(el("div",{style:"height:1px;background:#1a1a1a;margin:16px 0"}));
+  CATS.forEach(cat=>{
+    const lbl=el("span",{class:"label",style:`margin-top:0;color:${cat.color}`},`${cat.icon} ${cat.label.toUpperCase()} ($)`);
+    const inp=el("input",{type:"number",value:state.tempBudgets[cat.id],style:"margin-bottom:8px"});
+    inp.oninput=e=>{state.tempBudgets={...state.tempBudgets,[cat.id]:+e.target.value};};
+    wrap.append(lbl,inp);
+  });
+  const saveBtn=el("button",{class:"btn-red"},"SAVE LIMITS →");
+  saveBtn.onclick=async()=>{state.budgets={...state.tempBudgets};await saveBudgetsToDB();render();alert("✓ Limits saved to cloud!");};
+  wrap.appendChild(saveBtn);
+  s.appendChild(wrap); return s;
+}
+
+function guiltOverlay() {
+  const gd=state.guiltModal;
+  const ov=el("div",{class:"overlay"});
+  const modal=el("div",{class:"guilt-modal"});
+  modal.innerHTML=`
+    <div style="font-size:50px;text-align:center;margin-bottom:14px;animation:pulse 1s infinite">⚠️</div>
+    <h2 style="color:#FF4136;font-size:22px;font-weight:900;letter-spacing:3px;text-align:center;margin-bottom:14px;line-height:1.2;font-family:'Bebas Neue',sans-serif">${gd.msg}</h2>
+    <div style="background:#100000;border:1px solid #FF4136;border-radius:8px;padding:12px 16px;margin-bottom:16px;min-height:50px">
+      ${state.guiltRoast?`<p style="color:#FF6B6B;font-size:13px;text-align:center;margin:0;letter-spacing:1px;line-height:1.6">🤖 "${state.guiltRoast}"</p>`:`<p style="color:#2a2a2a;font-size:10px;text-align:center;margin:0;letter-spacing:2px;animation:pulse 1s infinite">AI GENERATING ROAST...</p>`}
+    </div>
+    <div style="background:#111;border:1px solid #2a1111;border-radius:8px;padding:12px 16px;margin-bottom:16px">
+      ${gd.catOver?`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #1a1a1a"><span style="color:#555;font-size:10px;letter-spacing:2px">${gd.catName?.toUpperCase()}</span><span style="color:#FF4136;font-weight:700;font-family:'Space Mono',monospace">$${gd.catSpent?.toFixed(2)} / $${gd.catBudget}</span></div>`:""}
+      ${gd.totOver?`<div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:#555;font-size:10px;letter-spacing:2px">WEEKLY TOTAL</span><span style="color:#FF4136;font-weight:700;font-family:'Space Mono',monospace">$${gd.totalSpent?.toFixed(2)} / $${gd.totalBudget}</span></div>`:""}
+    </div>
+    <p style="color:#FF4136;font-size:10px;letter-spacing:3px;margin-bottom:8px;text-align:center">EXPLAIN YOURSELF. NOW.</p>
+  `;
+  const ta=el("textarea",{placeholder:"Type your excuse (min 5 chars to continue)",style:"width:100%;background:#111;border:1px solid #FF4136;color:#fff;padding:12px;border-radius:6px;font-size:13px;font-family:'Space Mono',monospace;margin-bottom:12px"});
+  ta.rows=3; ta.value=state.excuseText;
+  const ackBtn=el("button",{class:"btn-red",style:`margin-top:0;opacity:${state.excuseText.trim().length>=5?"1":"0.3"}`},"I ACKNOWLEDGE MY FAILURE →");
+  ta.oninput=e=>{state.excuseText=e.target.value;ackBtn.style.opacity=e.target.value.trim().length>=5?"1":"0.3";};
+  ackBtn.onclick=()=>{if(state.excuseText.trim().length>=5){state.guiltModal=null;render();}};
+  modal.append(ta,ackBtn); ov.appendChild(modal); return ov;
+}
+
+function bottomNav() {
+  const nav=el("div",{class:"bottom-nav"});
+  [{id:"dashboard",icon:"◈",label:"HOME"},{id:"history",icon:"≡",label:"HISTORY"},{id:"log",icon:null,label:null,add:true},{id:"ai",icon:"◎",label:"AI"},{id:"settings",icon:"◌",label:"SETTINGS"}].forEach(item=>{
+    if(item.add){
+      const b=el("button",{class:"add-btn"},"+"); b.onclick=()=>setPage("log"); nav.appendChild(b);
+    } else {
+      const b=el("button",{class:`nav-btn${state.page===item.id?" active":""}`});
+      b.innerHTML=`<span style="font-size:18px">${item.icon}</span><span>${item.label}</span>`;
+      b.onclick=()=>setPage(item.id); nav.appendChild(b);
+    }
+  });
+  return nav;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+function render() {
+  const app=document.getElementById("app");
+  app.innerHTML="";
+  const shell=el("div",{style:"display:flex;flex-direction:column;height:100vh;height:100dvh;"});
+  const bar=el("div",{class:"top-bar"});
+  const brand=el("span",{class:"brand"},"NOEXCUSES");
+  const status=el("span",{style:`font-size:10px;letter-spacing:2px;color:${overTotal()?"#FF4136":overCount()>0?"#FF851B":"#2ECC40"}`},overTotal()?"⚠ OVER":overCount()>0?`${overCount()} OVER`:"✓ OK");
+  bar.append(brand,status); shell.appendChild(bar);
+  let content;
+  if(state.page==="dashboard") content=dashPage();
+  else if(state.page==="log") content=logPage();
+  else if(state.page==="ai") content=aiPage();
+  else if(state.page==="chat") content=chatPage();
+  else if(state.page==="history") content=historyPage();
+  else if(state.page==="settings") content=settingsPage();
+  shell.appendChild(content);
+  shell.appendChild(bottomNav());
+  if(state.guiltModal) shell.appendChild(guiltOverlay());
+  app.appendChild(shell);
+  if(state.page==="chat") setTimeout(scrollChatDown,50);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+(async()=>{
+  await loadFromDB();
+  render();
+})();
+</script>
+
+</body>
+</html>
