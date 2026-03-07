@@ -6,597 +6,404 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="theme-color" content="#0d0d0d"/>
+  <meta name="theme-color" content="#0f0f13"/>
   <title>NoExcuses</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
+    :root {
+      --bg: #0f0f13; --surface: #17171f; --surface2: #1e1e2a; --border: rgba(255,255,255,0.07);
+      --text: #eeeef5; --text2: #8080a0; --text3: #3a3a55;
+      --accent: #7c6af7; --accent2: #a78bfa;
+      --green: #34d399; --red: #f87171; --orange: #fb923c;
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; background: #0d0d0d; color: #fff; font-family: 'Space Mono', 'Courier New', monospace; overflow: hidden; }
-    #app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; background: #0d0d0d; max-width: 480px; margin: 0 auto; position: relative; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', system-ui, sans-serif; overflow: hidden; -webkit-font-smoothing: antialiased; }
+    #app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; background: var(--bg); max-width: 480px; margin: 0 auto; position: relative; }
     ::-webkit-scrollbar { display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-    @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+    @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-    @keyframes flicker { 0%,100%{opacity:1} 91%{opacity:1} 92%{opacity:0.5} 93%{opacity:1} 95%{opacity:0.8} 96%{opacity:1} }
-    @keyframes bounce3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-    .screen { flex: 1; overflow-y: auto; padding-bottom: 90px; animation: fadeIn 0.2s ease; }
-    .screen-full { flex: 1; display: flex; flex-direction: column; overflow: hidden; animation: fadeIn 0.2s ease; }
-    .top-bar { padding: 16px 20px 12px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-    .brand { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 5px; color: #FF4136; animation: flicker 5s infinite; }
-    .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: #0d0d0d; border-top: 1px solid #1a1a1a; display: flex; justify-content: space-around; align-items: center; padding: 10px 8px 20px; z-index: 100; }
-    .nav-btn { background: none; border: none; color: #3a3a3a; cursor: pointer; font-size: 20px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 8px; transition: color 0.2s; }
-    .nav-btn span { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 1px; }
-    .nav-btn.active { color: #FF4136; }
-    .add-btn { background: #FF4136; color: #fff; border: none; width: 52px; height: 52px; border-radius: 50%; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 0 20px #FF413640; margin-top: -10px; }
+    @keyframes fadeUp { from{transform:translateY(8px);opacity:0} to{transform:translateY(0);opacity:1} }
+    @keyframes bounce3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+    @keyframes glow { 0%,100%{opacity:0.7} 50%{opacity:1} }
+    .screen { flex: 1; overflow-y: auto; padding-bottom: 100px; }
+    .screen-full { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .top-bar { padding: 16px 20px 12px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .brand { font-family: 'DM Serif Display', Georgia, serif; font-size: 21px; color: var(--text); }
+    .brand em { color: var(--accent2); font-style: italic; }
+    .status-pill { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px 5px 9px; font-size: 11px; font-weight: 600; }
+    .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,15,19,0.97); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; padding: 8px 4px 22px; z-index: 100; }
+    .nav-btn { background: none; border: none; color: var(--text3); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 12px; transition: all 0.2s; }
+    .nav-btn svg { width: 20px; height: 20px; transition: all 0.2s; }
+    .nav-btn span { font-size: 9px; font-weight: 600; letter-spacing: 0.3px; }
+    .nav-btn.active { color: var(--accent2); }
+    .add-btn { background: linear-gradient(145deg, var(--accent), var(--accent2)); color: #fff; border: none; width: 48px; height: 48px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(124,106,247,0.45); margin-top: -4px; transition: transform 0.15s; }
+    .add-btn:active { transform: scale(0.93); }
     .page-pad { padding: 20px 18px; }
-    .card { background: #111; border: 1px solid #1e1e1e; border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; }
-    .card-red { border-color: #FF4136; }
-    .card-green { border-color: #2ECC40; }
-    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 4px; line-height: 1; }
-    .label { color: #3a3a3a; font-size: 9px; letter-spacing: 3px; display: block; margin-bottom: 5px; margin-top: 14px; }
-    .micro { color: #333; font-size: 9px; letter-spacing: 2px; }
+    .hero { background: linear-gradient(145deg, #141428 0%, #1a1535 60%, #0f1a3a 100%); border: 1px solid rgba(124,106,247,0.18); border-radius: 22px; padding: 22px; margin-bottom: 14px; position: relative; overflow: hidden; animation: fadeUp 0.3s ease; }
+    .hero::after { content:''; position:absolute; bottom:-40px; right:-30px; width:160px; height:160px; background: radial-gradient(circle, rgba(167,139,250,0.1) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
+    .hero-eyebrow { font-size: 11px; font-weight: 600; color: rgba(167,139,250,0.7); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+    .hero-amount { font-size: 50px; font-weight: 700; line-height: 1; letter-spacing: -2px; }
+    .hero-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 5px; }
+    .bar-bg { height: 5px; background: rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; margin-top: 16px; }
+    .bar-fill { height: 100%; border-radius: 10px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .quick-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .quick-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; gap: 10px; }
+    .quick-card:active { background: var(--surface2); transform: scale(0.98); }
+    .quick-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .quick-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+    .section-head { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+    .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; margin-bottom: 8px; animation: fadeUp 0.2s ease; }
+    .cat-card.over { border-color: rgba(248,113,113,0.3); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 18px 20px; margin-bottom: 12px; animation: fadeUp 0.2s ease; }
+    .card.accent { border-color: rgba(124,106,247,0.25); background: linear-gradient(135deg, rgba(124,106,247,0.06), var(--surface)); }
+    .card.green { border-color: rgba(52,211,153,0.25); }
+    .page-title { font-family: 'DM Serif Display', Georgia, serif; font-size: 30px; line-height: 1.1; margin-bottom: 3px; }
+    .page-sub { color: var(--text2); font-size: 13px; margin-bottom: 22px; }
+    .label { color: var(--text2); font-size: 12px; font-weight: 500; display: block; margin: 16px 0 6px; }
     input[type=number], input[type=text], input[type=password], select, textarea {
-      width: 100%; background: #0d0d0d; border: 1px solid #1e1e1e; color: #fff;
-      padding: 12px 14px; border-radius: 8px; font-family: 'Space Mono', monospace;
+      width: 100%; background: var(--surface); border: 1.5px solid var(--border); color: var(--text);
+      padding: 13px 15px; border-radius: 13px; font-family: 'DM Sans', sans-serif;
       font-size: 15px; display: block; -webkit-appearance: none; appearance: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: #FF4136; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,106,247,0.12); }
     textarea { resize: none; }
-    .btn-red { width: 100%; background: #FF4136; color: #fff; border: none; padding: 15px; border-radius: 8px; font-size: 12px; letter-spacing: 3px; font-weight: 700; cursor: pointer; font-family: 'Space Mono', monospace; margin-top: 16px; }
-    .btn-ghost { width: 100%; background: #111; color: #444; border: 1px solid #222; padding: 12px; border-radius: 8px; font-size: 11px; letter-spacing: 2px; cursor: pointer; font-family: 'Space Mono', monospace; margin-top: 10px; }
-    .bar-bg { height: 3px; background: #1a1a1a; border-radius: 2px; overflow: hidden; margin-top: 10px; }
-    .bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
-    .spinner { width: 28px; height: 28px; border: 2px solid #1a1a1a; border-top: 2px solid #FF4136; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
-    .scan-box { border: 1px dashed #222; border-radius: 12px; padding: 36px 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; min-height: 140px; text-align: center; }
-    .bubble-ai { background: #141414; border-radius: 12px 12px 12px 2px; padding: 10px 14px; max-width: 85%; }
-    .bubble-user { background: #FF4136; border-radius: 12px 12px 2px 12px; padding: 10px 14px; max-width: 85%; margin-left: auto; }
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
-    .guilt-modal { background: #080000; border: 1px solid #FF4136; border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 420px; animation: slideUp 0.3s ease; }
-    .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; }
-    .ai-tag { font-size: 9px; letter-spacing: 3px; color: #444; margin-bottom: 10px; display: block; }
-    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #2ECC40; display: inline-block; margin-right: 6px; animation: pulse 2s infinite; }
+    select option { background: var(--surface2); }
+    .btn { width: 100%; border: none; padding: 15px; border-radius: 14px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 14px; transition: opacity 0.15s, transform 0.1s; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; box-shadow: 0 4px 16px rgba(124,106,247,0.3); }
+    .btn-primary:active { opacity: 0.88; transform: scale(0.99); }
+    .btn-ghost { background: var(--surface); color: var(--text2); border: 1.5px solid var(--border); }
+    .spinner { width: 26px; height: 26px; border: 2px solid var(--surface2); border-top: 2px solid var(--accent2); border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto; }
+    .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 14px; }
+    .scan-box { border: 1.5px dashed rgba(124,106,247,0.25); border-radius: 18px; padding: 32px 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; min-height: 120px; text-align: center; background: rgba(124,106,247,0.03); transition: all 0.2s; }
+    .scan-box:active { background: rgba(124,106,247,0.07); }
+    .bubble-ai { background: var(--surface); border: 1px solid var(--border); border-radius: 18px 18px 18px 5px; padding: 12px 16px; max-width: 86%; }
+    .bubble-user { background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 18px 18px 5px 18px; padding: 12px 16px; max-width: 86%; margin-left: auto; }
+    .overlay { position: fixed; inset: 0; background: rgba(5,5,10,0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; align-items: flex-end; justify-content: center; z-index: 999; }
+    .guilt-modal { background: var(--surface); border: 1px solid var(--border); border-radius: 28px 28px 0 0; padding: 24px 22px 36px; width: 100%; max-width: 480px; animation: slideUp 0.35s cubic-bezier(0.34,1.3,0.64,1); }
+    .verdict-pill { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .ai-label { font-size: 10px; font-weight: 700; color: var(--accent2); letter-spacing: 1px; margin-bottom: 8px; display: block; text-transform: uppercase; }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 5px; animation: glow 2s infinite; }
+    .history-row { background: var(--surface); border-radius: 14px; padding: 13px 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; }
+    .divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
   </style>
 </head>
 <body>
-<div id="app"><div class="loading-screen"><div class="spinner"></div><div style="color:#333;font-size:10px;letter-spacing:3px;animation:pulse 1.5s infinite">LOADING...</div></div></div>
-
+<div id="app"><div class="loading-screen"><div class="spinner"></div><div style="color:var(--text3);font-size:12px;font-weight:500;animation:pulse 1.5s infinite">Loading your budget...</div></div></div>
 <script>
-const SUPABASE_URL = "https://fdvhrfivrjjfsuvvhbyh.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkdmhyZml2cmpqZnN1dnZoYnloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTIzOTQsImV4cCI6MjA4ODQ2ODM5NH0.YEanEtUa2rorgBdxXJcCbqnIjYekVz1gQu7OEpx0Isg";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const CATS = [
-  { id:"food",    label:"Food & Dining",    icon:"🍔", color:"#FF4136" },
-  { id:"shopping",label:"Shopping",          icon:"🛍️", color:"#FF851B" },
-  { id:"transport",label:"Transport",        icon:"🚗", color:"#FFDC00" },
-  { id:"entertainment",label:"Entertainment",icon:"🎬", color:"#7FDBFF" },
-  { id:"health",  label:"Health & Fitness",  icon:"💪", color:"#2ECC40" },
-  { id:"bills",   label:"Bills & Utilities", icon:"⚡", color:"#B10DC9" },
-  { id:"personal",label:"Personal Care",     icon:"🪥", color:"#F012BE" },
+const SUPABASE_URL="https://fdvhrfivrjjfsuvvhbyh.supabase.co";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkdmhyZml2cmpqZnN1dnZoYnloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTIzOTQsImV4cCI6MjA4ODQ2ODM5NH0.YEanEtUa2rorgBdxXJcCbqnIjYekVz1gQu7OEpx0Isg";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const CATS=[
+  {id:"food",label:"Food & Dining",icon:"🍔",color:"#f87171"},
+  {id:"shopping",label:"Shopping",icon:"🛍️",color:"#fb923c"},
+  {id:"transport",label:"Transport",icon:"🚗",color:"#fbbf24"},
+  {id:"entertainment",label:"Entertainment",icon:"🎬",color:"#60a5fa"},
+  {id:"health",label:"Health & Fitness",icon:"💪",color:"#34d399"},
+  {id:"bills",label:"Bills & Utilities",icon:"⚡",color:"#a78bfa"},
+  {id:"personal",label:"Personal Care",icon:"🪥",color:"#f472b6"},
 ];
-
-const GUILT = ["YOU BLEW IT. AGAIN.","SERIOUSLY? ALREADY?","THIS IS EXACTLY WHY YOU'RE BROKE.","NO WILLPOWER. NONE.","CONGRATS. YOU FAILED YOURSELF.","DID YOU EVEN TRY?"];
-const DEF_BUDGETS = { total:500, food:100, shopping:80, transport:60, entertainment:50, health:60, bills:100, personal:50 };
-const DEF_SPENDING = { food:0, shopping:0, transport:0, entertainment:0, health:0, bills:0, personal:0 };
-
-let state = {
-  apiKey: localStorage.getItem("ne_anthropic_key") || "",
-  budgets: { ...DEF_BUDGETS },
-  spending: { ...DEF_SPENDING },
-  transactions: [],
-  page: "dashboard",
-  guiltModal: null, guiltRoast: "", excuseText: "",
-  logAmount: "", logCat: "food", logNote: "",
-  scanning: false, scanMsg: null,
-  aiInsights: null, aiLoading: false,
-  chatMessages: [{ role:"ai", text:"I'm your NoExcuses AI advisor. Zero sympathy, zero patience. Ask me about your spending — or prepare to be judged." }],
-  chatInput: "", chatLoading: false,
-  tempBudgets: { ...DEF_BUDGETS },
-  dbConnected: false,
+const GUILT_MSGS=["Looks like you went a little over 😬","Budget exceeded — let's talk about it 💸","Oops, that pushed you over the limit 📊","You've crossed the line on this one 🚨","Over budget alert — it happens! 👀"];
+const DEF_BUDGETS={total:500,food:100,shopping:80,transport:60,entertainment:50,health:60,bills:100,personal:50};
+const DEF_SPENDING={food:0,shopping:0,transport:0,entertainment:0,health:0,bills:0,personal:0};
+let state={
+  apiKey:localStorage.getItem("ne_anthropic_key")||"",
+  budgets:{...DEF_BUDGETS},spending:{...DEF_SPENDING},transactions:[],
+  page:"dashboard",guiltModal:null,guiltRoast:"",excuseText:"",
+  logAmount:"",logCat:"food",logNote:"",scanning:false,scanMsg:null,
+  aiInsights:null,aiLoading:false,
+  chatMessages:[{role:"ai",text:"Hey! I'm your NoExcuses AI advisor. Ask me anything about your spending and I'll give you honest, helpful feedback. 💜"}],
+  chatInput:"",chatLoading:false,tempBudgets:{...DEF_BUDGETS},dbConnected:false,
 };
 
-// ── SUPABASE ──────────────────────────────────────────────────────────────
-async function loadFromDB() {
-  try {
-    const { data: budgetRows } = await sb.from("budgets").select("*");
-    if (budgetRows && budgetRows.length > 0) {
-      budgetRows.forEach(r => {
-        if (r.category === "total") state.budgets.total = r.amount;
-        else state.budgets[r.category] = r.amount;
-      });
-      state.tempBudgets = { ...state.budgets };
-    } else { await initDefaultBudgets(); }
+async function loadFromDB(){
+try{
+const{data:br}=await sb.from(“budgets”).select(”*”);
+if(br&&br.length>0){br.forEach(r=>{if(r.category===“total”)state.budgets.total=r.amount;else state.budgets[r.category]=r.amount;});state.tempBudgets={…state.budgets};}else{await initDefaultBudgets();}
+const{data:sr}=await sb.from(“spending”).select(”*”);
+if(sr&&sr.length>0)sr.forEach(r=>{state.spending[r.category]=parseFloat(r.amount);});else{await initDefaultSpending();}
+const{data:tr}=await sb.from(“transactions”).select(”*”).order(“created_at”,{ascending:false}).limit(100);
+if(tr)state.transactions=tr.map(r=>({id:r.id,amount:parseFloat(r.amount),cat:r.category,note:r.note||””,date:r.date,over:r.over}));
+state.dbConnected=true;
+}catch(e){console.error(e);state.dbConnected=false;}
+}
+async function initDefaultBudgets(){const rows=[{category:“total”,amount:DEF_BUDGETS.total}];CATS.forEach(c=>rows.push({category:c.id,amount:DEF_BUDGETS[c.id]}));await sb.from(“budgets”).upsert(rows,{onConflict:“category”});}
+async function initDefaultSpending(){await sb.from(“spending”).upsert(CATS.map(c=>({category:c.id,amount:0})),{onConflict:“category”});}
+async function saveBudgetsToDB(){const rows=[{category:“total”,amount:state.budgets.total}];CATS.forEach(c=>rows.push({category:c.id,amount:state.budgets[c.id]}));await sb.from(“budgets”).upsert(rows,{onConflict:“category”});}
+async function saveSpendingToDB(cat,amt){await sb.from(“spending”).upsert({category:cat,amount:amt},{onConflict:“category”});}
+async function saveTransactionToDB(tx){await sb.from(“transactions”).insert({amount:tx.amount,category:tx.cat,note:tx.note,date:tx.date,over:tx.over});}
+async function resetSpendingInDB(){await sb.from(“spending”).upsert(CATS.map(c=>({category:c.id,amount:0})),{onConflict:“category”});await sb.from(“transactions”).delete().neq(“id”,0);}
 
-    const { data: spendRows } = await sb.from("spending").select("*");
-    if (spendRows && spendRows.length > 0) {
-      spendRows.forEach(r => { state.spending[r.category] = parseFloat(r.amount); });
-    } else { await initDefaultSpending(); }
-
-    const { data: txRows } = await sb.from("transactions").select("*").order("created_at", { ascending:false }).limit(100);
-    if (txRows) {
-      state.transactions = txRows.map(r => ({ id:r.id, amount:parseFloat(r.amount), cat:r.category, note:r.note||"", date:r.date, over:r.over }));
-    }
-    state.dbConnected = true;
-  } catch(e) { console.error(e); state.dbConnected = false; }
+async function callClaude(messages,system){
+const res=await fetch(”/.netlify/functions/claude”,{method:“POST”,headers:{“Content-Type”:“application/json”},body:JSON.stringify({model:“claude-sonnet-4-20250514”,max_tokens:800,system,messages})});
+const d=await res.json();if(d.error)throw new Error(d.error.message);
+return d.content?.find(b=>b.type===“text”)?.text||””;
 }
 
-async function initDefaultBudgets() {
-  const rows = [{ category:"total", amount:DEF_BUDGETS.total }];
-  CATS.forEach(c => rows.push({ category:c.id, amount:DEF_BUDGETS[c.id] }));
-  await sb.from("budgets").upsert(rows, { onConflict:"category" });
+function pct(s,b){return Math.min((s/Math.max(b,0.01))*100,100);}
+function totalSpent(){return Object.values(state.spending).reduce((a,b)=>a+b,0);}
+function remaining(){return state.budgets.total-totalSpent();}
+function overCount(){return CATS.filter(c=>state.spending[c.id]>state.budgets[c.id]).length;}
+function overTotal(){return totalSpent()>state.budgets.total;}
+function buildCtx(){
+const cats=CATS.map(c=>`${c.label}: $${state.spending[c.id].toFixed(2)} of $${state.budgets[c.id]}`).join(”, “);
+const recent=state.transactions.slice(0,8).map(t=>`${t.cat} $${t.amount} ${t.date}`).join(”, “);
+return `Weekly budget: $${state.budgets.total}. Spent: $${totalSpent().toFixed(2)}. ${cats}. Recent: ${recent||"none"}.`;
+}
+function el(tag,attrs={},text){
+const e=document.createElement(tag);
+for(const[k,v]of Object.entries(attrs)){if(k===“class”)e.className=v;else if(k===“style”)e.style.cssText=v;else e.setAttribute(k,v);}
+if(text!==undefined)e.textContent=text;return e;
+}
+function setPage(p){state.page=p;render();}
+
+async function addSpend(){
+const amt=parseFloat(state.logAmount);if(!amt||isNaN(amt))return;
+const ns={…state.spending,[state.logCat]:state.spending[state.logCat]+amt};
+const nt=Object.values(ns).reduce((a,b)=>a+b,0);
+const catOver=ns[state.logCat]>state.budgets[state.logCat],totOver=nt>state.budgets.total;
+const tx={amount:amt,cat:state.logCat,note:state.logNote,date:new Date().toLocaleDateString(),over:catOver||totOver};
+state.spending=ns;state.transactions=[{id:Date.now(),…tx},…state.transactions];
+state.logAmount=””;state.logNote=””;state.scanMsg=null;
+saveSpendingToDB(state.logCat,ns[state.logCat]);saveTransactionToDB(tx);
+if(catOver||totOver){
+state.guiltModal={msg:GUILT_MSGS[Math.floor(Math.random()*GUILT_MSGS.length)],catOver,totOver,catName:CATS.find(c=>c.id===state.logCat)?.label,catSpent:ns[state.logCat],catBudget:state.budgets[state.logCat],totalSpent:nt,totalBudget:state.budgets.total};
+state.guiltRoast=””;state.excuseText=””;render();fetchGuiltRoast();
+}else{render();}
 }
 
-async function initDefaultSpending() {
-  const rows = CATS.map(c => ({ category:c.id, amount:0 }));
-  await sb.from("spending").upsert(rows, { onConflict:"category" });
+async function fetchGuiltRoast(){
+if(!state.apiKey){state.guiltRoast=“Time to review your spending habits and make a plan! 💡”;render();return;}
+try{const gd=state.guiltModal;const text=await callClaude([{role:“user”,content:`User overspent on ${gd.catName} by $${Math.max(0,gd.catSpent-gd.catBudget).toFixed(2)}. One honest friendly insight, max 20 words. Context: ${buildCtx()}`}],“Helpful honest financial advisor. One sentence only.”);state.guiltRoast=text.trim().replace(/^”|”$/g,””);}
+catch{state.guiltRoast=“Consider reviewing your spending habits and adjusting your budget.”;}
+render();
 }
 
-async function saveBudgetsToDB() {
-  const rows = [{ category:"total", amount:state.budgets.total }];
-  CATS.forEach(c => rows.push({ category:c.id, amount:state.budgets[c.id] }));
-  await sb.from("budgets").upsert(rows, { onConflict:"category" });
+async function runAI(){
+if(!state.apiKey){alert(“Add your Anthropic API key in Settings to use AI features.”);return;}
+state.aiLoading=true;state.aiInsights=null;render();
+try{const text=await callClaude([{role:“user”,content:`Analyze and return ONLY valid JSON: {"prediction":"one sentence","verdict":"SAFE or WARNING or DANGER","topRisk":"category id","roast":"one friendly insight","tip":"one specific tip","patterns":["p1","p2","p3"]}. Data: ${buildCtx()}`}],“Helpful financial analyst. Return only valid JSON.”);state.aiInsights=JSON.parse(text.trim());}
+catch{state.aiInsights={prediction:“Unable to analyze right now.”,verdict:“WARNING”,topRisk:“food”,roast:“Keep tracking your spending.”,tip:“Set a daily spending limit.”,patterns:[]};}
+state.aiLoading=false;render();
 }
 
-async function saveSpendingToDB(category, amount) {
-  await sb.from("spending").upsert({ category, amount }, { onConflict:"category" });
+async function sendChat(){
+const msg=state.chatInput.trim();if(!msg)return;
+if(!state.apiKey){state.chatMessages=[…state.chatMessages,{role:“ai”,text:“Please add your Anthropic API key in Settings to use the AI advisor! ⚙️”}];render();return;}
+state.chatMessages=[…state.chatMessages,{role:“user”,text:msg}];
+state.chatInput=””;state.chatLoading=true;render();scrollChatDown();
+try{
+const apiMsgs=state.chatMessages.map(m=>({role:m.role===“user”?“user”:“assistant”,content:m.text}));
+const text=await callClaude(apiMsgs,`Friendly helpful financial advisor. User data: ${buildCtx()}. Be honest but supportive. Max 80 words.`);
+state.chatMessages=[…state.chatMessages,{role:“ai”,text}];
+}catch{state.chatMessages=[…state.chatMessages,{role:“ai”,text:“Sorry, I couldn’t connect right now. Please try again! 🔄”}];}
+state.chatLoading=false;render();setTimeout(scrollChatDown,100);
 }
 
-async function saveTransactionToDB(tx) {
-  await sb.from("transactions").insert({ amount:tx.amount, category:tx.cat, note:tx.note, date:tx.date, over:tx.over });
+function scrollChatDown(){const e=document.getElementById(“chat-scroll”);if(e)e.scrollTop=e.scrollHeight;}
+
+async function scanReceipt(file){
+if(!state.apiKey){state.scanMsg={type:“error”,text:“Add your API key in Settings to scan receipts.”};render();return;}
+state.scanning=true;state.scanMsg=null;render();
+const reader=new FileReader();
+reader.onload=async()=>{
+const base64=reader.result.split(”,”)[1];
+try{
+const res=await fetch(”/.netlify/functions/claude”,{method:“POST”,headers:{“Content-Type”:“application/json”},body:JSON.stringify({model:“claude-sonnet-4-20250514”,max_tokens:300,messages:[{role:“user”,content:[{type:“image”,source:{type:“base64”,media_type:file.type,data:base64}},{type:“text”,text:`Scan receipt. Return ONLY raw JSON: {"amount":24.50,"category":"food","note":"Store name"}. Categories: food,shopping,transport,entertainment,health,bills,personal. Not a receipt: {"error":"x"}.`}]}]})});
+const d=await res.json();const text=d.content?.find(b=>b.type===“text”)?.text||””;
+const parsed=JSON.parse(text.trim());
+if(parsed.error)state.scanMsg={type:“error”,text:“Couldn’t read receipt. Try entering manually.”};
+else{state.logAmount=parsed.amount?.toString()||””;state.logCat=parsed.category||“food”;state.logNote=parsed.note||””;state.scanMsg={type:“success”,text:“✓ Receipt scanned!”};}
+}catch{state.scanMsg={type:“error”,text:“Scan failed. Please enter manually.”};}
+state.scanning=false;render();
+};
+reader.readAsDataURL(file);
 }
 
-async function resetSpendingInDB() {
-  const rows = CATS.map(c => ({ category:c.id, amount:0 }));
-  await sb.from("spending").upsert(rows, { onConflict:"category" });
-  await sb.from("transactions").delete().neq("id", 0);
+function dashPage(){
+const s=el(“div”,{class:“screen”}),wrap=el(“div”,{class:“page-pad”});
+const ts=totalSpent(),rem=remaining(),over=overTotal();
+const hour=new Date().getHours();
+wrap.appendChild(el(“div”,{style:“font-size:13px;color:var(–text2);margin-bottom:14px;font-weight:500”},hour<12?“Good morning ☀️”:hour<17?“Good afternoon ⛅”:“Good evening 🌙”));
+const hero=el(“div”,{class:“hero”});
+hero.innerHTML=`<div class="hero-eyebrow">Weekly Spending</div><div class="hero-amount" style="color:${over?"var(--red)":"var(--text)"}">$${ts.toFixed(2)}</div><div class="hero-sub">${over?`<span style="color:var(--red);font-weight:600">$${Math.abs(rem).toFixed(2)} over limit</span>`:`<span style="color:var(--green);font-weight:600">$${rem.toFixed(2)}</span> remaining of $${state.budgets.total}`}</div><div class="bar-bg"><div class="bar-fill" style="width:${pct(ts,state.budgets.total)}%;background:${over?"var(--red)":"linear-gradient(90deg,var(--accent),var(--green))"}"></div></div>`;
+wrap.appendChild(hero);
+const qrow=el(“div”,{class:“quick-row”});
+const qa=el(“div”,{class:“quick-card”});qa.innerHTML=`<div class="quick-icon" style="background:rgba(124,106,247,0.15)">🤖</div><div class="quick-label">AI Analysis</div>`;qa.onclick=()=>setPage(“ai”);
+const qc=el(“div”,{class:“quick-card”});qc.innerHTML=`<div class="quick-icon" style="background:rgba(167,139,250,0.15)">💬</div><div class="quick-label">AI Advisor</div>`;qc.onclick=()=>setPage(“chat”);
+qrow.append(qa,qc);wrap.appendChild(qrow);
+const syncRow=el(“div”,{style:“display:flex;align-items:center;margin-bottom:14px”});
+syncRow.innerHTML=`<span class="sync-dot"></span><span style="color:var(--text3);font-size:11px;font-weight:500">${state.dbConnected?"Synced to cloud":"Offline"}</span>`;
+wrap.appendChild(syncRow);
+wrap.appendChild(el(“div”,{class:“section-head”},“Categories”));
+CATS.forEach(cat=>{
+const spent=state.spending[cat.id],budget=state.budgets[cat.id],ov=spent>budget;
+const card=el(“div”,{class:`cat-card${ov?" over":""}`});
+card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="display:flex;align-items:center;gap:11px"><div style="width:38px;height:38px;border-radius:11px;background:${cat.color}18;display:flex;align-items:center;justify-content:center;font-size:18px">${cat.icon}</div><div><div style="font-size:13px;font-weight:600">${cat.label}</div><div style="font-size:11px;color:${ov?"var(--red)":"var(--text3)"};margin-top:1px">${ov?`$${(spent-budget).toFixed(2)} over`:`$${(budget-spent).toFixed(2)} left`}</div></div></div><div style="text-align:right"><div style="font-size:18px;font-weight:700;color:${ov?"var(--red)":"var(--text)"}">$${spent.toFixed(0)}</div><div style="font-size:11px;color:var(--text3)">of $${budget}</div></div></div><div class="bar-bg"><div class="bar-fill" style="width:${pct(spent,budget)}%;background:${ov?"var(--red)":cat.color}"></div></div>`;
+wrap.appendChild(card);
+});
+s.appendChild(wrap);return s;
 }
 
-// ── AI via Netlify function ───────────────────────────────────────────────
-async function callClaude(messages, system) {
-  const res = await fetch("/.netlify/functions/claude", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 800,
-      system,
-      messages
-    })
-  });
-  const d = await res.json();
-  if (d.error) throw new Error(d.error.message);
-  return d.content?.find(b => b.type === "text")?.text || "";
+function logPage(){
+const s=el(“div”,{class:“screen”}),wrap=el(“div”,{class:“page-pad”});
+wrap.appendChild(el(“div”,{class:“page-title”},“Log Spend”));
+wrap.appendChild(el(“div”,{class:“page-sub”},“Track every transaction, big or small.”));
+const scanB=el(“div”,{class:“scan-box”,style:“margin-bottom:16px”});
+if(state.scanning){scanB.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:12px"><div class="spinner"></div><div style="color:var(--text2);font-size:12px;font-weight:500">Reading receipt with AI...</div></div>`;}
+else{scanB.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="font-size:36px">📷</div><div style="color:var(--text2);font-size:13px;font-weight:600">Scan a receipt</div><div style="color:var(--text3);font-size:11px">AI auto-fills amount & category</div></div>`;scanB.onclick=()=>{const fi=document.createElement(“input”);fi.type=“file”;fi.accept=“image/*”;fi.onchange=e=>{if(e.target.files[0])scanReceipt(e.target.files[0]);};fi.click();};}
+wrap.appendChild(scanB);
+if(state.scanMsg){wrap.appendChild(el(“div”,{style:`background:${state.scanMsg.type==="success"?"rgba(52,211,153,0.08)":"rgba(248,113,113,0.08)"};border:1px solid ${state.scanMsg.type==="success"?"rgba(52,211,153,0.3)":"rgba(248,113,113,0.3)"};border-radius:12px;padding:11px 14px;margin-bottom:14px;color:${state.scanMsg.type==="success"?"var(--green)":"var(--red)"};font-size:13px;font-weight:500`},state.scanMsg.text));}
+wrap.appendChild(el(“span”,{class:“label”},“Amount ($)”));
+const amtInp=el(“input”,{type:“number”,placeholder:“0.00”,value:state.logAmount,style:“font-size:24px;font-weight:700”});amtInp.oninput=e=>{state.logAmount=e.target.value;};wrap.appendChild(amtInp);
+wrap.appendChild(el(“span”,{class:“label”},“Category”));
+const catSel=el(“select”);CATS.forEach(c=>{const o=el(“option”,{value:c.id},`${c.icon}  ${c.label}`);if(c.id===state.logCat)o.selected=true;catSel.appendChild(o);});catSel.onchange=e=>{state.logCat=e.target.value;};wrap.appendChild(catSel);
+wrap.appendChild(el(“span”,{class:“label”},“Note (optional)”));
+const noteInp=el(“input”,{type:“text”,placeholder:“What did you buy?”,value:state.logNote});noteInp.oninput=e=>{state.logNote=e.target.value;};wrap.appendChild(noteInp);
+const logBtn=el(“button”,{class:“btn btn-primary”},“Add Transaction”);logBtn.onclick=addSpend;wrap.appendChild(logBtn);
+if(state.transactions.length>0){
+wrap.appendChild(el(“div”,{class:“section-head”,style:“margin-top:24px;margin-bottom:12px”},“Recent”));
+state.transactions.slice(0,3).forEach(t=>{const cat=CATS.find(c=>c.id===t.cat);const row=el(“div”,{class:“history-row”,style:`border-left-color:${t.over?"var(--red)":cat?.color||"var(--accent)"}`});row.innerHTML=`<div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">${cat?.icon}</span><div style="font-size:13px;font-weight:500;color:var(--text2)">${cat?.label}</div></div><div style="font-size:15px;font-weight:700;color:${t.over?"var(--red)":"var(--text)"}">$${Number(t.amount).toFixed(2)}</div>`;wrap.appendChild(row);});
+}
+s.appendChild(wrap);return s;
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────
-function pct(s, b) { return Math.min((s / Math.max(b,0.01)) * 100, 100); }
-function totalSpent() { return Object.values(state.spending).reduce((a,b)=>a+b,0); }
-function remaining() { return state.budgets.total - totalSpent(); }
-function overCount() { return CATS.filter(c => state.spending[c.id] > state.budgets[c.id]).length; }
-function overTotal() { return totalSpent() > state.budgets.total; }
-function buildCtx() {
-  const cats = CATS.map(c=>`${c.label}: $${state.spending[c.id].toFixed(2)} of $${state.budgets[c.id]}`).join(", ");
-  const recent = state.transactions.slice(0,8).map(t=>`${t.cat} $${t.amount} ${t.date}`).join(", ");
-  return `Weekly budget: $${state.budgets.total}. Spent: $${totalSpent().toFixed(2)}. ${cats}. Recent: ${recent||"none"}.`;
+function aiPage(){
+const s=el(“div”,{class:“screen”}),wrap=el(“div”,{class:“page-pad”});
+wrap.appendChild(el(“div”,{class:“page-title”},“AI Analysis”));
+wrap.appendChild(el(“div”,{class:“page-sub”},“Predictions, patterns and personalised tips.”));
+if(state.aiLoading){const ctr=el(“div”,{style:“display:flex;flex-direction:column;align-items:center;padding:60px 0;gap:14px”});ctr.appendChild(el(“div”,{class:“spinner”}));ctr.appendChild(el(“div”,{style:“color:var(–text2);font-size:13px;font-weight:500;animation:pulse 1.5s infinite”},“Analysing your spending…”));wrap.appendChild(ctr);}
+else if(!state.aiInsights){const ctr=el(“div”,{style:“display:flex;flex-direction:column;align-items:center;padding:40px 0;gap:12px;text-align:center”});ctr.innerHTML=`<div style="font-size:56px;margin-bottom:8px">🤖</div><div style="font-size:16px;font-weight:600">Get your spending analysis</div><div style="font-size:13px;color:var(--text2);line-height:1.6;max-width:260px;margin-top:4px">Predict your week, find patterns and get personalised tips.</div>`;const b=el(“button”,{class:“btn btn-primary”,style:“margin-top:8px;max-width:240px”},“Run Analysis”);b.onclick=runAI;ctr.appendChild(b);wrap.appendChild(ctr);}
+else{
+const ins=state.aiInsights;
+const vc=ins.verdict===“DANGER”?“var(–red)”:ins.verdict===“WARNING”?“var(–orange)”:“var(–green)”;
+const vcbg=ins.verdict===“DANGER”?“rgba(248,113,113,0.1)”:ins.verdict===“WARNING”?“rgba(251,146,60,0.1)”:“rgba(52,211,153,0.1)”;
+const pred=el(“div”,{class:“card”});pred.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px"><span class="ai-label">Prediction</span><span class="verdict-pill" style="background:${vcbg};color:${vc}">${ins.verdict}</span></div><p style="font-size:14px;line-height:1.6">${ins.prediction}</p>`;wrap.appendChild(pred);
+const insight=el(“div”,{class:“card accent”});insight.innerHTML=`<span class="ai-label">✨ Insight</span><p style="color:var(--text2);font-size:13px;line-height:1.7;font-style:italic">"${ins.roast}"</p>`;wrap.appendChild(insight);
+const riskCat=CATS.find(c=>c.id===ins.topRisk);
+const risk=el(“div”,{class:“card”});risk.innerHTML=`<span class="ai-label">⚠️ Highest Risk</span><div style="display:flex;align-items:center;gap:12px"><div style="width:42px;height:42px;border-radius:12px;background:rgba(251,146,60,0.1);display:flex;align-items:center;justify-content:center;font-size:20px">${riskCat?.icon||"💸"}</div><span style="color:var(--orange);font-size:16px;font-weight:600">${riskCat?.label||ins.topRisk}</span></div>`;wrap.appendChild(risk);
+const tip=el(“div”,{class:“card green”});tip.innerHTML=`<span class="ai-label">💡 Action Tip</span><p style="color:var(--green);font-size:13px;line-height:1.7">${ins.tip}</p>`;wrap.appendChild(tip);
+if(ins.patterns?.length>0){const patt=el(“div”,{class:“card”});patt.innerHTML=`<span class="ai-label">📊 Spending Patterns</span>`;ins.patterns.forEach(p=>{const row=el(“div”,{style:“padding:10px 12px;background:var(–surface2);border-radius:10px;border-left:2px solid var(–accent);margin-bottom:8px”});row.innerHTML=`<p style="color:var(--text2);font-size:13px;line-height:1.6">${p}</p>`;patt.appendChild(row);});wrap.appendChild(patt);}
+const rerun=el(“button”,{class:“btn btn-ghost”},“Run Again”);rerun.onclick=runAI;wrap.appendChild(rerun);
+}
+s.appendChild(wrap);return s;
 }
 
-function el(tag, attrs={}, text) {
-  const e = document.createElement(tag);
-  for (const [k,v] of Object.entries(attrs)) {
-    if (k==="class") e.className=v;
-    else if (k==="style") e.style.cssText=v;
-    else e.setAttribute(k,v);
-  }
-  if (text !== undefined) e.textContent = text;
-  return e;
+function chatPage(){
+const s=el(“div”,{class:“screen-full”});
+const msgArea=el(“div”,{id:“chat-scroll”,style:“flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:12px”});
+state.chatMessages.forEach(m=>{
+const row=el(“div”,{style:`display:flex;justify-content:${m.role==="user"?"flex-end":"flex-start"}`});
+const bub=el(“div”,{class:m.role===“user”?“bubble-user”:“bubble-ai”});
+if(m.role===“ai”)bub.innerHTML=`<div style="color:var(--accent2);font-size:9px;font-weight:700;letter-spacing:1px;margin-bottom:5px">AI ADVISOR</div>`;
+bub.appendChild(el(“p”,{style:`color:${m.role==="user"?"#fff":"var(--text)"};font-size:13px;line-height:1.65;margin:0`},m.text));
+row.appendChild(bub);msgArea.appendChild(row);
+});
+if(state.chatLoading){const row=el(“div”,{style:“display:flex”});const bub=el(“div”,{class:“bubble-ai”,style:“display:flex;gap:5px;align-items:center;padding:14px 18px”});[0,1,2].forEach(i=>{bub.appendChild(el(“div”,{style:`width:7px;height:7px;border-radius:50%;background:var(--text3);animation:bounce3 1.2s ${i*0.2}s infinite`}));});row.appendChild(bub);msgArea.appendChild(row);}
+s.appendChild(msgArea);
+const quick=el(“div”,{style:“padding:8px 14px;display:flex;gap:7px;overflow-x:auto;flex-shrink:0;border-top:1px solid var(–border)”});
+[“Will I overspend?”,“Worst category?”,“How to improve?”].forEach(q=>{const b=el(“button”,{style:“background:var(–surface);border:1px solid var(–border);color:var(–text2);padding:7px 14px;border-radius:20px;font-size:12px;white-space:nowrap;cursor:pointer;font-family:‘DM Sans’,sans-serif;flex-shrink:0;font-weight:500”},q);b.onclick=()=>{state.chatInput=q;sendChat();};quick.appendChild(b);});
+s.appendChild(quick);
+const inputRow=el(“div”,{style:“padding:10px 14px 14px;display:flex;gap:8px;flex-shrink:0”});
+const inp=el(“input”,{type:“text”,placeholder:“Ask about your spending…”,value:state.chatInput,style:“flex:1;margin-bottom:0;font-size:14px”});inp.oninput=e=>{state.chatInput=e.target.value;};inp.onkeydown=e=>{if(e.key===“Enter”)sendChat();};
+const sendB=el(“button”,{style:“background:linear-gradient(135deg,var(–accent),var(–accent2));border:none;border-radius:12px;width:44px;height:44px;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center”},“↑”);sendB.onclick=sendChat;
+inputRow.append(inp,sendB);s.appendChild(inputRow);return s;
 }
 
-function btn(text, onclick, style) {
-  const b = el("button", { style }); b.textContent=text; b.onclick=onclick; return b;
+function historyPage(){
+const s=el(“div”,{class:“screen”}),wrap=el(“div”,{class:“page-pad”});
+wrap.appendChild(el(“div”,{class:“page-title”},“History”));
+wrap.appendChild(el(“div”,{class:“page-sub”},“All your transactions this week.”));
+if(state.transactions.length===0){const empty=el(“div”,{class:“empty”});empty.innerHTML=`<div style="font-size:44px;margin-bottom:12px;opacity:0.5">📭</div><div style="font-size:13px;font-weight:500">No transactions yet.<br>Start logging your spending!</div>`;wrap.appendChild(empty);}
+else{
+state.transactions.forEach(t=>{const cat=CATS.find(c=>c.id===t.cat);const row=el(“div”,{class:“history-row”,style:`border-left-color:${t.over?"var(--red)":cat?.color||"var(--accent)"}`});row.innerHTML=`<div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:10px;background:${(cat?.color||"#7c6af7")}18;display:flex;align-items:center;justify-content:center;font-size:17px">${cat?.icon}</div><div><div style="font-size:13px;font-weight:500">${cat?.label}</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${t.date}${t.note?` · ${t.note}`:""}</div></div></div><div style="text-align:right"><div style="font-size:16px;font-weight:700;color:${t.over?"var(--red)":"var(--text)"}">$${Number(t.amount).toFixed(2)}</div><div style="font-size:10px;font-weight:600;color:${t.over?"var(--red)":"var(--green)"}">${t.over?"Over":"OK"}</div></div>`;wrap.appendChild(row);});
+const clrBtn=el(“button”,{class:“btn btn-ghost”,style:“margin-top:16px”},“Reset Week”);clrBtn.onclick=async()=>{if(confirm(“Reset all spending for a new week?”)){state.spending={…DEF_SPENDING};state.transactions=[];await resetSpendingInDB();render();}};wrap.appendChild(clrBtn);
+}
+s.appendChild(wrap);return s;
 }
 
-// ── ACTIONS ───────────────────────────────────────────────────────────────
-function setPage(p) { state.page=p; render(); }
-
-async function addSpend() {
-  const amt = parseFloat(state.logAmount);
-  if (!amt || isNaN(amt)) return;
-  const ns = { ...state.spending, [state.logCat]: state.spending[state.logCat] + amt };
-  const nt = Object.values(ns).reduce((a,b)=>a+b,0);
-  const catOver = ns[state.logCat] > state.budgets[state.logCat];
-  const totOver = nt > state.budgets.total;
-  const tx = { amount:amt, cat:state.logCat, note:state.logNote, date:new Date().toLocaleDateString(), over:catOver||totOver };
-  state.spending = ns;
-  state.transactions = [{ id:Date.now(), ...tx }, ...state.transactions];
-  state.logAmount=""; state.logNote=""; state.scanMsg=null;
-  saveSpendingToDB(state.logCat, ns[state.logCat]);
-  saveTransactionToDB(tx);
-  if (catOver || totOver) {
-    state.guiltModal = {
-      msg: GUILT[Math.floor(Math.random()*GUILT.length)],
-      catOver, totOver,
-      catName: CATS.find(c=>c.id===state.logCat)?.label,
-      catSpent: ns[state.logCat], catBudget: state.budgets[state.logCat],
-      totalSpent: nt, totalBudget: state.budgets.total,
-    };
-    state.guiltRoast=""; state.excuseText="";
-    render(); fetchGuiltRoast();
-  } else { render(); }
+function settingsPage(){
+const s=el(“div”,{class:“screen”}),wrap=el(“div”,{class:“page-pad”});
+wrap.appendChild(el(“div”,{class:“page-title”},“Settings”));
+wrap.appendChild(el(“div”,{class:“page-sub”},“Manage your limits and API key.”));
+const apiCard=el(“div”,{class:“card”,style:“margin-bottom:6px”});
+apiCard.innerHTML=`<div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">Anthropic API Key</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:${state.apiKey?"var(--green)":"var(--red)"}"></div><span style="font-size:12px;color:${state.apiKey?"var(--green)":"var(--red)"};font-weight:500">${state.apiKey?"Key saved — AI features active":"No key — AI features disabled"}</span></div>`;
+const keyInp=el(“input”,{type:“password”,placeholder:state.apiKey?“Enter new key to update”:“sk-ant-api03-…”,style:“margin-bottom:0”});keyInp.oninput=e=>{state._newKey=e.target.value;};
+const saveKeyBtn=el(“button”,{class:“btn btn-primary”,style:“margin-top:10px”},“Save API Key”);saveKeyBtn.onclick=()=>{if(state._newKey){state.apiKey=state._newKey;localStorage.setItem(“ne_anthropic_key”,state.apiKey);state._newKey=””;render();}};
+apiCard.append(keyInp,saveKeyBtn);wrap.appendChild(apiCard);
+const dbCard=el(“div”,{class:“card”,style:“margin-bottom:20px”});dbCard.innerHTML=`<div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Database</div><div style="display:flex;align-items:center;gap:8px"><span class="sync-dot"></span><span style="font-size:13px;color:var(--green);font-weight:500">${state.dbConnected?"Connected to Supabase":"Offline"}</span></div><div style="font-size:11px;color:var(--text3);margin-top:4px">All data syncs to the cloud automatically</div>`;wrap.appendChild(dbCard);
+wrap.appendChild(el(“div”,{class:“section-head”},“Weekly Budgets”));
+wrap.appendChild(el(“span”,{class:“label”,style:“margin-top:4px”},“Total Weekly Budget ($)”));
+const totInp=el(“input”,{type:“number”,value:state.tempBudgets.total,style:“font-size:22px;font-weight:700”});totInp.oninput=e=>{state.tempBudgets={…state.tempBudgets,total:+e.target.value};};wrap.appendChild(totInp);
+wrap.appendChild(el(“div”,{class:“divider”}));
+CATS.forEach(cat=>{
+const lbl=el(“div”,{style:“display:flex;align-items:center;gap:8px;margin-top:14px;margin-bottom:6px”});lbl.innerHTML=`<span style="font-size:16px">${cat.icon}</span><span style="font-size:12px;font-weight:600;color:var(--text2)">${cat.label}</span>`;
+const inp=el(“input”,{type:“number”,value:state.tempBudgets[cat.id]});inp.oninput=e=>{state.tempBudgets={…state.tempBudgets,[cat.id]:+e.target.value};};
+wrap.append(lbl,inp);
+});
+const saveBtn=el(“button”,{class:“btn btn-primary”},“Save Budgets”);
+saveBtn.onclick=async()=>{state.budgets={…state.tempBudgets};await saveBudgetsToDB();const t=el(“div”,{style:“position:fixed;top:24px;left:50%;transform:translateX(-50%);background:var(–green);color:#000;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;animation:fadeIn 0.2s;white-space:nowrap”});t.textContent=“✓ Budgets saved!”;document.body.appendChild(t);setTimeout(()=>t.remove(),2000);render();};
+wrap.appendChild(saveBtn);s.appendChild(wrap);return s;
 }
 
-async function fetchGuiltRoast() {
-  if (!state.apiKey) { state.guiltRoast="Your wallet is suffering. You should feel bad."; render(); return; }
-  try {
-    const gd = state.guiltModal;
-    const text = await callClaude(
-      [{ role:"user", content:`User overspent on ${gd.catName} by $${Math.max(0,gd.catSpent-gd.catBudget).toFixed(2)}. ONE brutal specific roast, max 18 words. Context: ${buildCtx()}` }],
-      "Brutally honest. One sentence only."
-    );
-    state.guiltRoast = text.trim().replace(/^"|"$/g,"");
-  } catch(e) { state.guiltRoast="Your wallet is crying. So should you."; }
-  render();
+function guiltOverlay(){
+const gd=state.guiltModal;
+const ov=el(“div”,{class:“overlay”});
+const modal=el(“div”,{class:“guilt-modal”});
+modal.innerHTML=`<div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px"></div><div style="font-size:40px;text-align:center;margin-bottom:12px">💸</div><h2 style="font-family:'DM Serif Display',serif;font-size:22px;text-align:center;margin-bottom:6px">${gd.msg}</h2><p style="text-align:center;color:var(--text2);font-size:13px;margin-bottom:16px">Here's what happened</p>`;
+const bd=el(“div”,{style:“background:var(–surface2);border-radius:14px;padding:14px 16px;margin-bottom:14px”});
+if(gd.catOver){const r=el(“div”,{style:“display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(–border)”});r.innerHTML=`<span style="color:var(--text2);font-size:13px">${gd.catName}</span><span style="color:var(--red);font-weight:600;font-size:13px">$${gd.catSpent?.toFixed(2)} / $${gd.catBudget}</span>`;bd.appendChild(r);}
+if(gd.totOver){const r=el(“div”,{style:“display:flex;justify-content:space-between;padding:6px 0”});r.innerHTML=`<span style="color:var(--text2);font-size:13px">Weekly Total</span><span style="color:var(--red);font-weight:600;font-size:13px">$${gd.totalSpent?.toFixed(2)} / $${gd.totalBudget}</span>`;bd.appendChild(r);}
+modal.appendChild(bd);
+if(state.guiltRoast){const rb=el(“div”,{style:“background:rgba(124,106,247,0.07);border:1px solid rgba(124,106,247,0.2);border-radius:12px;padding:12px 14px;margin-bottom:14px”});rb.innerHTML=`<div style="font-size:10px;font-weight:700;color:var(--accent2);margin-bottom:5px">AI INSIGHT</div><p style="color:var(--text2);font-size:13px;line-height:1.6">"${state.guiltRoast}"</p>`;modal.appendChild(rb);}
+else{modal.appendChild(el(“div”,{style:“text-align:center;color:var(–text3);font-size:12px;margin-bottom:14px;animation:pulse 1.5s infinite”},“Getting AI insight…”));}
+modal.appendChild(el(“div”,{style:“font-size:12px;font-weight:600;color:var(–text2);margin-bottom:6px”},“Add a note (optional)”));
+const ta=el(“textarea”,{placeholder:“What happened? (min 5 chars to continue)”,style:“width:100%;padding:12px 14px;border-radius:12px;font-size:13px;font-family:‘DM Sans’,sans-serif;margin-bottom:12px”});ta.rows=2;ta.value=state.excuseText;
+const ackBtn=el(“button”,{class:“btn btn-primary”,style:`margin-top:0;opacity:${state.excuseText.trim().length>=5?"1":"0.45"}`},“Got it, I’ll do better →”);
+ta.oninput=e=>{state.excuseText=e.target.value;ackBtn.style.opacity=e.target.value.trim().length>=5?“1”:“0.45”;};
+ackBtn.onclick=()=>{if(state.excuseText.trim().length>=5){state.guiltModal=null;render();}};
+modal.append(ta,ackBtn);ov.appendChild(modal);return ov;
 }
 
-async function runAI() {
-  if (!state.apiKey) { alert("Add your Anthropic API key in Settings first."); return; }
-  state.aiLoading=true; state.aiInsights=null; render();
-  try {
-    const text = await callClaude(
-      [{ role:"user", content:`Analyze and return ONLY valid JSON (no markdown): {"prediction":"one sentence","verdict":"SAFE or WARNING or DANGER","topRisk":"category id","roast":"one brutal sentence","tip":"one actionable tip","patterns":["p1","p2","p3"]}. Data: ${buildCtx()}` }],
-      "Brutally honest financial analyst. Return only valid JSON."
-    );
-    state.aiInsights = JSON.parse(text.trim());
-  } catch(e) { state.aiInsights={ prediction:"Analysis failed. Check API key.", verdict:"WARNING", topRisk:"food", roast:"Even your data is a mess.", tip:"Start tracking.", patterns:[] }; }
-  state.aiLoading=false; render();
+function bottomNav(){
+const nav=el(“div”,{class:“bottom-nav”});
+const items=[
+{id:“dashboard”,label:“Home”,svg:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>’},
+{id:“history”,label:“History”,svg:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>’},
+{id:“log”,add:true},
+{id:“ai”,label:“AI”,svg:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><circle cx="19" cy="5" r="3" fill="currentColor" opacity="0.5"/></svg>’},
+{id:“settings”,label:“More”,svg:’<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>’},
+];
+items.forEach(item=>{
+if(item.add){const b=el(“div”,{class:“add-btn”});b.innerHTML=’<svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>’;b.onclick=()=>setPage(“log”);nav.appendChild(b);}
+else{const b=el(“button”,{class:`nav-btn${state.page===item.id?" active":""}`});b.innerHTML=`${item.svg}<span>${item.label}</span>`;b.onclick=()=>setPage(item.id);nav.appendChild(b);}
+});
+return nav;
 }
 
-async function sendChat() {
-  const msg=state.chatInput.trim(); if(!msg) return;
-  if (!state.apiKey) {
-    state.chatMessages=[...state.chatMessages,{role:"ai",text:"Please add your Anthropic API key in Settings to use the AI advisor."}];
-    render(); return;
-  }
-  state.chatMessages=[...state.chatMessages,{role:"user",text:msg}];
-  state.chatInput=""; state.chatLoading=true; render(); scrollChatDown();
-  try {
-    const apiMsgs=state.chatMessages.map(m=>({role:m.role==="user"?"user":"assistant",content:m.text}));
-    const text=await callClaude(apiMsgs,`Brutally honest financial advisor. User data: ${buildCtx()}. Direct, max 70 words.`);
-    state.chatMessages=[...state.chatMessages,{role:"ai",text}];
-  } catch(e) { state.chatMessages=[...state.chatMessages,{role:"ai",text:"Connection error. Please try again."}]; }
-  state.chatLoading=false; render(); setTimeout(scrollChatDown,100);
+function render(){
+const app=document.getElementById(“app”);app.innerHTML=””;
+const shell=el(“div”,{style:“display:flex;flex-direction:column;height:100vh;height:100dvh;”});
+const bar=el(“div”,{class:“top-bar”});
+const brand=el(“div”,{class:“brand”});brand.innerHTML=“No<em>Excuses</em>”;
+const over=overTotal(),oc=overCount();
+const sc=over?“var(–red)”:oc>0?“var(–orange)”:“var(–green)”;
+const st=over?“Over budget”:oc>0?`${oc} over`:“On track”;
+const pill=el(“div”,{class:“status-pill”});pill.innerHTML=`<div style="width:6px;height:6px;border-radius:50%;background:${sc};animation:glow 2s infinite"></div><span style="color:${sc}">${st}</span>`;
+bar.append(brand,pill);shell.appendChild(bar);
+const pages={dashboard:dashPage,log:logPage,ai:aiPage,chat:chatPage,history:historyPage,settings:settingsPage};
+shell.appendChild((pages[state.page]||dashPage)());
+shell.appendChild(bottomNav());
+if(state.guiltModal)shell.appendChild(guiltOverlay());
+app.appendChild(shell);
+if(state.page===“chat”)setTimeout(scrollChatDown,50);
 }
 
-function scrollChatDown() {
-  const e=document.getElementById("chat-scroll"); if(e) e.scrollTop=e.scrollHeight;
-}
-
-async function scanReceipt(file) {
-  if (!state.apiKey) { state.scanMsg={type:"error",text:"Add Anthropic API key in Settings to use receipt scanning."}; render(); return; }
-  state.scanning=true; state.scanMsg=null; render();
-  const reader=new FileReader();
-  reader.onload=async()=>{
-    const base64=reader.result.split(",")[1];
-    try {
-      const res=await fetch("/.netlify/functions/claude",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,
-          messages:[{role:"user",content:[
-            {type:"image",source:{type:"base64",media_type:file.type,data:base64}},
-            {type:"text",text:`Scan receipt. Return ONLY raw JSON: {"amount":24.50,"category":"food","note":"Store name"}. Categories: food,shopping,transport,entertainment,health,bills,personal. Not receipt: {"error":"x"}.`}
-          ]}]
-        })
-      });
-      const d=await res.json();
-      const text=d.content?.find(b=>b.type==="text")?.text||"";
-      const parsed=JSON.parse(text.trim());
-      if(parsed.error){state.scanMsg={type:"error",text:"Couldn't read receipt. Enter manually."};}
-      else{state.logAmount=parsed.amount?.toString()||"";state.logCat=parsed.category||"food";state.logNote=parsed.note||"";state.scanMsg={type:"success",text:"✓ Receipt scanned!"};}
-    } catch{state.scanMsg={type:"error",text:"Scan failed. Enter manually."};}
-    state.scanning=false; render();
-  };
-  reader.readAsDataURL(file);
-}
-
-// ── PAGES ─────────────────────────────────────────────────────────────────
-function dashPage() {
-  const s=el("div",{class:"screen"});
-  const wrap=el("div",{class:"page-pad"});
-  const ts=totalSpent(),rem=remaining(),over=overTotal();
-
-  const syncBar=el("div",{style:"display:flex;align-items:center;margin-bottom:14px"});
-  syncBar.innerHTML=`<span class="sync-dot"></span><span style="color:#2a2a2a;font-size:9px;letter-spacing:2px">${state.dbConnected?"SYNCED TO CLOUD":"OFFLINE MODE"}</span>`;
-  wrap.appendChild(syncBar);
-
-  const total=el("div",{class:`card${over?" card-red":""}`,style:"margin-bottom:16px"});
-  total.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px">
-      <div>
-        <div class="micro" style="margin-bottom:4px">WEEKLY TOTAL</div>
-        <div style="font-size:38px;font-weight:700;color:${over?"#FF4136":"#fff"};font-family:'Space Mono',monospace;line-height:1">$${ts.toFixed(2)}</div>
-      </div>
-      <div style="text-align:right">
-        <div class="micro">LIMIT</div>
-        <div style="font-size:18px;color:#444;font-family:'Space Mono',monospace">$${state.budgets.total}</div>
-      </div>
-    </div>
-    <div class="bar-bg"><div class="bar-fill" style="width:${pct(ts,state.budgets.total)}%;background:${over?"#FF4136":"#2ECC40"}"></div></div>
-    ${over?`<div style="color:#FF4136;font-size:9px;letter-spacing:2px;margin-top:8px">🚨 OVER BY $${Math.abs(rem).toFixed(2)}</div>`:`<div style="color:#2ECC40;font-size:9px;letter-spacing:2px;margin-top:8px">$${rem.toFixed(2)} REMAINING</div>`}
-  `;
-  wrap.appendChild(total);
-
-  const qrow=el("div",{style:"display:flex;gap:10px;margin-bottom:20px"});
-  qrow.appendChild(btn("🤖 AI ANALYSIS",()=>setPage("ai"),"flex:1;background:#111;border:1px solid #1e1e1e;color:#555;padding:10px 8px;border-radius:8px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Space Mono',monospace"));
-  qrow.appendChild(btn("💬 ADVISOR",()=>setPage("chat"),"flex:1;background:#111;border:1px solid #1e1e1e;color:#555;padding:10px 8px;border-radius:8px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Space Mono',monospace"));
-  wrap.appendChild(qrow);
-  wrap.appendChild(el("div",{style:"color:#2a2a2a;font-size:9px;letter-spacing:4px;margin-bottom:12px"},"CATEGORIES"));
-
-  CATS.forEach(cat=>{
-    const spent=state.spending[cat.id],budget=state.budgets[cat.id],ov=spent>budget;
-    const card=el("div",{class:"card",style:`border-color:${ov?"#FF4136":"#1e1e1e"};margin-bottom:10px`});
-    card.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:22px">${cat.icon}</span>
-          <div>
-            <div style="color:#888;font-size:11px;letter-spacing:1px">${cat.label.toUpperCase()}</div>
-            ${ov?`<div style="color:#FF4136;font-size:8px;letter-spacing:2px">OVER BUDGET</div>`:""}
-          </div>
-        </div>
-        <div style="text-align:right">
-          <div style="color:${ov?"#FF4136":"#fff"};font-size:18px;font-weight:700;font-family:'Space Mono',monospace">$${spent.toFixed(0)}</div>
-          <div style="color:#333;font-size:10px">/ $${budget}</div>
-        </div>
-      </div>
-      <div class="bar-bg"><div class="bar-fill" style="width:${pct(spent,budget)}%;background:${ov?"#FF4136":cat.color}"></div></div>
-    `;
-    wrap.appendChild(card);
-  });
-  s.appendChild(wrap); return s;
-}
-
-function logPage() {
-  const s=el("div",{class:"screen"});
-  const wrap=el("div",{class:"page-pad"});
-  wrap.appendChild(el("div",{class:"page-title",style:"margin-bottom:4px"},"LOG SPEND"));
-  wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"EVERY DOLLAR. NO EXCEPTIONS."));
-
-  const scanB=el("div",{class:"scan-box",style:"margin-bottom:16px"});
-  if(state.scanning){
-    scanB.innerHTML=`<div><div class="spinner"></div><div style="color:#444;margin-top:12px;font-size:10px;letter-spacing:2px">AI READING RECEIPT...</div></div>`;
-  } else {
-    scanB.innerHTML=`<div><div style="font-size:44px;margin-bottom:10px">📷</div><div style="color:#333;font-size:11px;letter-spacing:2px">TAP TO SCAN RECEIPT</div></div>`;
-    scanB.onclick=()=>{const fi=document.createElement("input");fi.type="file";fi.accept="image/*";fi.onchange=e=>{if(e.target.files[0])scanReceipt(e.target.files[0]);};fi.click();};
-  }
-  wrap.appendChild(scanB);
-
-  if(state.scanMsg){
-    wrap.appendChild(el("div",{style:`background:${state.scanMsg.type==="success"?"#0a1a0a":"#1a0a0a"};border:1px solid ${state.scanMsg.type==="success"?"#2ECC40":"#FF4136"};border-radius:8px;padding:10px 14px;margin-bottom:14px;color:${state.scanMsg.type==="success"?"#2ECC40":"#FF4136"};font-size:12px`},state.scanMsg.text));
-  }
-
-  wrap.appendChild(el("span",{class:"label"},"AMOUNT ($)"));
-  const amtInp=el("input",{type:"number",placeholder:"0.00",value:state.logAmount,style:"margin-bottom:0"});
-  amtInp.oninput=e=>{state.logAmount=e.target.value;};
-  wrap.appendChild(amtInp);
-
-  wrap.appendChild(el("span",{class:"label"},"CATEGORY"));
-  const catSel=el("select",{style:"margin-bottom:0"});
-  CATS.forEach(c=>{const o=el("option",{value:c.id},`${c.icon} ${c.label}`);if(c.id===state.logCat)o.selected=true;catSel.appendChild(o);});
-  catSel.onchange=e=>{state.logCat=e.target.value;};
-  wrap.appendChild(catSel);
-
-  wrap.appendChild(el("span",{class:"label"},"NOTE (OPTIONAL)"));
-  const noteInp=el("input",{type:"text",placeholder:"What did you buy?",value:state.logNote,style:"margin-bottom:0"});
-  noteInp.oninput=e=>{state.logNote=e.target.value;};
-  wrap.appendChild(noteInp);
-
-  const logBtn=el("button",{class:"btn-red"},"LOG THIS SPEND →");
-  logBtn.onclick=addSpend;
-  wrap.appendChild(logBtn);
-
-  if(state.transactions.length>0){
-    wrap.appendChild(el("div",{style:"color:#2a2a2a;font-size:9px;letter-spacing:4px;margin:20px 0 12px"},"RECENT"));
-    state.transactions.slice(0,3).forEach(t=>{
-      const cat=CATS.find(c=>c.id===t.cat);
-      const row=el("div",{style:`display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;margin-bottom:8px;background:#111;border-left:2px solid ${t.over?"#FF4136":cat?.color||"#333"}`});
-      row.innerHTML=`<span style="color:#666;font-size:12px">${cat?.icon} ${cat?.label}</span><span style="color:${t.over?"#FF4136":"#fff"};font-family:'Space Mono',monospace;font-size:14px;font-weight:700">$${Number(t.amount).toFixed(2)}</span>`;
-      wrap.appendChild(row);
-    });
-  }
-  s.appendChild(wrap); return s;
-}
-
-function aiPage() {
-  const s=el("div",{class:"screen"});
-  const wrap=el("div",{class:"page-pad"});
-  wrap.appendChild(el("div",{class:"page-title",style:"margin-bottom:4px"},"AI ANALYSIS"));
-  wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"PREDICTIONS · PATTERNS · ROASTS"));
-
-  if(state.aiLoading){
-    const ctr=el("div",{style:"display:flex;flex-direction:column;align-items:center;padding:60px 0;gap:16px"});
-    ctr.appendChild(el("div",{class:"spinner"}));
-    ctr.appendChild(el("div",{style:"color:#333;font-size:10px;letter-spacing:3px"},"AI CRUNCHING YOUR NUMBERS..."));
-    wrap.appendChild(ctr);
-  } else if(!state.aiInsights){
-    const ctr=el("div",{style:"display:flex;flex-direction:column;align-items:center;padding:40px 0;gap:14px;text-align:center"});
-    ctr.innerHTML=`<div style="font-size:64px;margin-bottom:8px">🤖</div><div style="color:#2a2a2a;font-size:10px;letter-spacing:2px;line-height:2.2">AI WILL PREDICT YOUR WEEK<br>FIND YOUR PATTERNS<br>AND ROAST YOU</div>`;
-    const b=el("button",{class:"btn-red",style:"margin-top:20px"},"RUN AI ANALYSIS →");
-    b.onclick=runAI; ctr.appendChild(b); wrap.appendChild(ctr);
-  } else {
-    const ins=state.aiInsights;
-    const vc=ins.verdict==="DANGER"?"#FF4136":ins.verdict==="WARNING"?"#FF851B":"#2ECC40";
-    const pred=el("div",{class:"card",style:`border-color:${vc};margin-bottom:12px`});
-    pred.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="ai-tag" style="margin-bottom:0">WEEKLY PREDICTION</span><span style="background:${vc};color:#000;font-size:10px;font-weight:900;letter-spacing:2px;padding:4px 10px;border-radius:4px">${ins.verdict}</span></div><p style="color:#ccc;font-size:13px;line-height:1.6;margin:0">${ins.prediction}</p>`;
-    wrap.appendChild(pred);
-    const roast=el("div",{class:"card",style:"border-color:#FF4136;background:#0e0404;margin-bottom:12px"});
-    roast.innerHTML=`<span class="ai-tag">🔥 AI ROAST</span><p style="color:#FF6B6B;font-size:14px;line-height:1.6;font-style:italic;margin:0">"${ins.roast}"</p>`;
-    wrap.appendChild(roast);
-    const riskCat=CATS.find(c=>c.id===ins.topRisk);
-    const risk=el("div",{class:"card",style:"margin-bottom:12px"});
-    risk.innerHTML=`<span class="ai-tag">⚠ HIGHEST RISK</span><div style="display:flex;align-items:center;gap:12px"><span style="font-size:32px">${riskCat?.icon||"💸"}</span><span style="color:#FF851B;font-size:16px;font-weight:700">${riskCat?.label||ins.topRisk}</span></div>`;
-    wrap.appendChild(risk);
-    const tip=el("div",{class:"card card-green",style:"margin-bottom:12px"});
-    tip.innerHTML=`<span class="ai-tag">💡 ACTION TIP</span><p style="color:#2ECC40;font-size:13px;line-height:1.6;margin:0">${ins.tip}</p>`;
-    wrap.appendChild(tip);
-    if(ins.patterns?.length>0){
-      const patt=el("div",{class:"card",style:"margin-bottom:12px"});
-      patt.innerHTML=`<span class="ai-tag">📊 SPENDING PATTERNS</span>`;
-      ins.patterns.forEach(p=>{const row=el("div",{style:"padding:10px 12px;background:#0d0d0d;border-radius:6px;border-left:2px solid #FF4136;margin-bottom:8px"});row.innerHTML=`<p style="color:#888;font-size:12px;line-height:1.5;margin:0">${p}</p>`;patt.appendChild(row);});
-      wrap.appendChild(patt);
-    }
-    const rerun=el("button",{class:"btn-ghost"},"RE-RUN ANALYSIS");
-    rerun.onclick=runAI; wrap.appendChild(rerun);
-  }
-  s.appendChild(wrap); return s;
-}
-
-function chatPage() {
-  const s=el("div",{class:"screen-full"});
-  const msgArea=el("div",{id:"chat-scroll",style:"flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:12px"});
-  state.chatMessages.forEach(m=>{
-    const row=el("div",{style:`display:flex;justify-content:${m.role==="user"?"flex-end":"flex-start"}`});
-    const bub=el("div",{class:m.role==="user"?"bubble-user":"bubble-ai"});
-    if(m.role==="ai") bub.innerHTML=`<div style="color:#FF4136;font-size:8px;letter-spacing:3px;margin-bottom:5px">NOEXCUSES AI</div>`;
-    bub.appendChild(el("p",{style:`color:${m.role==="user"?"#fff":"#bbb"};font-size:13px;line-height:1.6;margin:0`},m.text));
-    row.appendChild(bub); msgArea.appendChild(row);
-  });
-  if(state.chatLoading){
-    const row=el("div",{style:"display:flex"});
-    const bub=el("div",{class:"bubble-ai",style:"display:flex;gap:5px;align-items:center;padding:12px 16px"});
-    [0,1,2].forEach(i=>{bub.appendChild(el("div",{style:`width:7px;height:7px;border-radius:50%;background:#333;animation:bounce3 1s ${i*0.2}s infinite`}));});
-    row.appendChild(bub); msgArea.appendChild(row);
-  }
-  s.appendChild(msgArea);
-  const quick=el("div",{style:"padding:8px 12px;display:flex;gap:6px;overflow-x:auto;border-top:1px solid #141414;flex-shrink:0"});
-  ["Will I overspend?","Worst category?","How to improve?"].forEach(q=>{
-    const b=el("button",{style:"background:#111;border:1px solid #1e1e1e;color:#555;padding:7px 12px;border-radius:20px;font-size:10px;white-space:nowrap;cursor:pointer;font-family:'Space Mono',monospace;flex-shrink:0"},q);
-    b.onclick=()=>{state.chatInput=q;sendChat();}; quick.appendChild(b);
-  });
-  s.appendChild(quick);
-  const inputRow=el("div",{style:"padding:10px 12px 12px;border-top:1px solid #1a1a1a;display:flex;gap:8px;flex-shrink:0"});
-  const inp=el("input",{type:"text",placeholder:"Ask about your spending...",value:state.chatInput,style:"flex:1;margin-bottom:0;font-size:13px"});
-  inp.oninput=e=>{state.chatInput=e.target.value;};
-  inp.onkeydown=e=>{if(e.key==="Enter")sendChat();};
-  const sendB=el("button",{style:"background:#FF4136;border:none;border-radius:8px;padding:0 16px;color:#fff;font-size:18px;cursor:pointer;font-weight:700"},"↑");
-  sendB.onclick=sendChat;
-  inputRow.append(inp,sendB); s.appendChild(inputRow);
-  return s;
-}
-
-function historyPage() {
-  const s=el("div",{class:"screen"});
-  const wrap=el("div",{class:"page-pad"});
-  wrap.appendChild(el("div",{class:"page-title",style:"margin-bottom:4px"},"HISTORY"));
-  wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"EVERY TRANSACTION. NO HIDING."));
-  if(state.transactions.length===0){
-    wrap.appendChild(el("div",{style:"text-align:center;padding:60px 0;color:#222;font-size:11px;letter-spacing:3px"},"NO TRANSACTIONS YET."));
-  } else {
-    state.transactions.forEach(t=>{
-      const cat=CATS.find(c=>c.id===t.cat);
-      const row=el("div",{style:`background:#111;border-radius:10px;padding:12px 14px 12px 16px;margin-bottom:8px;border-left:3px solid ${t.over?"#FF4136":cat?.color||"#2ECC40"}`});
-      row.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">${cat?.icon}</span><div><div style="color:#888;font-size:11px">${cat?.label}</div><div style="color:#444;font-size:10px;margin-top:2px">${t.date}${t.note?` · ${t.note}`:""}</div></div></div><div style="text-align:right"><div style="color:${t.over?"#FF4136":"#fff"};font-size:16px;font-weight:700;font-family:'Space Mono',monospace">$${Number(t.amount).toFixed(2)}</div>${t.over?`<div style="color:#FF4136;font-size:8px;letter-spacing:2px">OVER</div>`:`<div style="color:#2ECC40;font-size:8px;letter-spacing:2px">OK</div>`}</div></div>`;
-      wrap.appendChild(row);
-    });
-    const clrBtn=el("button",{class:"btn-ghost"},"RESET WEEK");
-    clrBtn.onclick=async()=>{if(confirm("Reset all spending for a new week?")){state.spending={...DEF_SPENDING};state.transactions=[];await resetSpendingInDB();render();}};
-    wrap.appendChild(clrBtn);
-  }
-  s.appendChild(wrap); return s;
-}
-
-function settingsPage() {
-  const s=el("div",{class:"screen"});
-  const wrap=el("div",{class:"page-pad"});
-  wrap.appendChild(el("div",{class:"page-title",style:"margin-bottom:4px"},"SETTINGS"));
-  wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"LIMITS & API KEY"));
-
-  const apiCard=el("div",{class:"card",style:"margin-bottom:20px"});
-  apiCard.innerHTML=`<div style="color:#444;font-size:9px;letter-spacing:3px;margin-bottom:10px">ANTHROPIC API KEY (AI FEATURES)</div>${state.apiKey?`<div style="color:#2ECC40;font-size:10px;letter-spacing:2px;margin-bottom:8px">✓ KEY SAVED</div>`:`<div style="color:#FF4136;font-size:10px;letter-spacing:2px;margin-bottom:8px">⚠ NO KEY — AI DISABLED</div>`}`;
-  const keyInp=el("input",{type:"password",placeholder:state.apiKey?"Enter new key to update":"sk-ant-...",style:"margin-bottom:0"});
-  keyInp.oninput=e=>{state._newKey=e.target.value;};
-  const saveKeyBtn=el("button",{class:"btn-red",style:"margin-top:10px"},"SAVE API KEY");
-  saveKeyBtn.onclick=()=>{if(state._newKey){state.apiKey=state._newKey;localStorage.setItem("ne_anthropic_key",state.apiKey);state._newKey="";render();}};
-  apiCard.append(keyInp,saveKeyBtn);
-  wrap.appendChild(apiCard);
-
-  const dbCard=el("div",{class:"card",style:"margin-bottom:20px"});
-  dbCard.innerHTML=`<div style="color:#444;font-size:9px;letter-spacing:3px;margin-bottom:8px">DATABASE</div><div style="display:flex;align-items:center;gap:8px"><span class="sync-dot"></span><span style="color:#2ECC40;font-size:11px;letter-spacing:2px">${state.dbConnected?"CONNECTED TO SUPABASE":"OFFLINE"}</span></div>`;
-  wrap.appendChild(dbCard);
-
-  wrap.appendChild(el("div",{style:"color:#2a2a2a;font-size:9px;letter-spacing:4px;margin-bottom:14px"},"WEEKLY BUDGETS"));
-  wrap.appendChild(el("span",{class:"label",style:"margin-top:0"},"TOTAL WEEKLY BUDGET ($)"));
-  const totInp=el("input",{type:"number",value:state.tempBudgets.total,style:"font-size:22px;font-weight:700;margin-bottom:0"});
-  totInp.oninput=e=>{state.tempBudgets={...state.tempBudgets,total:+e.target.value};};
-  wrap.appendChild(totInp);
-  wrap.appendChild(el("div",{style:"height:1px;background:#1a1a1a;margin:16px 0"}));
-  CATS.forEach(cat=>{
-    wrap.appendChild(el("span",{class:"label",style:`margin-top:0;color:${cat.color}`},`${cat.icon} ${cat.label.toUpperCase()} ($)`));
-    const inp=el("input",{type:"number",value:state.tempBudgets[cat.id],style:"margin-bottom:8px"});
-    inp.oninput=e=>{state.tempBudgets={...state.tempBudgets,[cat.id]:+e.target.value};};
-    wrap.appendChild(inp);
-  });
-  const saveBtn=el("button",{class:"btn-red"},"SAVE LIMITS →");
-  saveBtn.onclick=async()=>{state.budgets={...state.tempBudgets};await saveBudgetsToDB();alert("✓ Saved!");render();};
-  wrap.appendChild(saveBtn);
-  s.appendChild(wrap); return s;
-}
-
-function guiltOverlay() {
-  const gd=state.guiltModal;
-  const ov=el("div",{class:"overlay"});
-  const modal=el("div",{class:"guilt-modal"});
-  modal.innerHTML=`
-    <div style="font-size:50px;text-align:center;margin-bottom:14px">⚠️</div>
-    <h2 style="color:#FF4136;font-size:22px;font-weight:900;letter-spacing:3px;text-align:center;margin-bottom:14px;line-height:1.2;font-family:'Bebas Neue',sans-serif">${gd.msg}</h2>
-    <div style="background:#100000;border:1px solid #FF4136;border-radius:8px;padding:12px 16px;margin-bottom:16px;min-height:50px">
-      ${state.guiltRoast?`<p style="color:#FF6B6B;font-size:13px;text-align:center;margin:0;line-height:1.6">🤖 "${state.guiltRoast}"</p>`:`<p style="color:#2a2a2a;font-size:10px;text-align:center;margin:0;letter-spacing:2px">AI GENERATING ROAST...</p>`}
-    </div>
-    <div style="background:#111;border:1px solid #2a1111;border-radius:8px;padding:12px 16px;margin-bottom:16px">
-      ${gd.catOver?`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #1a1a1a"><span style="color:#555;font-size:10px;letter-spacing:2px">${gd.catName?.toUpperCase()}</span><span style="color:#FF4136;font-weight:700;font-family:'Space Mono',monospace">$${gd.catSpent?.toFixed(2)} / $${gd.catBudget}</span></div>`:""}
-      ${gd.totOver?`<div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:#555;font-size:10px;letter-spacing:2px">WEEKLY TOTAL</span><span style="color:#FF4136;font-weight:700;font-family:'Space Mono',monospace">$${gd.totalSpent?.toFixed(2)} / $${gd.totalBudget}</span></div>`:""}
-    </div>
-    <p style="color:#FF4136;font-size:10px;letter-spacing:3px;margin-bottom:8px;text-align:center">EXPLAIN YOURSELF. NOW.</p>
-  `;
-  const ta=el("textarea",{placeholder:"Type your excuse (min 5 chars to continue)",style:"width:100%;background:#111;border:1px solid #FF4136;color:#fff;padding:12px;border-radius:6px;font-size:13px;font-family:'Space Mono',monospace;margin-bottom:12px"});
-  ta.rows=3; ta.value=state.excuseText;
-  const ackBtn=el("button",{class:"btn-red",style:`margin-top:0;opacity:${state.excuseText.trim().length>=5?"1":"0.3"}`},"I ACKNOWLEDGE MY FAILURE →");
-  ta.oninput=e=>{state.excuseText=e.target.value;ackBtn.style.opacity=e.target.value.trim().length>=5?"1":"0.3";};
-  ackBtn.onclick=()=>{if(state.excuseText.trim().length>=5){state.guiltModal=null;render();}};
-  modal.append(ta,ackBtn); ov.appendChild(modal); return ov;
-}
-
-function bottomNav() {
-  const nav=el("div",{class:"bottom-nav"});
-  [{id:"dashboard",icon:"◈",label:"HOME"},{id:"history",icon:"≡",label:"HISTORY"},{id:"log",add:true},{id:"ai",icon:"◎",label:"AI"},{id:"settings",icon:"◌",label:"SETTINGS"}].forEach(item=>{
-    if(item.add){
-      const b=el("button",{class:"add-btn"},"+"); b.onclick=()=>setPage("log"); nav.appendChild(b);
-    } else {
-      const b=el("button",{class:`nav-btn${state.page===item.id?" active":""}`});
-      b.innerHTML=`<span style="font-size:18px">${item.icon}</span><span>${item.label}</span>`;
-      b.onclick=()=>setPage(item.id); nav.appendChild(b);
-    }
-  });
-  return nav;
-}
-
-function render() {
-  const app=document.getElementById("app");
-  app.innerHTML="";
-  const shell=el("div",{style:"display:flex;flex-direction:column;height:100vh;height:100dvh;"});
-  const bar=el("div",{class:"top-bar"});
-  bar.append(el("span",{class:"brand"},"NOEXCUSES"),el("span",{style:`font-size:10px;letter-spacing:2px;color:${overTotal()?"#FF4136":overCount()>0?"#FF851B":"#2ECC40"}`},overTotal()?"⚠ OVER":overCount()>0?`${overCount()} OVER`:"✓ OK"));
-  shell.appendChild(bar);
-  const pages={dashboard:dashPage,log:logPage,ai:aiPage,chat:chatPage,history:historyPage,settings:settingsPage};
-  shell.appendChild((pages[state.page]||dashPage)());
-  shell.appendChild(bottomNav());
-  if(state.guiltModal) shell.appendChild(guiltOverlay());
-  app.appendChild(shell);
-  if(state.page==="chat") setTimeout(scrollChatDown,50);
-}
-
-(async()=>{ await loadFromDB(); render(); })();
+(async()=>{await loadFromDB();render();})();
 </script>
 
 </body>
