@@ -120,16 +120,19 @@ let state={
   chatInput:"",chatLoading:false,tempBudgets:{...DEF_BUDGETS},dbConnected:false,
 };
 
+function withTimeout(promise, ms){
+return Promise.race([promise, new Promise((_,rej)=>setTimeout(()=>rej(new Error(“timeout”)),ms))]);
+}
 async function loadFromDB(){
 try{
-const{data:br}=await sb.from(“budgets”).select(”*”);
-if(br&&br.length>0){br.forEach(r=>{if(r.category===“total”)state.budgets.total=r.amount;else state.budgets[r.category]=r.amount;});state.tempBudgets={…state.budgets};}else{await initDefaultBudgets();}
-const{data:sr}=await sb.from(“spending”).select(”*”);
-if(sr&&sr.length>0)sr.forEach(r=>{state.spending[r.category]=parseFloat(r.amount);});else{await initDefaultSpending();}
-const{data:tr}=await sb.from(“transactions”).select(”*”).order(“created_at”,{ascending:false}).limit(100);
+const{data:br}=await withTimeout(sb.from(“budgets”).select(”*”), 5000);
+if(br&&br.length>0){br.forEach(r=>{if(r.category===“total”)state.budgets.total=r.amount;else state.budgets[r.category]=r.amount;});state.tempBudgets={…state.budgets};}else{try{await withTimeout(initDefaultBudgets(),5000);}catch{}}
+const{data:sr}=await withTimeout(sb.from(“spending”).select(”*”), 5000);
+if(sr&&sr.length>0)sr.forEach(r=>{state.spending[r.category]=parseFloat(r.amount);});else{try{await withTimeout(initDefaultSpending(),5000);}catch{}}
+const{data:tr}=await withTimeout(sb.from(“transactions”).select(”*”).order(“created_at”,{ascending:false}).limit(100), 5000);
 if(tr)state.transactions=tr.map(r=>({id:r.id,amount:parseFloat(r.amount),cat:r.category,note:r.note||””,date:r.date,over:r.over}));
 state.dbConnected=true;
-}catch(e){console.error(e);state.dbConnected=false;}
+}catch(e){console.error(“DB load failed:”,e.message);state.dbConnected=false;}
 }
 async function initDefaultBudgets(){const rows=[{category:“total”,amount:DEF_BUDGETS.total}];CATS.forEach(c=>rows.push({category:c.id,amount:DEF_BUDGETS[c.id]}));await sb.from(“budgets”).upsert(rows,{onConflict:“category”});}
 async function initDefaultSpending(){await sb.from(“spending”).upsert(CATS.map(c=>({category:c.id,amount:0})),{onConflict:“category”});}
@@ -403,7 +406,7 @@ app.appendChild(shell);
 if(state.page===“chat”)setTimeout(scrollChatDown,50);
 }
 
-(async()=>{await loadFromDB();render();})();
+(async()=>{ const fb=setTimeout(()=>{console.warn(“Force render”);render();},6000); try{await loadFromDB();}catch(e){console.error(e);} clearTimeout(fb); render(); })();
 </script>
 
 </body>
