@@ -93,7 +93,7 @@ var sb = null;
 
 var CATS = [
 {id:“food”, label:“Food & Dining”, icon:“🍔”, color:”#f87171”},
-{id:“shopping”, label:“Shopping”, icon:“🛍️”, color:”#fb923c”},
+{id:“shopping”, label:“Shopping”, icon:“🛍”, color:”#fb923c”},
 {id:“transport”, label:“Transport”, icon:“🚗”, color:”#fbbf24”},
 {id:“entertainment”, label:“Entertainment”, icon:“🎬”, color:”#60a5fa”},
 {id:“health”, label:“Health & Fitness”, icon:“💪”, color:”#34d399”},
@@ -370,7 +370,7 @@ function dashPage() {
 var s = el(“div”,{class:“screen”}), wrap = el(“div”,{class:“page-pad”});
 var ts = totalSpent(), rem = remaining(), over = overTotal();
 var hour = new Date().getHours();
-wrap.appendChild(el(“div”,{style:“font-size:13px;color:var(–text2);margin-bottom:14px;font-weight:500”}, hour<12?“Good morning ☀️”:hour<17?“Good afternoon ⛅”:“Good evening 🌙”));
+wrap.appendChild(el(“div”,{style:“font-size:13px;color:var(–text2);margin-bottom:14px;font-weight:500”}, hour<12?“Good morning ☀”:hour<17?“Good afternoon ⛅”:“Good evening 🌙”));
 var hero = el(“div”,{class:“hero”});
 hero.innerHTML = ‘<div class="hero-eyebrow">Weekly Spending</div>’
 + ‘<div class=“hero-amount” style=“color:’+(over?“var(–red)”:“var(–text)”)+’”>$’+ts.toFixed(2)+’</div>’
