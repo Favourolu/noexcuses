@@ -153,28 +153,18 @@ async function resetSpendingInDB() {
   await sb.from("transactions").delete().neq("id", 0);
 }
 
-// ── AI via CORS proxy ─────────────────────────────────────────────────────
+// ── AI via Netlify function ───────────────────────────────────────────────
 async function callClaude(messages, system) {
-  // Use allorigins proxy to bypass CORS
-  const payload = {
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 800,
-    system,
-    messages
-  };
-
-  const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent("https://api.anthropic.com/v1/messages");
-
-  const res = await fetch(proxyUrl, {
+  const res = await fetch("/.netlify/functions/claude", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": state.apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify(payload)
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 800,
+      system,
+      messages
+    })
   });
-
   const d = await res.json();
   if (d.error) throw new Error(d.error.message);
   return d.content?.find(b => b.type === "text")?.text || "";
@@ -289,10 +279,9 @@ async function scanReceipt(file) {
   reader.onload=async()=>{
     const base64=reader.result.split(",")[1];
     try {
-      const proxyUrl="https://corsproxy.io/?"+encodeURIComponent("https://api.anthropic.com/v1/messages");
-      const res=await fetch(proxyUrl,{
+      const res=await fetch("/.netlify/functions/claude",{
         method:"POST",
-        headers:{"Content-Type":"application/json","x-api-key":state.apiKey,"anthropic-version":"2023-06-01"},
+        headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,
           messages:[{role:"user",content:[
             {type:"image",source:{type:"base64",media_type:file.type,data:base64}},
