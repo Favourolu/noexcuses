@@ -85,15 +85,15 @@ select option{background:#161616}
 <body>
 <div id="app"></div>
 <script>
-// ── STATE (localStorage only, no external deps) ──────────────────────────
+//    STATE (localStorage only, no external deps)                           
 var CATS = [
-  {id:"food",    label:"Food & Dining",    icon:"🍔", color:"#f87171"},
-  {id:"shopping",label:"Shopping",         icon:"🛍",  color:"#fb923c"},
-  {id:"transport",label:"Transport",       icon:"🚗", color:"#fbbf24"},
-  {id:"entertain",label:"Entertainment",   icon:"🎬", color:"#60a5fa"},
-  {id:"health",  label:"Health & Fitness", icon:"💪", color:"#34d399"},
-  {id:"bills",   label:"Bills & Utilities",icon:"⚡", color:"#a78bfa"},
-  {id:"personal",label:"Personal Care",    icon:"🪥", color:"#f472b6"}
+  {id:"food",    label:"Food & Dining",    icon:"Food", color:"#f87171"},
+  {id:"shopping",label:"Shopping",         icon:"Shop",  color:"#fb923c"},
+  {id:"transport",label:"Transport",       icon:"Car", color:"#fbbf24"},
+  {id:"entertain",label:"Entertainment",   icon:"Fun", color:"#60a5fa"},
+  {id:"health",  label:"Health & Fitness", icon:"Health", color:"#34d399"},
+  {id:"bills",   label:"Bills & Utilities",icon:"Bills", color:"#a78bfa"},
+  {id:"personal",label:"Personal Care",    icon:"Care", color:"#f472b6"}
 ];
 var DEF_B = {total:500,food:100,shopping:80,transport:60,entertain:50,health:60,bills:100,personal:50};
 var DEF_S = {food:0,shopping:0,transport:0,entertain:0,health:0,bills:0,personal:0};
@@ -142,7 +142,7 @@ guilt:      null, guiltRoast: “”, excuse: “”,
 newKey:     “”
 };
 
-// ── HELPERS ───────────────────────────────────────────────────────────────
+//    HELPERS  
 function total()   { return Object.values(state.spending).reduce(function(a,b){return a+b;},0); }
 function rem()     { return state.budgets.total - total(); }
 function overAll() { return total() > state.budgets.total; }
@@ -163,7 +163,7 @@ return e;
 function div(cls, txt) { return el(“div”, cls, txt); }
 function setPage(p) { state.page = p; render(); }
 
-// ── AI ────────────────────────────────────────────────────────────────────
+//    AI  
 async function ai(msgs, sys) {
 var r = await fetch(”/.netlify/functions/claude”, {
 method:“POST”, headers:{“Content-Type”:“application/json”},
@@ -176,7 +176,7 @@ for (var i=0;i<c.length;i++) { if (c[i].type===“text”) return c[i].text; }
 return “”;
 }
 
-// ── ACTIONS ───────────────────────────────────────────────────────────────
+//    ACTIONS  
 function addSpend() {
 var amt = parseFloat(state.logAmt);
 if (!amt || isNaN(amt)) return;
@@ -254,11 +254,11 @@ state.scanning=false; render();
 reader.readAsDataURL(file);
 }
 
-// ── PAGES ─────────────────────────────────────────────────────────────────
+//    PAGES  
 function homePage() {
 var s=el(“div”,“screen”), w=el(“div”,“pad”);
 var hr=new Date().getHours();
-w.appendChild(div(””,hr<12?“Good morning ☀”:hr<17?“Good afternoon ⛅”:“Good evening 🌙”)).style.cssText=“font-size:13px;color:#444;margin-bottom:14px;font-weight:500”;
+w.appendChild(div(””,hr<12?“Good morning AM”:hr<17?“Good afternoon PM”:“Good evening Eve”)).style.cssText=“font-size:13px;color:#444;margin-bottom:14px;font-weight:500”;
 
 // Hero
 var ts=total(),r=rem(),ov=overAll();
@@ -273,8 +273,8 @@ w.appendChild(hero);
 
 // Quick
 var qr=div(“qrow”);
-var q1=div(“qcard”); q1.innerHTML=’<div class="qicon" style="background:rgba(124,106,247,.15)">🤖</div><div class="qlabel">AI Analysis</div>’; q1.onclick=function(){setPage(“ai”);};
-var q2=div(“qcard”); q2.innerHTML=’<div class="qicon" style="background:rgba(167,139,250,.15)">💬</div><div class="qlabel">AI Advisor</div>’; q2.onclick=function(){setPage(“chat”);};
+var q1=div(“qcard”); q1.innerHTML=’<div class="qicon" style="background:rgba(124,106,247,.15)">AI</div><div class="qlabel">AI Analysis</div>’; q1.onclick=function(){setPage(“ai”);};
+var q2=div(“qcard”); q2.innerHTML=’<div class="qicon" style="background:rgba(167,139,250,.15)">Chat</div><div class="qlabel">AI Advisor</div>’; q2.onclick=function(){setPage(“chat”);};
 qr.appendChild(q1); qr.appendChild(q2); w.appendChild(qr);
 w.appendChild(div(“sec”,“Categories”));
 
@@ -301,7 +301,7 @@ w.appendChild(div(“sub”,“Track every transaction.”));
 
 var sb=div(“scan-box”);
 if(state.scanning){sb.innerHTML=’<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><div class="spinner"></div><div style="color:#444;font-size:12px">Reading receipt…</div></div>’;}
-else{sb.innerHTML=’<div style="display:flex;flex-direction:column;align-items:center;gap:7px"><div style="font-size:32px">📷</div><div style="color:#555;font-size:13px;font-weight:500">Scan a receipt</div><div style="color:#333;font-size:11px">AI fills it in for you</div></div>’;sb.onclick=function(){var fi=document.createElement(“input”);fi.type=“file”;fi.accept=“image/*”;fi.onchange=function(e){if(e.target.files[0])scanReceipt(e.target.files[0]);};fi.click();};}
+else{sb.innerHTML=’<div style="display:flex;flex-direction:column;align-items:center;gap:7px"><div style="font-size:32px">Scan</div><div style="color:#555;font-size:13px;font-weight:500">Scan a receipt</div><div style="color:#333;font-size:11px">AI fills it in for you</div></div>’;sb.onclick=function(){var fi=document.createElement(“input”);fi.type=“file”;fi.accept=“image/*”;fi.onchange=function(e){if(e.target.files[0])scanReceipt(e.target.files[0]);};fi.click();};}
 w.appendChild(sb);
 
 if(state.scanMsg){var sm=div(””,state.scanMsg.text);sm.style.cssText=“background:”+(state.scanMsg.type===“ok”?“rgba(52,211,153,.08)”:“rgba(248,113,113,.08)”)+”;border:1px solid “+(state.scanMsg.type===“ok”?“rgba(52,211,153,.3)”:“rgba(248,113,113,.3)”)+”;border-radius:10px;padding:10px 13px;margin-bottom:12px;color:”+(state.scanMsg.type===“ok”?”#34d399”:”#f87171”)+”;font-size:13px;font-weight:500”;w.appendChild(sm);}
@@ -331,7 +331,7 @@ var s=el(“div”,“screen”), w=el(“div”,“pad”);
 w.appendChild(div(“title”,“AI Analysis”));
 w.appendChild(div(“sub”,“Predictions and personalised tips.”));
 if(state.aiLoading){var c=div(””);c.style.cssText=“display:flex;flex-direction:column;align-items:center;padding:60px 0;gap:12px”;c.appendChild(div(“spinner”));var ld=div(””,“Analysing…”);ld.style.cssText=“color:#444;font-size:13px;animation:pulse 1.5s infinite”;c.appendChild(ld);w.appendChild(c);}
-else if(!state.aiData){var c2=div(””);c2.style.cssText=“text-align:center;padding:40px 0”;c2.innerHTML=’<div style="font-size:50px;margin-bottom:12px">🤖</div><div style="font-size:16px;font-weight:600;margin-bottom:6px">Spending Analysis</div><div style="font-size:13px;color:#444;line-height:1.6">Get predictions, patterns and tips.</div>’;var ab=el(“button”,“btn btn-p”,“Run Analysis”);ab.style.maxWidth=“200px”;ab.onclick=runAI;c2.appendChild(ab);w.appendChild(c2);}
+else if(!state.aiData){var c2=div(””);c2.style.cssText=“text-align:center;padding:40px 0”;c2.innerHTML=’<div style="font-size:50px;margin-bottom:12px">AI</div><div style="font-size:16px;font-weight:600;margin-bottom:6px">Spending Analysis</div><div style="font-size:13px;color:#444;line-height:1.6">Get predictions, patterns and tips.</div>’;var ab=el(“button”,“btn btn-p”,“Run Analysis”);ab.style.maxWidth=“200px”;ab.onclick=runAI;c2.appendChild(ab);w.appendChild(c2);}
 else{
 var ins=state.aiData;
 var vc=ins.verdict===“DANGER”?”#f87171”:ins.verdict===“WARNING”?”#fb923c”:”#34d399”;
@@ -363,7 +363,7 @@ s.appendChild(qs);
 
 var ir=div(””); ir.style.cssText=“padding:10px 12px 14px;display:flex;gap:8px;flex-shrink:0”;
 var inp=el(“input”); inp.type=“text”; inp.placeholder=“Ask about your spending…”; inp.style.cssText=“flex:1;margin-bottom:0;font-size:14px”; inp.value=state.chatInput; inp.oninput=function(e){state.chatInput=e.target.value;}; inp.onkeydown=function(e){if(e.key===“Enter”)sendChat();};
-var sb2=el(“button”); sb2.style.cssText=“background:#a78bfa;border:none;border-radius:11px;width:42px;height:42px;color:#fff;font-size:17px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center”; sb2.textContent=“↑”; sb2.onclick=sendChat;
+var sb2=el(“button”); sb2.style.cssText=“background:#a78bfa;border:none;border-radius:11px;width:42px;height:42px;color:#fff;font-size:17px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center”; sb2.textContent=” “; sb2.onclick=sendChat;
 ir.appendChild(inp); ir.appendChild(sb2); s.appendChild(ir);
 return s;
 }
@@ -372,12 +372,12 @@ function historyPage() {
 var s=el(“div”,“screen”), w=el(“div”,“pad”);
 w.appendChild(div(“title”,“History”));
 w.appendChild(div(“sub”,“All your transactions.”));
-if(state.txns.length===0){var em=div(“empty”); em.innerHTML=’<div style="font-size:40px;margin-bottom:10px;opacity:.4">📭</div><div style="font-size:13px">No transactions yet.</div>’; w.appendChild(em);}
+if(state.txns.length===0){var em=div(“empty”); em.innerHTML=’<div style="font-size:40px;margin-bottom:10px;opacity:.4">…</div><div style="font-size:13px">No transactions yet.</div>’; w.appendChild(em);}
 else{
 state.txns.forEach(function(t){
 var ct=CATS.find(function(c){return c.id===t.cat;});
 var row=div(“hrow”); row.style.borderLeftColor=t.over?”#f87171”:(ct?ct.color:”#a78bfa”);
-row.innerHTML=’<div style="display:flex;align-items:center;gap:9px"><div style=“width:34px;height:34px;border-radius:9px;background:’+(ct?ct.color+“18”:”#a78bfa18”)+’;display:flex;align-items:center;justify-content:center;font-size:16px”>’+(ct?ct.icon:””)+’</div><div><div style="font-size:13px;font-weight:500">’+(ct?ct.label:””)+’</div><div style="font-size:11px;color:#333;margin-top:1px">’+t.date+(t.note?” · “+t.note:””)+’</div></div></div><div style="text-align:right"><div style=“font-size:15px;font-weight:700;color:’+(t.over?”#f87171”:”#f0f0f0”)+’”>$’+Number(t.amt).toFixed(2)+’</div><div style=“font-size:10px;color:’+(t.over?”#f87171”:”#34d399”)+’;font-weight:600”>’+(t.over?“Over”:“OK”)+’</div></div>’;
+row.innerHTML=’<div style="display:flex;align-items:center;gap:9px"><div style=“width:34px;height:34px;border-radius:9px;background:’+(ct?ct.color+“18”:”#a78bfa18”)+’;display:flex;align-items:center;justify-content:center;font-size:16px”>’+(ct?ct.icon:””)+’</div><div><div style="font-size:13px;font-weight:500">’+(ct?ct.label:””)+’</div><div style="font-size:11px;color:#333;margin-top:1px">’+t.date+(t.note?”   “+t.note:””)+’</div></div></div><div style="text-align:right"><div style=“font-size:15px;font-weight:700;color:’+(t.over?”#f87171”:”#f0f0f0”)+’”>$’+Number(t.amt).toFixed(2)+’</div><div style=“font-size:10px;color:’+(t.over?”#f87171”:”#34d399”)+’;font-weight:600”>’+(t.over?“Over”:“OK”)+’</div></div>’;
 w.appendChild(row);
 });
 var rb=el(“button”,“btn btn-g”); rb.style.marginTop=“14px”; rb.textContent=“Reset Week”; rb.onclick=function(){if(confirm(“Reset all spending for a new week?”)){state.spending=Object.assign({},DEF_S);state.txns=[];saveState();render();}};
@@ -394,7 +394,7 @@ w.appendChild(div(“sub”,“API key and weekly budgets.”));
 var ac=div(“card”); ac.style.marginBottom=“6px”;
 var astat=div(””); astat.style.cssText=“display:flex;align-items:center;gap:7px;margin-bottom:11px”;
 var dot=div(””); dot.style.cssText=“width:7px;height:7px;border-radius:50%;background:”+(state.apiKey?”#34d399”:”#f87171”);
-var atxt=div(””,””); atxt.style.cssText=“font-size:12px;font-weight:500;color:”+(state.apiKey?”#34d399”:”#f87171”); atxt.textContent=state.apiKey?“Key saved — AI active”:“No key — AI disabled”;
+var atxt=div(””,””); atxt.style.cssText=“font-size:12px;font-weight:500;color:”+(state.apiKey?”#34d399”:”#f87171”); atxt.textContent=state.apiKey?“Key saved   AI active”:“No key   AI disabled”;
 astat.appendChild(dot); astat.appendChild(atxt);
 var albl=div(””,“Anthropic API Key”); albl.style.cssText=“font-size:12px;font-weight:600;color:#444;margin-bottom:9px”;
 var ki=el(“input”); ki.type=“password”; ki.placeholder=state.apiKey?“Enter new key to update”:“sk-ant-api03-…”; ki.style.marginBottom=“0”; ki.oninput=function(e){state.newKey=e.target.value;};
@@ -425,7 +425,7 @@ var ov=div(“overlay”);
 var modal=div(“modal”);
 var handle=div(””); handle.style.cssText=“width:32px;height:3px;background:#2a2a2a;border-radius:2px;margin:0 auto 18px”;
 modal.appendChild(handle);
-var icon=div(””); icon.style.cssText=“font-size:36px;text-align:center;margin-bottom:10px”; icon.textContent=“💸”; modal.appendChild(icon);
+var icon=div(””); icon.style.cssText=“font-size:36px;text-align:center;margin-bottom:10px”; icon.textContent=”$”; modal.appendChild(icon);
 var head=div(””); head.style.cssText=“font-size:20px;font-weight:700;text-align:center;margin-bottom:5px”; head.textContent=g.catOv?“You went over on “+g.catName:“Weekly budget exceeded”;
 modal.appendChild(head);
 
