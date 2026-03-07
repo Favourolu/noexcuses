@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="theme-color" content="#0f0f13"/>
   <title>NoExcuses</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
     :root {
@@ -91,13 +91,25 @@
     .divider { height: 1px; background: var(--border); margin: 16px 0; }
     .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
   </style>
+
 </head>
 <body>
 <div id="app"><div class="loading-screen"><div class="spinner"></div><div style="color:var(--text3);font-size:12px;font-weight:500;animation:pulse 1.5s infinite">Loading your budget...</div></div></div>
 <script>
 const SUPABASE_URL="https://fdvhrfivrjjfsuvvhbyh.supabase.co";
 const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkdmhyZml2cmpqZnN1dnZoYnloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTIzOTQsImV4cCI6MjA4ODQ2ODM5NH0.YEanEtUa2rorgBdxXJcCbqnIjYekVz1gQu7OEpx0Isg";
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let sb=null;
+// Lazy-load Supabase — app renders immediately, DB syncs after
+function loadSupabase(){
+  return new Promise((resolve)=>{
+    if(window.supabase){sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);resolve();return;}
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    s.onload=()=>{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);resolve();};
+    s.onerror=()=>{console.error('Supabase CDN failed');resolve();};
+    document.head.appendChild(s);
+  });
+}
 const CATS=[
   {id:"food",label:"Food & Dining",icon:"🍔",color:"#f87171"},
   {id:"shopping",label:"Shopping",icon:"🛍️",color:"#fb923c"},
@@ -124,6 +136,7 @@ function withTimeout(promise, ms){
 return Promise.race([promise, new Promise((_,rej)=>setTimeout(()=>rej(new Error(“timeout”)),ms))]);
 }
 async function loadFromDB(){
+if(!sb){state.dbConnected=false;return;}
 try{
 const{data:br}=await withTimeout(sb.from(“budgets”).select(”*”), 5000);
 if(br&&br.length>0){br.forEach(r=>{if(r.category===“total”)state.budgets.total=r.amount;else state.budgets[r.category]=r.amount;});state.tempBudgets={…state.budgets};}else{try{await withTimeout(initDefaultBudgets(),5000);}catch{}}
@@ -406,7 +419,15 @@ app.appendChild(shell);
 if(state.page===“chat”)setTimeout(scrollChatDown,50);
 }
 
-(async()=>{ const fb=setTimeout(()=>{console.warn(“Force render”);render();},6000); try{await loadFromDB();}catch(e){console.error(e);} clearTimeout(fb); render(); })();
+// Start immediately — show app right away, sync DB in background
+render();
+(async()=>{
+try{
+await Promise.race([loadSupabase(), new Promise(r=>setTimeout(r,4000))]);
+if(sb) await loadFromDB();
+}catch(e){console.error(‘Init error:’,e);}
+render(); // re-render with DB data
+})();
 </script>
 
 </body>
