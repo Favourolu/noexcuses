@@ -60,10 +60,9 @@
   </style>
 </head>
 <body>
-<div id="app"><div class="loading-screen"><div class="spinner"></div><div style="color:#333;font-size:10px;letter-spacing:3px;animation:pulse 1.5s infinite">CONNECTING TO DATABASE...</div></div></div>
+<div id="app"><div class="loading-screen"><div class="spinner"></div><div style="color:#333;font-size:10px;letter-spacing:3px;animation:pulse 1.5s infinite">LOADING...</div></div></div>
 
 <script>
-// ── CONFIG ────────────────────────────────────────────────────────────────
 const SUPABASE_URL = "https://fdvhrfivrjjfsuvvhbyh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_ZkO15E-HdCxt2NS3CHL3KQ_gb7DFPYe";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -82,7 +81,6 @@ const GUILT = ["YOU BLEW IT. AGAIN.","SERIOUSLY? ALREADY?","THIS IS EXACTLY WHY 
 const DEF_BUDGETS = { total:500, food:100, shopping:80, transport:60, entertainment:50, health:60, bills:100, personal:50 };
 const DEF_SPENDING = { food:0, shopping:0, transport:0, entertainment:0, health:0, bills:0, personal:0 };
 
-// ── STATE ─────────────────────────────────────────────────────────────────
 let state = {
   apiKey: localStorage.getItem("ne_anthropic_key") || "",
   budgets: { ...DEF_BUDGETS },
@@ -96,13 +94,12 @@ let state = {
   chatMessages: [{ role:"ai", text:"I'm your NoExcuses AI advisor. Zero sympathy, zero patience. Ask me about your spending — or prepare to be judged." }],
   chatInput: "", chatLoading: false,
   tempBudgets: { ...DEF_BUDGETS },
-  dbConnected: false, syncing: false,
+  dbConnected: false,
 };
 
-// ── SUPABASE FUNCTIONS ────────────────────────────────────────────────────
+// ── SUPABASE ──────────────────────────────────────────────────────────────
 async function loadFromDB() {
   try {
-    // Load budgets
     const { data: budgetRows } = await sb.from("budgets").select("*");
     if (budgetRows && budgetRows.length > 0) {
       budgetRows.forEach(r => {
@@ -110,32 +107,19 @@ async function loadFromDB() {
         else state.budgets[r.category] = r.amount;
       });
       state.tempBudgets = { ...state.budgets };
-    } else {
-      await initDefaultBudgets();
-    }
+    } else { await initDefaultBudgets(); }
 
-    // Load spending
     const { data: spendRows } = await sb.from("spending").select("*");
     if (spendRows && spendRows.length > 0) {
-      spendRows.forEach(r => { state.spending[r.category] = r.amount; });
-    } else {
-      await initDefaultSpending();
-    }
+      spendRows.forEach(r => { state.spending[r.category] = parseFloat(r.amount); });
+    } else { await initDefaultSpending(); }
 
-    // Load transactions
-    const { data: txRows } = await sb.from("transactions").select("*").order("created_at", { ascending: false }).limit(100);
+    const { data: txRows } = await sb.from("transactions").select("*").order("created_at", { ascending:false }).limit(100);
     if (txRows) {
-      state.transactions = txRows.map(r => ({
-        id: r.id, amount: r.amount, cat: r.category,
-        note: r.note || "", date: r.date, over: r.over,
-      }));
+      state.transactions = txRows.map(r => ({ id:r.id, amount:parseFloat(r.amount), cat:r.category, note:r.note||"", date:r.date, over:r.over }));
     }
-
     state.dbConnected = true;
-  } catch(e) {
-    console.error("DB load error:", e);
-    state.dbConnected = false;
-  }
+  } catch(e) { console.error(e); state.dbConnected = false; }
 }
 
 async function initDefaultBudgets() {
@@ -160,11 +144,7 @@ async function saveSpendingToDB(category, amount) {
 }
 
 async function saveTransactionToDB(tx) {
-  const { data } = await sb.from("transactions").insert({
-    amount: tx.amount, category: tx.cat,
-    note: tx.note, date: tx.date, over: tx.over,
-  }).select().single();
-  return data?.id;
+  await sb.from("transactions").insert({ amount:tx.amount, category:tx.cat, note:tx.note, date:tx.date, over:tx.over });
 }
 
 async function resetSpendingInDB() {
@@ -173,27 +153,43 @@ async function resetSpendingInDB() {
   await sb.from("transactions").delete().neq("id", 0);
 }
 
+// ── AI via CORS proxy ─────────────────────────────────────────────────────
+async function callClaude(messages, system) {
+  // Use allorigins proxy to bypass CORS
+  const payload = {
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 800,
+    system,
+    messages
+  };
+
+  const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent("https://api.anthropic.com/v1/messages");
+
+  const res = await fetch(proxyUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": state.apiKey,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const d = await res.json();
+  if (d.error) throw new Error(d.error.message);
+  return d.content?.find(b => b.type === "text")?.text || "";
+}
+
 // ── HELPERS ───────────────────────────────────────────────────────────────
 function pct(s, b) { return Math.min((s / Math.max(b,0.01)) * 100, 100); }
 function totalSpent() { return Object.values(state.spending).reduce((a,b)=>a+b,0); }
 function remaining() { return state.budgets.total - totalSpent(); }
 function overCount() { return CATS.filter(c => state.spending[c.id] > state.budgets[c.id]).length; }
 function overTotal() { return totalSpent() > state.budgets.total; }
-
 function buildCtx() {
   const cats = CATS.map(c=>`${c.label}: $${state.spending[c.id].toFixed(2)} of $${state.budgets[c.id]}`).join(", ");
   const recent = state.transactions.slice(0,8).map(t=>`${t.cat} $${t.amount} ${t.date}`).join(", ");
   return `Weekly budget: $${state.budgets.total}. Spent: $${totalSpent().toFixed(2)}. ${cats}. Recent: ${recent||"none"}.`;
-}
-
-async function callClaude(messages, system) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json","x-api-key":state.apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true" },
-    body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:800, system, messages })
-  });
-  const d = await res.json();
-  return d.content?.find(b=>b.type==="text")?.text || "";
 }
 
 function el(tag, attrs={}, text) {
@@ -222,15 +218,11 @@ async function addSpend() {
   const catOver = ns[state.logCat] > state.budgets[state.logCat];
   const totOver = nt > state.budgets.total;
   const tx = { amount:amt, cat:state.logCat, note:state.logNote, date:new Date().toLocaleDateString(), over:catOver||totOver };
-
   state.spending = ns;
   state.transactions = [{ id:Date.now(), ...tx }, ...state.transactions];
   state.logAmount=""; state.logNote=""; state.scanMsg=null;
-
-  // Save to Supabase
   saveSpendingToDB(state.logCat, ns[state.logCat]);
   saveTransactionToDB(tx);
-
   if (catOver || totOver) {
     state.guiltModal = {
       msg: GUILT[Math.floor(Math.random()*GUILT.length)],
@@ -240,8 +232,7 @@ async function addSpend() {
       totalSpent: nt, totalBudget: state.budgets.total,
     };
     state.guiltRoast=""; state.excuseText="";
-    render();
-    fetchGuiltRoast();
+    render(); fetchGuiltRoast();
   } else { render(); }
 }
 
@@ -254,7 +245,7 @@ async function fetchGuiltRoast() {
       "Brutally honest. One sentence only."
     );
     state.guiltRoast = text.trim().replace(/^"|"$/g,"");
-  } catch { state.guiltRoast="Your wallet is crying. So should you."; }
+  } catch(e) { state.guiltRoast="Your wallet is crying. So should you."; }
   render();
 }
 
@@ -267,27 +258,28 @@ async function runAI() {
       "Brutally honest financial analyst. Return only valid JSON."
     );
     state.aiInsights = JSON.parse(text.trim());
-  } catch { state.aiInsights={ prediction:"Analysis failed — check your API key.", verdict:"WARNING", topRisk:"food", roast:"Even your data is a mess.", tip:"Start tracking.", patterns:[] }; }
+  } catch(e) { state.aiInsights={ prediction:"Analysis failed. Check API key.", verdict:"WARNING", topRisk:"food", roast:"Even your data is a mess.", tip:"Start tracking.", patterns:[] }; }
   state.aiLoading=false; render();
 }
 
 async function sendChat() {
   const msg=state.chatInput.trim(); if(!msg) return;
-  if (!state.apiKey) { state.chatMessages=[...state.chatMessages,{role:"ai",text:"Go to Settings and add your Anthropic API key to use the AI advisor."}]; render(); return; }
+  if (!state.apiKey) {
+    state.chatMessages=[...state.chatMessages,{role:"ai",text:"Please add your Anthropic API key in Settings to use the AI advisor."}];
+    render(); return;
+  }
   state.chatMessages=[...state.chatMessages,{role:"user",text:msg}];
-  state.chatInput=""; state.chatLoading=true; render();
-  scrollChatDown();
+  state.chatInput=""; state.chatLoading=true; render(); scrollChatDown();
   try {
     const apiMsgs=state.chatMessages.map(m=>({role:m.role==="user"?"user":"assistant",content:m.text}));
     const text=await callClaude(apiMsgs,`Brutally honest financial advisor. User data: ${buildCtx()}. Direct, max 70 words.`);
     state.chatMessages=[...state.chatMessages,{role:"ai",text}];
-  } catch { state.chatMessages=[...state.chatMessages,{role:"ai",text:"API error. Check your key in Settings."}]; }
-  state.chatLoading=false; render();
-  setTimeout(scrollChatDown,100);
+  } catch(e) { state.chatMessages=[...state.chatMessages,{role:"ai",text:"Connection error. Please try again."}]; }
+  state.chatLoading=false; render(); setTimeout(scrollChatDown,100);
 }
 
 function scrollChatDown() {
-  const el=document.getElementById("chat-scroll"); if(el) el.scrollTop=el.scrollHeight;
+  const e=document.getElementById("chat-scroll"); if(e) e.scrollTop=e.scrollHeight;
 }
 
 async function scanReceipt(file) {
@@ -297,9 +289,10 @@ async function scanReceipt(file) {
   reader.onload=async()=>{
     const base64=reader.result.split(",")[1];
     try {
-      const res=await fetch("https://api.anthropic.com/v1/messages",{
+      const proxyUrl="https://corsproxy.io/?"+encodeURIComponent("https://api.anthropic.com/v1/messages");
+      const res=await fetch(proxyUrl,{
         method:"POST",
-        headers:{"Content-Type":"application/json","x-api-key":state.apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+        headers:{"Content-Type":"application/json","x-api-key":state.apiKey,"anthropic-version":"2023-06-01"},
         body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,
           messages:[{role:"user",content:[
             {type:"image",source:{type:"base64",media_type:file.type,data:base64}},
@@ -324,12 +317,10 @@ function dashPage() {
   const wrap=el("div",{class:"page-pad"});
   const ts=totalSpent(),rem=remaining(),over=overTotal();
 
-  // Sync status
   const syncBar=el("div",{style:"display:flex;align-items:center;margin-bottom:14px"});
-  syncBar.innerHTML=`<span class="sync-dot"></span><span style="color:#2a2a2a;font-size:9px;letter-spacing:2px">SYNCED TO CLOUD</span>`;
+  syncBar.innerHTML=`<span class="sync-dot"></span><span style="color:#2a2a2a;font-size:9px;letter-spacing:2px">${state.dbConnected?"SYNCED TO CLOUD":"OFFLINE MODE"}</span>`;
   wrap.appendChild(syncBar);
 
-  // Total card
   const total=el("div",{class:`card${over?" card-red":""}`,style:"margin-bottom:16px"});
   total.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px">
@@ -347,12 +338,10 @@ function dashPage() {
   `;
   wrap.appendChild(total);
 
-  // AI quick buttons
   const qrow=el("div",{style:"display:flex;gap:10px;margin-bottom:20px"});
-  const qa=btn("🤖 AI ANALYSIS",()=>setPage("ai"),"flex:1;background:#111;border:1px solid #1e1e1e;color:#555;padding:10px 8px;border-radius:8px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Space Mono',monospace");
-  const qc=btn("💬 ADVISOR",()=>setPage("chat"),"flex:1;background:#111;border:1px solid #1e1e1e;color:#555;padding:10px 8px;border-radius:8px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Space Mono',monospace");
-  qrow.append(qa,qc); wrap.appendChild(qrow);
-
+  qrow.appendChild(btn("🤖 AI ANALYSIS",()=>setPage("ai"),"flex:1;background:#111;border:1px solid #1e1e1e;color:#555;padding:10px 8px;border-radius:8px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Space Mono',monospace"));
+  qrow.appendChild(btn("💬 ADVISOR",()=>setPage("chat"),"flex:1;background:#111;border:1px solid #1e1e1e;color:#555;padding:10px 8px;border-radius:8px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Space Mono',monospace"));
+  wrap.appendChild(qrow);
   wrap.appendChild(el("div",{style:"color:#2a2a2a;font-size:9px;letter-spacing:4px;margin-bottom:12px"},"CATEGORIES"));
 
   CATS.forEach(cat=>{
@@ -372,11 +361,10 @@ function dashPage() {
           <div style="color:#333;font-size:10px">/ $${budget}</div>
         </div>
       </div>
-      <div class="bar-bg"><div class="bar-fill" style="width:${pct(spent,budget)}%;background:${ov?"#FF4136":cat.color};box-shadow:0 0 6px ${ov?"#FF413650":cat.color+"40"}"></div></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${pct(spent,budget)}%;background:${ov?"#FF4136":cat.color}"></div></div>
     `;
     wrap.appendChild(card);
   });
-
   s.appendChild(wrap); return s;
 }
 
@@ -390,13 +378,13 @@ function logPage() {
   if(state.scanning){
     scanB.innerHTML=`<div><div class="spinner"></div><div style="color:#444;margin-top:12px;font-size:10px;letter-spacing:2px">AI READING RECEIPT...</div></div>`;
   } else {
-    scanB.innerHTML=`<div><div style="font-size:44px;margin-bottom:10px">📷</div><div style="color:#333;font-size:11px;letter-spacing:2px">TAP TO SCAN RECEIPT</div><div style="color:#222;font-size:9px;margin-top:6px;letter-spacing:1px">AI AUTO-DETECTS AMOUNT & CATEGORY</div></div>`;
+    scanB.innerHTML=`<div><div style="font-size:44px;margin-bottom:10px">📷</div><div style="color:#333;font-size:11px;letter-spacing:2px">TAP TO SCAN RECEIPT</div></div>`;
     scanB.onclick=()=>{const fi=document.createElement("input");fi.type="file";fi.accept="image/*";fi.onchange=e=>{if(e.target.files[0])scanReceipt(e.target.files[0]);};fi.click();};
   }
   wrap.appendChild(scanB);
 
   if(state.scanMsg){
-    wrap.appendChild(el("div",{style:`background:${state.scanMsg.type==="success"?"#0a1a0a":"#1a0a0a"};border:1px solid ${state.scanMsg.type==="success"?"#2ECC40":"#FF4136"};border-radius:8px;padding:10px 14px;margin-bottom:14px;color:${state.scanMsg.type==="success"?"#2ECC40":"#FF4136"};font-size:12px;letter-spacing:1px`},state.scanMsg.text));
+    wrap.appendChild(el("div",{style:`background:${state.scanMsg.type==="success"?"#0a1a0a":"#1a0a0a"};border:1px solid ${state.scanMsg.type==="success"?"#2ECC40":"#FF4136"};border-radius:8px;padding:10px 14px;margin-bottom:14px;color:${state.scanMsg.type==="success"?"#2ECC40":"#FF4136"};font-size:12px`},state.scanMsg.text));
   }
 
   wrap.appendChild(el("span",{class:"label"},"AMOUNT ($)"));
@@ -424,11 +412,10 @@ function logPage() {
     state.transactions.slice(0,3).forEach(t=>{
       const cat=CATS.find(c=>c.id===t.cat);
       const row=el("div",{style:`display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;margin-bottom:8px;background:#111;border-left:2px solid ${t.over?"#FF4136":cat?.color||"#333"}`});
-      row.innerHTML=`<span style="color:#666;font-size:12px">${cat?.icon} ${cat?.label}</span><span style="color:${t.over?"#FF4136":"#fff"};font-family:'Space Mono',monospace;font-size:14px;font-weight:700">$${t.amount.toFixed(2)}</span>`;
+      row.innerHTML=`<span style="color:#666;font-size:12px">${cat?.icon} ${cat?.label}</span><span style="color:${t.over?"#FF4136":"#fff"};font-family:'Space Mono',monospace;font-size:14px;font-weight:700">$${Number(t.amount).toFixed(2)}</span>`;
       wrap.appendChild(row);
     });
   }
-
   s.appendChild(wrap); return s;
 }
 
@@ -439,13 +426,13 @@ function aiPage() {
   wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"PREDICTIONS · PATTERNS · ROASTS"));
 
   if(state.aiLoading){
-    const ctr=el("div",{style:"display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 0;gap:16px"});
+    const ctr=el("div",{style:"display:flex;flex-direction:column;align-items:center;padding:60px 0;gap:16px"});
     ctr.appendChild(el("div",{class:"spinner"}));
-    ctr.appendChild(el("div",{style:"color:#333;font-size:10px;letter-spacing:3px;animation:pulse 1.5s infinite"},"AI CRUNCHING YOUR NUMBERS..."));
+    ctr.appendChild(el("div",{style:"color:#333;font-size:10px;letter-spacing:3px"},"AI CRUNCHING YOUR NUMBERS..."));
     wrap.appendChild(ctr);
   } else if(!state.aiInsights){
-    const ctr=el("div",{style:"display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0;gap:14px;text-align:center"});
-    ctr.innerHTML=`<div style="font-size:64px;margin-bottom:8px">🤖</div><div style="color:#2a2a2a;font-size:10px;letter-spacing:2px;line-height:2.2">AI WILL ANALYZE YOUR DATA<br>PREDICT YOUR WEEK<br>FIND YOUR PATTERNS<br>AND ROAST YOU</div>`;
+    const ctr=el("div",{style:"display:flex;flex-direction:column;align-items:center;padding:40px 0;gap:14px;text-align:center"});
+    ctr.innerHTML=`<div style="font-size:64px;margin-bottom:8px">🤖</div><div style="color:#2a2a2a;font-size:10px;letter-spacing:2px;line-height:2.2">AI WILL PREDICT YOUR WEEK<br>FIND YOUR PATTERNS<br>AND ROAST YOU</div>`;
     const b=el("button",{class:"btn-red",style:"margin-top:20px"},"RUN AI ANALYSIS →");
     b.onclick=runAI; ctr.appendChild(b); wrap.appendChild(ctr);
   } else {
@@ -487,7 +474,7 @@ function chatPage() {
     row.appendChild(bub); msgArea.appendChild(row);
   });
   if(state.chatLoading){
-    const row=el("div",{style:"display:flex;justify-content:flex-start"});
+    const row=el("div",{style:"display:flex"});
     const bub=el("div",{class:"bubble-ai",style:"display:flex;gap:5px;align-items:center;padding:12px 16px"});
     [0,1,2].forEach(i=>{bub.appendChild(el("div",{style:`width:7px;height:7px;border-radius:50%;background:#333;animation:bounce3 1s ${i*0.2}s infinite`}));});
     row.appendChild(bub); msgArea.appendChild(row);
@@ -496,8 +483,7 @@ function chatPage() {
   const quick=el("div",{style:"padding:8px 12px;display:flex;gap:6px;overflow-x:auto;border-top:1px solid #141414;flex-shrink:0"});
   ["Will I overspend?","Worst category?","How to improve?"].forEach(q=>{
     const b=el("button",{style:"background:#111;border:1px solid #1e1e1e;color:#555;padding:7px 12px;border-radius:20px;font-size:10px;white-space:nowrap;cursor:pointer;font-family:'Space Mono',monospace;flex-shrink:0"},q);
-    b.onclick=()=>{state.chatInput=q;sendChat();};
-    quick.appendChild(b);
+    b.onclick=()=>{state.chatInput=q;sendChat();}; quick.appendChild(b);
   });
   s.appendChild(quick);
   const inputRow=el("div",{style:"padding:10px 12px 12px;border-top:1px solid #1a1a1a;display:flex;gap:8px;flex-shrink:0"});
@@ -521,16 +507,11 @@ function historyPage() {
     state.transactions.forEach(t=>{
       const cat=CATS.find(c=>c.id===t.cat);
       const row=el("div",{style:`background:#111;border-radius:10px;padding:12px 14px 12px 16px;margin-bottom:8px;border-left:3px solid ${t.over?"#FF4136":cat?.color||"#2ECC40"}`});
-      row.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">${cat?.icon}</span><div><div style="color:#888;font-size:11px;letter-spacing:1px">${cat?.label}</div><div style="color:#444;font-size:10px;margin-top:2px">${t.date}${t.note?` · ${t.note}`:""}</div></div></div><div style="text-align:right"><div style="color:${t.over?"#FF4136":"#fff"};font-size:16px;font-weight:700;font-family:'Space Mono',monospace">$${Number(t.amount).toFixed(2)}</div>${t.over?`<div style="color:#FF4136;font-size:8px;letter-spacing:2px">OVER</div>`:`<div style="color:#2ECC40;font-size:8px;letter-spacing:2px">OK</div>`}</div></div>`;
+      row.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">${cat?.icon}</span><div><div style="color:#888;font-size:11px">${cat?.label}</div><div style="color:#444;font-size:10px;margin-top:2px">${t.date}${t.note?` · ${t.note}`:""}</div></div></div><div style="text-align:right"><div style="color:${t.over?"#FF4136":"#fff"};font-size:16px;font-weight:700;font-family:'Space Mono',monospace">$${Number(t.amount).toFixed(2)}</div>${t.over?`<div style="color:#FF4136;font-size:8px;letter-spacing:2px">OVER</div>`:`<div style="color:#2ECC40;font-size:8px;letter-spacing:2px">OK</div>`}</div></div>`;
       wrap.appendChild(row);
     });
-    const clrBtn=el("button",{class:"btn-ghost",style:"margin-top:10px"},"RESET WEEK");
-    clrBtn.onclick=async()=>{
-      if(confirm("Reset all spending for a new week?")){
-        state.spending={...DEF_SPENDING}; state.transactions=[];
-        await resetSpendingInDB(); render();
-      }
-    };
+    const clrBtn=el("button",{class:"btn-ghost"},"RESET WEEK");
+    clrBtn.onclick=async()=>{if(confirm("Reset all spending for a new week?")){state.spending={...DEF_SPENDING};state.transactions=[];await resetSpendingInDB();render();}};
     wrap.appendChild(clrBtn);
   }
   s.appendChild(wrap); return s;
@@ -542,23 +523,19 @@ function settingsPage() {
   wrap.appendChild(el("div",{class:"page-title",style:"margin-bottom:4px"},"SETTINGS"));
   wrap.appendChild(el("div",{class:"micro",style:"margin-bottom:20px"},"LIMITS & API KEY"));
 
-  // API Key section
   const apiCard=el("div",{class:"card",style:"margin-bottom:20px"});
-  apiCard.innerHTML=`<div style="color:#444;font-size:9px;letter-spacing:3px;margin-bottom:10px">ANTHROPIC API KEY (FOR AI FEATURES)</div>${state.apiKey?`<div style="color:#2ECC40;font-size:10px;letter-spacing:2px;margin-bottom:8px">✓ KEY SAVED</div>`:`<div style="color:#FF4136;font-size:10px;letter-spacing:2px;margin-bottom:8px">⚠ NO KEY — AI DISABLED</div>`}`;
-  const keyInp=el("input",{type:"password",placeholder:"sk-ant-...",style:"margin-bottom:0"});
-  if(state.apiKey) keyInp.placeholder="Enter new key to update";
+  apiCard.innerHTML=`<div style="color:#444;font-size:9px;letter-spacing:3px;margin-bottom:10px">ANTHROPIC API KEY (AI FEATURES)</div>${state.apiKey?`<div style="color:#2ECC40;font-size:10px;letter-spacing:2px;margin-bottom:8px">✓ KEY SAVED</div>`:`<div style="color:#FF4136;font-size:10px;letter-spacing:2px;margin-bottom:8px">⚠ NO KEY — AI DISABLED</div>`}`;
+  const keyInp=el("input",{type:"password",placeholder:state.apiKey?"Enter new key to update":"sk-ant-...",style:"margin-bottom:0"});
   keyInp.oninput=e=>{state._newKey=e.target.value;};
   const saveKeyBtn=el("button",{class:"btn-red",style:"margin-top:10px"},"SAVE API KEY");
   saveKeyBtn.onclick=()=>{if(state._newKey){state.apiKey=state._newKey;localStorage.setItem("ne_anthropic_key",state.apiKey);state._newKey="";render();}};
   apiCard.append(keyInp,saveKeyBtn);
   wrap.appendChild(apiCard);
 
-  // DB status
   const dbCard=el("div",{class:"card",style:"margin-bottom:20px"});
-  dbCard.innerHTML=`<div style="color:#444;font-size:9px;letter-spacing:3px;margin-bottom:8px">DATABASE STATUS</div><div style="display:flex;align-items:center;gap:8px"><span class="sync-dot"></span><span style="color:#2ECC40;font-size:11px;letter-spacing:2px">CONNECTED TO SUPABASE</span></div><div style="color:#2a2a2a;font-size:9px;margin-top:6px;letter-spacing:1px">All data syncs automatically to the cloud</div>`;
+  dbCard.innerHTML=`<div style="color:#444;font-size:9px;letter-spacing:3px;margin-bottom:8px">DATABASE</div><div style="display:flex;align-items:center;gap:8px"><span class="sync-dot"></span><span style="color:#2ECC40;font-size:11px;letter-spacing:2px">${state.dbConnected?"CONNECTED TO SUPABASE":"OFFLINE"}</span></div>`;
   wrap.appendChild(dbCard);
 
-  // Budgets
   wrap.appendChild(el("div",{style:"color:#2a2a2a;font-size:9px;letter-spacing:4px;margin-bottom:14px"},"WEEKLY BUDGETS"));
   wrap.appendChild(el("span",{class:"label",style:"margin-top:0"},"TOTAL WEEKLY BUDGET ($)"));
   const totInp=el("input",{type:"number",value:state.tempBudgets.total,style:"font-size:22px;font-weight:700;margin-bottom:0"});
@@ -566,13 +543,13 @@ function settingsPage() {
   wrap.appendChild(totInp);
   wrap.appendChild(el("div",{style:"height:1px;background:#1a1a1a;margin:16px 0"}));
   CATS.forEach(cat=>{
-    const lbl=el("span",{class:"label",style:`margin-top:0;color:${cat.color}`},`${cat.icon} ${cat.label.toUpperCase()} ($)`);
+    wrap.appendChild(el("span",{class:"label",style:`margin-top:0;color:${cat.color}`},`${cat.icon} ${cat.label.toUpperCase()} ($)`));
     const inp=el("input",{type:"number",value:state.tempBudgets[cat.id],style:"margin-bottom:8px"});
     inp.oninput=e=>{state.tempBudgets={...state.tempBudgets,[cat.id]:+e.target.value};};
-    wrap.append(lbl,inp);
+    wrap.appendChild(inp);
   });
   const saveBtn=el("button",{class:"btn-red"},"SAVE LIMITS →");
-  saveBtn.onclick=async()=>{state.budgets={...state.tempBudgets};await saveBudgetsToDB();render();alert("✓ Limits saved to cloud!");};
+  saveBtn.onclick=async()=>{state.budgets={...state.tempBudgets};await saveBudgetsToDB();alert("✓ Saved!");render();};
   wrap.appendChild(saveBtn);
   s.appendChild(wrap); return s;
 }
@@ -582,10 +559,10 @@ function guiltOverlay() {
   const ov=el("div",{class:"overlay"});
   const modal=el("div",{class:"guilt-modal"});
   modal.innerHTML=`
-    <div style="font-size:50px;text-align:center;margin-bottom:14px;animation:pulse 1s infinite">⚠️</div>
+    <div style="font-size:50px;text-align:center;margin-bottom:14px">⚠️</div>
     <h2 style="color:#FF4136;font-size:22px;font-weight:900;letter-spacing:3px;text-align:center;margin-bottom:14px;line-height:1.2;font-family:'Bebas Neue',sans-serif">${gd.msg}</h2>
     <div style="background:#100000;border:1px solid #FF4136;border-radius:8px;padding:12px 16px;margin-bottom:16px;min-height:50px">
-      ${state.guiltRoast?`<p style="color:#FF6B6B;font-size:13px;text-align:center;margin:0;letter-spacing:1px;line-height:1.6">🤖 "${state.guiltRoast}"</p>`:`<p style="color:#2a2a2a;font-size:10px;text-align:center;margin:0;letter-spacing:2px;animation:pulse 1s infinite">AI GENERATING ROAST...</p>`}
+      ${state.guiltRoast?`<p style="color:#FF6B6B;font-size:13px;text-align:center;margin:0;line-height:1.6">🤖 "${state.guiltRoast}"</p>`:`<p style="color:#2a2a2a;font-size:10px;text-align:center;margin:0;letter-spacing:2px">AI GENERATING ROAST...</p>`}
     </div>
     <div style="background:#111;border:1px solid #2a1111;border-radius:8px;padding:12px 16px;margin-bottom:16px">
       ${gd.catOver?`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #1a1a1a"><span style="color:#555;font-size:10px;letter-spacing:2px">${gd.catName?.toUpperCase()}</span><span style="color:#FF4136;font-weight:700;font-family:'Space Mono',monospace">$${gd.catSpent?.toFixed(2)} / $${gd.catBudget}</span></div>`:""}
@@ -603,7 +580,7 @@ function guiltOverlay() {
 
 function bottomNav() {
   const nav=el("div",{class:"bottom-nav"});
-  [{id:"dashboard",icon:"◈",label:"HOME"},{id:"history",icon:"≡",label:"HISTORY"},{id:"log",icon:null,label:null,add:true},{id:"ai",icon:"◎",label:"AI"},{id:"settings",icon:"◌",label:"SETTINGS"}].forEach(item=>{
+  [{id:"dashboard",icon:"◈",label:"HOME"},{id:"history",icon:"≡",label:"HISTORY"},{id:"log",add:true},{id:"ai",icon:"◎",label:"AI"},{id:"settings",icon:"◌",label:"SETTINGS"}].forEach(item=>{
     if(item.add){
       const b=el("button",{class:"add-btn"},"+"); b.onclick=()=>setPage("log"); nav.appendChild(b);
     } else {
@@ -615,34 +592,22 @@ function bottomNav() {
   return nav;
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────
 function render() {
   const app=document.getElementById("app");
   app.innerHTML="";
   const shell=el("div",{style:"display:flex;flex-direction:column;height:100vh;height:100dvh;"});
   const bar=el("div",{class:"top-bar"});
-  const brand=el("span",{class:"brand"},"NOEXCUSES");
-  const status=el("span",{style:`font-size:10px;letter-spacing:2px;color:${overTotal()?"#FF4136":overCount()>0?"#FF851B":"#2ECC40"}`},overTotal()?"⚠ OVER":overCount()>0?`${overCount()} OVER`:"✓ OK");
-  bar.append(brand,status); shell.appendChild(bar);
-  let content;
-  if(state.page==="dashboard") content=dashPage();
-  else if(state.page==="log") content=logPage();
-  else if(state.page==="ai") content=aiPage();
-  else if(state.page==="chat") content=chatPage();
-  else if(state.page==="history") content=historyPage();
-  else if(state.page==="settings") content=settingsPage();
-  shell.appendChild(content);
+  bar.append(el("span",{class:"brand"},"NOEXCUSES"),el("span",{style:`font-size:10px;letter-spacing:2px;color:${overTotal()?"#FF4136":overCount()>0?"#FF851B":"#2ECC40"}`},overTotal()?"⚠ OVER":overCount()>0?`${overCount()} OVER`:"✓ OK"));
+  shell.appendChild(bar);
+  const pages={dashboard:dashPage,log:logPage,ai:aiPage,chat:chatPage,history:historyPage,settings:settingsPage};
+  shell.appendChild((pages[state.page]||dashPage)());
   shell.appendChild(bottomNav());
   if(state.guiltModal) shell.appendChild(guiltOverlay());
   app.appendChild(shell);
   if(state.page==="chat") setTimeout(scrollChatDown,50);
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────
-(async()=>{
-  await loadFromDB();
-  render();
-})();
+(async()=>{ await loadFromDB(); render(); })();
 </script>
 
 </body>
