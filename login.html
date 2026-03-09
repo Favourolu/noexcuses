@@ -64,11 +64,11 @@
     </div>
   </div>
   <script>
-    // Check if already logged in
+    // Only redirect if explicitly logged in (not just any stored value)
     try {
-      const current = localStorage.getItem('noexcuse_current_user');
-      if (current) { window.location.href = 'dashboard.html'; }
-    } catch(e) {}
+      const current = JSON.parse(localStorage.getItem('noexcuse_current_user') || 'null');
+      if (current && current.email) { window.location.href = 'dashboard.html'; }
+    } catch(e) { localStorage.removeItem('noexcuse_current_user'); }
 
 ```
 function handleLogin() {
