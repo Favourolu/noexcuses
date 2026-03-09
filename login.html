@@ -64,9 +64,11 @@
     </div>
   </div>
   <script>
-    // Check if coming from register
-    const current = localStorage.getItem('noexcuse_current_user');
-    if (current) { window.location.href = 'dashboard.html'; }
+    // Check if already logged in
+    try {
+      const current = localStorage.getItem('noexcuse_current_user');
+      if (current) { window.location.href = 'dashboard.html'; }
+    } catch(e) {}
 
 ```
 function handleLogin() {
@@ -74,19 +76,44 @@ function handleLogin() {
   const password = document.getElementById('password').value;
   const errorMsg = document.getElementById('errorMsg');
   errorMsg.style.display = 'none';
+
   if (!email || !password) {
     errorMsg.textContent = 'Please enter your email and password.';
     errorMsg.style.display = 'block'; return;
   }
-  const users = JSON.parse(localStorage.getItem('noexcuse_users') || '[]');
-  const user = users.find(u => u.email === email && u.password === password);
-  if (!user) {
-    errorMsg.textContent = 'Incorrect email or password. Try again.';
-    errorMsg.style.display = 'block'; return;
+
+  try {
+    const users = JSON.parse(localStorage.getItem('noexcuse_users') || '[]');
+    console.log('Users found:', users.length);
+    console.log('Looking for:', email);
+    
+    const user = users.find(u => u.email.toLowerCase().trim() === email.toLowerCase() && u.password === password);
+    
+    if (!user) {
+      // Check if email exists but wrong password
+      const emailExists = users.find(u => u.email.toLowerCase().trim() === email.toLowerCase());
+      if (emailExists) {
+        errorMsg.textContent = 'Wrong password. Please try again.';
+      } else {
+        errorMsg.textContent = 'No account found with this email. Please register first.';
+      }
+      errorMsg.style.display = 'block'; return;
+    }
+
+    localStorage.setItem('noexcuse_current_user', JSON.stringify({ name: user.name, email: user.email }));
+    window.location.href = 'dashboard.html';
+
+  } catch(e) {
+    errorMsg.textContent = 'Something went wrong. Please try again.';
+    errorMsg.style.display = 'block';
+    console.error(e);
   }
-  localStorage.setItem('noexcuse_current_user', JSON.stringify({ name: user.name, email: user.email }));
-  window.location.href = 'dashboard.html';
 }
+
+// Allow pressing Enter to login
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') handleLogin();
+});
 ```
 
   </script>
