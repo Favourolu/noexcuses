@@ -162,6 +162,24 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .welcome-skip:hover { color: var(--white); }
 
 
+
+/* SPLASH SCREEN */
+.splash { position: fixed; inset: 0; background: var(--black); z-index: 1000; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; animation: splashFadeOut 0.5s ease 3.5s forwards; }
+@keyframes splashFadeOut { from { opacity: 1; pointer-events: all; } to { opacity: 0; pointer-events: none; } }
+.splash-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; margin-bottom: 2.5rem; }
+.splash-logo span { color: var(--gold); }
+.splash-msg { font-family: 'Syne', sans-serif; font-size: clamp(1.3rem, 4vw, 2rem); font-weight: 800; letter-spacing: -0.5px; text-align: center; max-width: 600px; line-height: 1.3; animation: msgSlideUp 0.6s ease 0.2s both; }
+@keyframes msgSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.splash-emoji { font-size: 3rem; margin-bottom: 1.5rem; animation: msgSlideUp 0.6s ease 0.1s both; }
+.splash-sub { font-size: 0.95rem; color: var(--text-muted); margin-top: 1rem; text-align: center; animation: msgSlideUp 0.6s ease 0.4s both; }
+.splash-bar { width: 200px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 100px; margin-top: 2.5rem; overflow: hidden; animation: msgSlideUp 0.6s ease 0.5s both; }
+.splash-bar-fill { height: 100%; background: var(--gold); border-radius: 100px; animation: loadBar 3s ease forwards; }
+@keyframes loadBar { from { width: 0%; } to { width: 100%; } }
+.splash-type-good { color: var(--green); }
+.splash-type-warning { color: var(--gold); }
+.splash-type-danger { color: var(--red); }
+.splash-type-funny { color: var(--white); }
+
 /* PROOF MODAL */
 .proof-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
 .proof-modal.active { display: flex; }
@@ -204,6 +222,16 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   </style>
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+
+<div class="splash" id="splashScreen">
+  <div class="splash-logo">No<span>Excuse</span></div>
+  <div class="splash-emoji" id="splashEmoji">💰</div>
+  <div class="splash-msg" id="splashMsg">Loading your budget...</div>
+  <div class="splash-sub" id="splashSub"></div>
+  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+</div>
 
 <nav>
   <div class="logo">No<span>Excuse</span></div>
@@ -451,6 +479,93 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     }
   ];
 
+
+  const MESSAGES = {
+    good: [
+      { emoji: '🏆', msg: 'You are an absolute legend with money!', sub: 'Your budget is looking fantastic this month.' },
+      { emoji: '🌟', msg: 'Wow. Look at you being financially responsible!', sub: 'Your future self is proud of you right now.' },
+      { emoji: '🎯', msg: 'On target, on budget, on point.', sub: 'Keep this energy going all month long!' },
+      { emoji: '💚', msg: 'Green across the board. You are winning!', sub: 'This is what financial discipline looks like.' },
+      { emoji: '🚀', msg: 'Your savings account is doing a happy dance!', sub: 'Seriously though — you are crushing it.' },
+      { emoji: '😎', msg: 'Budget? What budget? You make it look effortless.', sub: 'NoExcuse is proud of you today.' },
+      { emoji: '🌈', msg: 'Good vibes only. Your wallet agrees.', sub: 'Another great day of intentional spending ahead!' },
+      { emoji: '👑', msg: 'Financially disciplined royalty. That is you.', sub: 'Bow to no impulse purchase today!' },
+      { emoji: '🎉', msg: 'Not all heroes wear capes. Some just stick to their budget.', sub: 'You are that hero today.' },
+      { emoji: '💪', msg: 'Strong budget energy detected!', sub: 'You are building wealth one naira at a time.' },
+    ],
+    warning: [
+      { emoji: '⚠️', msg: 'Uh oh... your budget is sweating a little.', sub: 'Some categories need your attention today.' },
+      { emoji: '👀', msg: 'Your wallet is giving you the side eye right now.', sub: 'Time to slow down on spending a little.' },
+      { emoji: '🎭', msg: 'Plot twist: you might be spending too much.', sub: 'Check your categories and take it easy today.' },
+      { emoji: '🔥', msg: 'Your budget is getting a little... warm.', sub: 'Let's cool it down before things get spicy.' },
+      { emoji: '😅', msg: 'You are doing okay. Not great. But okay.', sub: 'A little discipline today goes a long way.' },
+      { emoji: '🤔', msg: 'Hmm. Your budget wants a word with you.', sub: 'Check in on those yellow categories.' },
+      { emoji: '📉', msg: 'Some categories are dropping faster than expected.', sub: 'Think twice before every spend today.' },
+      { emoji: '🚦', msg: 'Yellow light. Slow down, don't stop.', sub: 'You can still turn this month around!' },
+      { emoji: '💭', msg: 'Every naira you save today is future-you saying thank you.', sub: 'Make intentional choices today.' },
+      { emoji: '🧘', msg: 'Take a breath before any purchase today.', sub: 'Pause, think, then decide. You got this.' },
+    ],
+    danger: [
+      { emoji: '🚨', msg: 'BUDGET ALERT! We need to talk.', sub: 'You are over or very close to your limits. No more excuses.' },
+      { emoji: '😤', msg: 'Okay. What happened? We set those limits together.', sub: 'Time to get serious and stop the bleeding.' },
+      { emoji: '💀', msg: 'Your budget called. It is not okay.', sub: 'Seriously though — you need to pump the brakes today.' },
+      { emoji: '🆘', msg: 'Mayday mayday! Budget overrun detected!', sub: 'No unnecessary spending today. At all.' },
+      { emoji: '😭', msg: 'Your savings goal is crying right now.', sub: 'You worked hard for this. Don't let impulse win.' },
+      { emoji: '🔒', msg: 'NoExcuse has entered strict mode.', sub: 'Every expense today needs a VERY good reason.' },
+      { emoji: '🪞', msg: 'Look in the mirror and ask: was it worth it?', sub: 'Today is about recovery. Spend nothing you don't need to.' },
+      { emoji: '⛔', msg: 'You said you wanted to save money. Remember?', sub: 'Today is the day you prove you meant it.' },
+      { emoji: '😡', msg: 'NoExcuse is disappointed. But not giving up on you.', sub: 'Come back from this. You absolutely can.' },
+      { emoji: '🌊', msg: 'You are in deep waters budget-wise.', sub: 'Swim back to shore. No impulse buys today.' },
+    ],
+    funny: [
+      { emoji: '🍔', msg: 'Did you NEED that last takeout? Did you though?', sub: 'Just asking questions. NoExcuse asks the hard ones.' },
+      { emoji: '👻', msg: 'Boo! It's your budget coming back to haunt you.', sub: 'Just kidding. But seriously, check your categories.' },
+      { emoji: '🎲', msg: 'Life is not a gamble. Neither should your budget be.', sub: 'Every naira has a purpose. Make it count.' },
+      { emoji: '🐢', msg: 'Slow and steady wins the savings race.', sub: 'Boring? Maybe. Effective? Absolutely.' },
+      { emoji: '☕', msg: 'Before you buy that coffee, open NoExcuse.', sub: 'We are not saying don't buy it. We are just saying... log it.' },
+      { emoji: '🎪', msg: 'Welcome back to the greatest budget show on earth!', sub: 'Today's performance: you vs impulse spending.' },
+      { emoji: '🦁', msg: 'Be a lion about your budget today.', sub: 'Fierce, focused, and financially disciplined.' },
+      { emoji: '🧠', msg: 'Big brain energy only today please.', sub: 'Think before you spend. Your future self will thank you.' },
+      { emoji: '🌍', msg: 'You could change your world with the money you save.', sub: 'One disciplined day at a time.' },
+      { emoji: '🎵', msg: 'Money, money, money... must be funny... when you SAVE it!', sub: 'ABBA understood budgeting. Now so do you.' },
+    ]
+  };
+
+  function showSplash() {
+    const totalBudget = categories.reduce(function(s,c){ return s + (c.budget || 0); }, 0);
+    const totalSpent = categories.reduce(function(s,c){ return s + (c.spent || 0); }, 0);
+    const pct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+    // Pick message type based on budget status
+    let type;
+    const rand = Math.random();
+    if (pct >= 90) {
+      type = rand > 0.3 ? 'danger' : 'funny';
+    } else if (pct >= 60) {
+      type = rand > 0.4 ? 'warning' : 'funny';
+    } else {
+      type = rand > 0.5 ? 'good' : 'funny';
+    }
+
+    const msgs = MESSAGES[type];
+    // Use date-based index so message changes every login but is consistent same day
+    const idx = (new Date().getDate() + new Date().getMonth()) % msgs.length;
+    const msg = msgs[idx];
+
+    // Apply
+    document.getElementById('splashEmoji').textContent = msg.emoji;
+    document.getElementById('splashMsg').textContent = msg.msg;
+    document.getElementById('splashMsg').className = 'splash-msg splash-type-' + type;
+    document.getElementById('splashSub').textContent = msg.sub;
+
+    // Remove splash after animation
+    setTimeout(function() {
+      const splash = document.getElementById('splashScreen');
+      if (splash) splash.remove();
+    }, 4200);
+  }
+
+
   const DEFAULT_CATEGORIES = [
     { id: 1, name: 'Bills & Utilities', icon: '🏠', budget: 50000, spent: 0 },
     { id: 2, name: 'Food & Groceries', icon: '🍽️', budget: 40000, spent: 0 },
@@ -467,6 +582,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     loadData();
     renderEmojiGrid();
     renderAll();
+    showSplash();
 
     // Show welcome modal only on first login
     const hasSeenTutorial = localStorage.getItem('noexcuse_tutorial_' + currentUser.email);
