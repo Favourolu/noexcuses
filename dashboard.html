@@ -10,210 +10,178 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root { --black: #0a0a0a; --white: #f5f2eb; --gold: #e8b84b; --gold-dark: #c49a2a; --red: #e84b4b; --green: #2ecc71; --gray: #1a1a1a; --gray2: #222; --text-muted: #888; }
     body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
-
-```
-/* NAV */
-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2.5rem; border-bottom: 1px solid rgba(232,184,75,0.1); background: rgba(10,10,10,0.95); position: sticky; top: 0; z-index: 100; }
-.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
-.logo span { color: var(--gold); }
-.nav-right { display: flex; align-items: center; gap: 1rem; }
-.user-name { font-size: 0.9rem; color: var(--text-muted); }
-.user-name span { color: var(--white); font-weight: 600; }
-.help-btn { background: rgba(232,184,75,0.1); border: 1px solid rgba(232,184,75,0.3); color: var(--gold); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-.help-btn:hover { background: rgba(232,184,75,0.2); }
-.logout-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; transition: all 0.2s; }
-.logout-btn:hover { border-color: var(--red); color: var(--red); }
-
-/* LAYOUT */
-.container { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
-.greeting { margin-bottom: 2.5rem; }
-.greeting h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
-.greeting h1 span { color: var(--gold); }
-.greeting p { color: var(--text-muted); margin-top: 0.3rem; font-size: 0.95rem; }
-
-/* STATS */
-.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
-.stat-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem; }
-.stat-card.highlight { border-color: rgba(232,184,75,0.2); background: linear-gradient(135deg, rgba(232,184,75,0.08), transparent); }
-.stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.6rem; }
-.stat-value { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
-.stat-value.gold { color: var(--gold); }
-.stat-value.green { color: var(--green); }
-.stat-value.red { color: var(--red); }
-.stat-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem; }
-
-/* MAIN GRID */
-.main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; }
-.section-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
-.btn-small { background: var(--gold); color: var(--black); border: none; padding: 0.45rem 1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
-.btn-small:hover { background: var(--gold-dark); }
-
-/* CATEGORIES */
-.category-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.3rem 1.5rem; margin-bottom: 0.8rem; transition: all 0.2s; }
-.category-card:hover { border-color: rgba(232,184,75,0.2); }
-.cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
-.cat-info { display: flex; align-items: center; gap: 0.7rem; }
-.cat-icon { width: 36px; height: 36px; background: rgba(232,184,75,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
-.cat-name { font-weight: 600; font-size: 0.95rem; }
-.cat-amounts { text-align: right; }
-.cat-spent { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
-.cat-budget { font-size: 0.78rem; color: var(--text-muted); }
-.bar-track { height: 6px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 100px; transition: width 0.5s ease; }
-.bar-safe { background: var(--green); }
-.bar-warning { background: var(--gold); }
-.bar-danger { background: var(--red); animation: pulse 1s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-.cat-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; }
-.cat-percent { font-size: 0.78rem; color: var(--text-muted); }
-.log-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
-.log-btn:hover { border-color: var(--gold); color: var(--gold); }
-
-/* RIGHT PANEL */
-.right-panel { display: flex; flex-direction: column; gap: 1.2rem; }
-.panel-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem; }
-.panel-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 1.2rem; }
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.4rem; }
-.form-group input, .form-group select, .form-group textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.7rem 0.9rem; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
-.form-group input::placeholder, .form-group textarea::placeholder { color: #555; }
-.form-group select option { background: #222; }
-.form-group textarea { resize: none; height: 70px; }
-.btn-full { width: 100%; background: var(--gold); color: var(--black); padding: 0.85rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
-.btn-full:hover { background: var(--gold-dark); }
-
-/* RECENT */
-.expense-item { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-.expense-item:last-child { border-bottom: none; }
-.exp-left { display: flex; align-items: center; gap: 0.7rem; }
-.exp-icon { width: 32px; height: 32px; background: rgba(232,184,75,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
-.exp-name { font-size: 0.88rem; font-weight: 500; }
-.exp-reason { font-size: 0.75rem; color: var(--text-muted); }
-.exp-amount { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--red); }
-
-/* REPORT */
-.grade-display { text-align: center; padding: 1rem 0; }
-.grade { font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800; }
-.grade-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem; }
-
-/* TOAST */
-.toast { position: fixed; bottom: 2rem; right: 2rem; background: #1a0a0a; border: 1px solid var(--red); border-radius: 14px; padding: 1.2rem 1.5rem; max-width: 360px; z-index: 999; animation: slideIn 0.4s ease; display: none; }
-.toast.show { display: block; }
-@keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-.toast-title { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--red); font-size: 0.9rem; margin-bottom: 0.4rem; display: flex; justify-content: space-between; }
-.toast-msg { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
-.toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; }
-
-/* ADD CATEGORY MODAL */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-.modal-overlay.active { opacity: 1; pointer-events: all; }
-.modal { background: #161616; border: 1px solid rgba(232,184,75,0.2); border-radius: 18px; padding: 2rem; width: 100%; max-width: 400px; }
-.modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 1.5rem; }
-.emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
-.emoji-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.5rem; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; text-align: center; }
-.emoji-btn:hover, .emoji-btn.selected { background: rgba(232,184,75,0.15); border-color: var(--gold); }
-.modal-actions { display: flex; gap: 0.8rem; margin-top: 1.2rem; }
-.btn-cancel { flex: 1; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
-.btn-cancel:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
-
-/* ===================== TUTORIAL STYLES ===================== */
-/* Overlay */
-.tutorial-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 500; display: none; }
-.tutorial-overlay.active { display: block; }
-
-/* Spotlight - highlights element */
-.tutorial-spotlight { position: fixed; border: 3px solid var(--gold); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.75); z-index: 501; transition: all 0.4s ease; pointer-events: none; }
-
-/* Tooltip card */
-.tutorial-tooltip { position: fixed; background: #161616; border: 1px solid rgba(232,184,75,0.4); border-radius: 16px; padding: 1.5rem; max-width: 320px; z-index: 502; box-shadow: 0 20px 60px rgba(0,0,0,0.5); animation: tooltipIn 0.3s ease; }
-@keyframes tooltipIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.tooltip-step { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); font-weight: 700; margin-bottom: 0.6rem; }
-.tooltip-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.6rem; }
-.tooltip-desc { font-size: 0.88rem; color: #bbb; line-height: 1.6; margin-bottom: 1.2rem; }
-.tooltip-actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
-.tooltip-next { background: var(--gold); color: var(--black); border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
-.tooltip-next:hover { background: var(--gold-dark); }
-.tooltip-skip { background: none; border: none; color: var(--text-muted); font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.2s; }
-.tooltip-skip:hover { color: var(--white); }
-.tooltip-quit { background: rgba(232,75,75,0.15); border: 1px solid rgba(232,75,75,0.3); color: var(--red); font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 0.4rem 0.8rem; border-radius: 6px; transition: all 0.2s; }
-.tooltip-quit:hover { background: rgba(232,75,75,0.25); }
-.tooltip-dots { display: flex; gap: 0.4rem; margin-left: auto; }
-.tooltip-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.15); }
-.tooltip-dot.active { background: var(--gold); }
-.tutorial-close { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 503; background: rgba(232,75,75,0.15); border: 1px solid rgba(232,75,75,0.4); color: var(--red); width: 40px; height: 40px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: none; align-items: center; justify-content: center; font-weight: 700; transition: all 0.2s; }
-.tutorial-close:hover { background: rgba(232,75,75,0.3); }
-.tutorial-close.active { display: flex; }
-
-/* Welcome modal - shown first */
-.welcome-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 600; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
-.welcome-card { background: #111; border: 1px solid rgba(232,184,75,0.25); border-radius: 24px; padding: 2.5rem; max-width: 480px; width: 100%; text-align: center; animation: welcomeIn 0.5s ease; }
-@keyframes welcomeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-.welcome-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
-.welcome-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.6rem; }
-.welcome-title span { color: var(--gold); }
-.welcome-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 2rem; }
-.welcome-features { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem; text-align: left; }
-.welcome-feature { display: flex; align-items: center; gap: 0.8rem; font-size: 0.9rem; }
-.feature-icon { width: 32px; height: 32px; background: rgba(232,184,75,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
-.welcome-btn { width: 100%; background: var(--gold); color: var(--black); border: none; padding: 1rem; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-bottom: 0.8rem; }
-.welcome-btn:hover { background: var(--gold-dark); }
-.welcome-skip { background: none; border: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-.welcome-skip:hover { color: var(--white); }
-
-
-
-
-
-/* PROOF MODAL */
-.proof-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
-.proof-modal.active { display: flex; }
-.proof-card { background: #111; border: 1px solid rgba(232,184,75,0.3); border-radius: 20px; padding: 2rem; max-width: 460px; width: 100%; }
-.proof-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 0.4rem; color: var(--gold); }
-.proof-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
-.proof-upload { border: 2px dashed rgba(232,184,75,0.3); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 1rem; position: relative; }
-.proof-upload:hover { border-color: var(--gold); background: rgba(232,184,75,0.05); }
-.proof-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.proof-upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-.proof-upload-text { font-size: 0.88rem; color: var(--text-muted); }
-.proof-upload-text span { color: var(--gold); font-weight: 600; }
-.proof-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 1rem; display: none; }
-.proof-actions { display: flex; gap: 0.8rem; }
-.proof-cancel { flex: 1; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-family: "DM Sans", sans-serif; transition: all 0.2s; }
-.proof-cancel:hover { border-color: var(--red); color: var(--red); }
-.proof-submit { flex: 2; background: var(--gold); color: var(--black); border: none; padding: 0.75rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: "DM Sans", sans-serif; transition: all 0.2s; }
-.proof-submit:hover { background: var(--gold-dark); }
-
-/* LOCKDOWN BANNER */
-.lockdown-banner { background: linear-gradient(135deg, rgba(232,75,75,0.15), rgba(232,75,75,0.05)); border: 1px solid rgba(232,75,75,0.4); border-radius: 14px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; display: none; }
-.lockdown-banner.active { display: flex; align-items: center; gap: 1rem; }
-.lockdown-icon { font-size: 1.8rem; flex-shrink: 0; }
-.lockdown-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 1rem; color: var(--red); margin-bottom: 0.3rem; }
-.lockdown-msg { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
-.lockdown-ack { background: var(--red); color: var(--white); border: none; padding: 0.5rem 1.2rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-family: "DM Sans", sans-serif; font-size: 0.85rem; margin-top: 0.6rem; transition: all 0.2s; white-space: nowrap; }
-.lockdown-ack:hover { background: #c0392b; }
-.category-card.locked { opacity: 0.5; pointer-events: none; border-color: rgba(232,75,75,0.2); }
-.category-card.exceeded { border-color: rgba(232,75,75,0.5); background: rgba(232,75,75,0.05); }
-
-@media(max-width:768px) {
-  .main-grid { grid-template-columns: 1fr; }
-  .stats-row { grid-template-columns: 1fr 1fr; }
-  nav { padding: 1rem 1.2rem; }
-  .container { padding: 1.5rem 1rem; }
-  .tutorial-tooltip { max-width: 280px; }
-}
-```
-
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2.5rem; border-bottom: 1px solid rgba(232,184,75,0.1); background: rgba(10,10,10,0.95); position: sticky; top: 0; z-index: 100; }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
+    .logo span { color: var(--gold); }
+    .nav-right { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .user-name { font-size: 0.9rem; color: var(--text-muted); }
+    .user-name span { color: var(--white); font-weight: 600; }
+    .nav-btn { background: rgba(232,184,75,0.1); border: 1px solid rgba(232,184,75,0.3); color: var(--gold); height: 32px; padding: 0 0.8rem; border-radius: 20px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.75rem; transition: all 0.2s; }
+    .nav-btn:hover { background: rgba(232,184,75,0.2); }
+    .logout-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; transition: all 0.2s; }
+    .logout-btn:hover { border-color: var(--red); color: var(--red); }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+    .greeting { margin-bottom: 1.5rem; }
+    .greeting h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+    .greeting h1 span { color: var(--gold); }
+    .greeting p { color: var(--text-muted); margin-top: 0.3rem; font-size: 0.95rem; }
+    /* DAILY MSG */
+    .daily-msg { background: linear-gradient(135deg,rgba(232,184,75,0.08),rgba(232,184,75,0.03)); border: 1px solid rgba(232,184,75,0.2); border-radius: 14px; padding: 1rem 1.5rem; margin-bottom: 2rem; display: none; align-items: center; gap: 1rem; animation: fadeUp 0.6s ease both; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .daily-msg-emoji { font-size: 1.8rem; flex-shrink: 0; }
+    .daily-msg-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+    .daily-msg-sub { font-size: 0.82rem; color: var(--text-muted); }
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
+    .stat-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem; }
+    .stat-card.highlight { border-color: rgba(232,184,75,0.2); background: linear-gradient(135deg, rgba(232,184,75,0.08), transparent); }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.6rem; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+    .stat-value.gold { color: var(--gold); }
+    .stat-value.green { color: var(--green); }
+    .stat-value.red { color: var(--red); }
+    .stat-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem; }
+    /* MAIN GRID */
+    .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; }
+    .section-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+    .btn-small { background: var(--gold); color: var(--black); border: none; padding: 0.45rem 1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .btn-small:hover { background: var(--gold-dark); }
+    /* CATEGORIES */
+    .category-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.3rem 1.5rem; margin-bottom: 0.8rem; transition: all 0.2s; }
+    .category-card:hover { border-color: rgba(232,184,75,0.2); }
+    .category-card.locked { opacity: 0.45; pointer-events: none; border-color: rgba(232,75,75,0.2); }
+    .category-card.exceeded { border-color: rgba(232,75,75,0.5); background: rgba(232,75,75,0.05); }
+    .cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+    .cat-info { display: flex; align-items: center; gap: 0.7rem; }
+    .cat-icon { width: 36px; height: 36px; background: rgba(232,184,75,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .cat-name { font-weight: 600; font-size: 0.95rem; }
+    .cat-amounts { text-align: right; }
+    .cat-spent { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .cat-budget { font-size: 0.78rem; color: var(--text-muted); }
+    .bar-track { height: 6px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 100px; transition: width 0.5s ease; }
+    .bar-safe { background: var(--green); }
+    .bar-warning { background: var(--gold); }
+    .bar-danger { background: var(--red); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    .cat-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; }
+    .cat-percent { font-size: 0.78rem; color: var(--text-muted); }
+    .log-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .log-btn:hover { border-color: var(--gold); color: var(--gold); }
+    /* RIGHT PANEL */
+    .right-panel { display: flex; flex-direction: column; gap: 1.2rem; }
+    .panel-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem; }
+    .panel-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 1.2rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.7rem 0.9rem; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: #555; }
+    .form-group select option { background: #222; }
+    .form-group textarea { resize: none; height: 70px; }
+    .btn-full { width: 100%; background: var(--gold); color: var(--black); padding: 0.85rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .btn-full:hover { background: var(--gold-dark); }
+    /* RECENT */
+    .expense-item { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .expense-item:last-child { border-bottom: none; }
+    .exp-left { display: flex; align-items: center; gap: 0.7rem; }
+    .exp-icon { width: 32px; height: 32px; background: rgba(232,184,75,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+    .exp-name { font-size: 0.88rem; font-weight: 500; }
+    .exp-reason { font-size: 0.75rem; color: var(--text-muted); }
+    .exp-amount { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--red); }
+    /* REPORT */
+    .grade-display { text-align: center; padding: 1rem 0; }
+    .grade { font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800; }
+    .grade-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem; }
+    /* TOAST */
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: #1a0a0a; border: 1px solid var(--red); border-radius: 14px; padding: 1.2rem 1.5rem; max-width: 360px; z-index: 999; display: none; animation: slideIn 0.4s ease; }
+    .toast.show { display: block; }
+    @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .toast-title { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--red); font-size: 0.9rem; margin-bottom: 0.4rem; display: flex; justify-content: space-between; }
+    .toast-msg { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
+    .toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; }
+    /* LOCKDOWN */
+    .lockdown-banner { background: linear-gradient(135deg,rgba(232,75,75,0.15),rgba(232,75,75,0.05)); border: 1px solid rgba(232,75,75,0.4); border-radius: 14px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; display: none; }
+    .lockdown-banner.active { display: flex; align-items: center; gap: 1rem; }
+    .lockdown-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: var(--red); margin-bottom: 0.3rem; }
+    .lockdown-msg { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
+    .lockdown-ack { background: var(--red); color: var(--white); border: none; padding: 0.5rem 1.2rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; margin-top: 0.6rem; transition: all 0.2s; }
+    /* PROOF MODAL */
+    .proof-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+    .proof-modal.active { display: flex; }
+    .proof-card { background: #111; border: 1px solid rgba(232,184,75,0.3); border-radius: 20px; padding: 2rem; max-width: 460px; width: 100%; }
+    .proof-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 0.4rem; color: var(--gold); }
+    .proof-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+    .proof-upload { border: 2px dashed rgba(232,184,75,0.3); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 1rem; position: relative; }
+    .proof-upload:hover { border-color: var(--gold); background: rgba(232,184,75,0.05); }
+    .proof-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .proof-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 1rem; display: none; }
+    .proof-actions { display: flex; gap: 0.8rem; }
+    .proof-cancel { flex: 1; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .proof-submit { flex: 2; background: var(--gold); color: var(--black); border: none; padding: 0.75rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal { background: #161616; border: 1px solid rgba(232,184,75,0.2); border-radius: 18px; padding: 2rem; width: 100%; max-width: 400px; max-height: 85vh; overflow-y: auto; }
+    .modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 1.5rem; }
+    .emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+    .emoji-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.5rem; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; text-align: center; }
+    .emoji-btn:hover, .emoji-btn.selected { background: rgba(232,184,75,0.15); border-color: var(--gold); }
+    .modal-actions { display: flex; gap: 0.8rem; margin-top: 1.2rem; }
+    .btn-cancel { flex: 1; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    /* TUTORIAL */
+    .tutorial-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 500; display: none; }
+    .tutorial-overlay.active { display: block; }
+    .tutorial-spotlight { position: fixed; border: 3px solid var(--gold); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.75); z-index: 501; transition: all 0.4s ease; pointer-events: none; }
+    .tutorial-tooltip { position: fixed; background: #161616; border: 1px solid rgba(232,184,75,0.4); border-radius: 16px; padding: 1.5rem; max-width: 320px; z-index: 502; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .tooltip-step { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); font-weight: 700; margin-bottom: 0.6rem; }
+    .tooltip-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.6rem; }
+    .tooltip-desc { font-size: 0.88rem; color: #bbb; line-height: 1.6; margin-bottom: 1.2rem; }
+    .tooltip-actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+    .tooltip-next { background: var(--gold); color: var(--black); border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .tooltip-skip { background: none; border: none; color: var(--text-muted); font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .tooltip-quit { background: rgba(232,75,75,0.15); border: 1px solid rgba(232,75,75,0.3); color: var(--red); font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 0.4rem 0.8rem; border-radius: 6px; }
+    .tooltip-dots { display: flex; gap: 0.4rem; margin-left: auto; }
+    .tooltip-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+    .tooltip-dot.active { background: var(--gold); }
+    .tutorial-close { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 503; background: rgba(232,75,75,0.15); border: 1px solid rgba(232,75,75,0.4); color: var(--red); width: 40px; height: 40px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: none; align-items: center; justify-content: center; font-weight: 700; }
+    .tutorial-close.active { display: flex; }
+    /* WELCOME */
+    .welcome-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 600; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .welcome-card { background: #111; border: 1px solid rgba(232,184,75,0.25); border-radius: 24px; padding: 2.5rem; max-width: 480px; width: 100%; text-align: center; }
+    .welcome-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+    .welcome-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.6rem; }
+    .welcome-title span { color: var(--gold); }
+    .welcome-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 2rem; }
+    .welcome-features { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem; text-align: left; }
+    .welcome-feature { display: flex; align-items: center; gap: 0.8rem; font-size: 0.9rem; }
+    .feature-icon { width: 32px; height: 32px; background: rgba(232,184,75,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+    .welcome-btn { width: 100%; background: var(--gold); color: var(--black); border: none; padding: 1rem; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 0.8rem; }
+    .welcome-skip { background: none; border: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    /* LOADING */
+    .loading-screen { position: fixed; inset: 0; background: var(--black); z-index: 1000; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; }
+    .loading-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; }
+    .loading-logo span { color: var(--gold); }
+    .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(232,184,75,0.15); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media(max-width:768px) { .main-grid { grid-template-columns: 1fr; } .stats-row { grid-template-columns: 1fr 1fr; } nav { padding: 1rem 1.2rem; } .container { padding: 1.5rem 1rem; } }
   </style>
 </head>
 <body>
+
+<!-- LOADING -->
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">No<span>Excuse</span></div>
+  <div class="loading-spinner"></div>
+</div>
 
 <nav>
   <div class="logo">No<span>Excuse</span></div>
   <div class="nav-right">
     <div class="user-name">Hey, <span id="navUserName">there</span> 👋</div>
-    <button class="help-btn" onclick="showArchiveModal()" style="width:auto;padding:0 0.8rem;border-radius:20px;font-size:0.75rem;font-weight:700">📁 History</button>
-    <button class="help-btn" onclick="startTutorial()" title="Help & Tutorial">?</button>
+    <button class="nav-btn" onclick="showArchiveModal()">📁 History</button>
+    <button class="nav-btn" onclick="startTutorial()">? Help</button>
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </nav>
@@ -221,18 +189,25 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 <div class="container">
   <div class="greeting">
     <h1>Your Budget <span id="monthName"></span> 💰</h1>
-    <p id="greetingMsg">Track every naira. No excuses.</p>
+    <p>Track every naira. No excuses.</p>
   </div>
 
-  <!-- DAILY MESSAGE BANNER -->
-
-  <div id="dailyMsgBanner" style="background:linear-gradient(135deg,rgba(232,184,75,0.08),rgba(232,184,75,0.03));border:1px solid rgba(232,184,75,0.2);border-radius:14px;padding:1rem 1.5rem;margin-bottom:2rem;display:none;align-items:center;gap:1rem;animation:fadeUp 0.6s ease both">
-    <div id="dailyMsgEmoji" style="font-size:1.8rem;flex-shrink:0">💰</div>
+  <div class="daily-msg" id="dailyMsgBanner">
+    <div class="daily-msg-emoji" id="dailyMsgEmoji">💰</div>
     <div>
-      <div id="dailyMsgText" style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:0.2rem"></div>
-      <div id="dailyMsgSub" style="font-size:0.82rem;color:var(--text-muted)"></div>
+      <div class="daily-msg-text" id="dailyMsgText"></div>
+      <div class="daily-msg-sub" id="dailyMsgSub"></div>
     </div>
     <button onclick="document.getElementById('dailyMsgBanner').style.display='none'" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;flex-shrink:0">✕</button>
+  </div>
+
+  <div class="lockdown-banner" id="lockdownBanner">
+    <div style="font-size:1.8rem;flex-shrink:0">🔒</div>
+    <div style="flex:1">
+      <div class="lockdown-title">Budget Exceeded — Spending Locked!</div>
+      <div class="lockdown-msg" id="lockdownMsg"></div>
+      <button class="lockdown-ack" onclick="acknowledgeLockdown()">I Acknowledge My Overspend</button>
+    </div>
   </div>
 
   <div class="stats-row" id="statsRow">
@@ -261,102 +236,70 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
       </div>
       <div id="categoriesList"></div>
     </div>
-
-```
-<div class="right-panel">
-  <div class="panel-card" id="logExpensePanel">
-    <div class="panel-title">📝 Log an Expense</div>
-    <div class="form-group">
-      <label>Category</label>
-      <select id="expCategory">
-        <option value="1">🏠 Bills &amp; Utilities</option>
-        <option value="2">🍽️ Food &amp; Groceries</option>
-        <option value="3">👗 Clothing</option>
-        <option value="4">💰 Miscellaneous</option>
-      </select>
+    <div class="right-panel">
+      <div class="panel-card" id="logExpensePanel">
+        <div class="panel-title">📝 Log an Expense</div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="expCategory">
+            <option value="1">🏠 Bills &amp; Utilities</option>
+            <option value="2">🍽️ Food &amp; Groceries</option>
+            <option value="3">👗 Clothing</option>
+            <option value="4">💰 Miscellaneous</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Amount (₦)</label>
+          <input type="number" id="expAmount" placeholder="e.g. 5000" />
+        </div>
+        <div class="form-group">
+          <label>What is this for? (Required)</label>
+          <textarea id="expReason" placeholder="Explain why you are spending this money..."></textarea>
+        </div>
+        <button class="btn-full" onclick="logExpense()">Log Expense</button>
+      </div>
+      <div class="panel-card">
+        <div class="panel-title">🧾 Recent Expenses</div>
+        <div id="recentExpenses"><p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">No expenses logged yet</p></div>
+      </div>
+      <div class="panel-card" id="reportCardPanel">
+        <div class="panel-title">📊 Monthly Report Card</div>
+        <div class="grade-display">
+          <div class="grade" id="reportGrade" style="color:var(--green)">A</div>
+          <div class="grade-sub" id="reportMsg">Excellent discipline! Keep it up.</div>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Amount (₦)</label>
-      <input type="number" id="expAmount" placeholder="e.g. 5000" />
-    </div>
-    <div class="form-group">
-      <label>What is this for? (Required)</label>
-      <textarea id="expReason" placeholder="Explain why you're spending this money..."></textarea>
-    </div>
-    <button class="btn-full" onclick="logExpense()">Log Expense</button>
-  </div>
-
-  <div class="panel-card">
-    <div class="panel-title">🧾 Recent Expenses</div>
-    <div id="recentExpenses"><p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">No expenses logged yet</p></div>
-  </div>
-
-  <div class="panel-card" id="reportCardPanel">
-    <div class="panel-title">📊 Monthly Report Card</div>
-    <div class="grade-display">
-      <div class="grade" id="reportGrade" style="color:var(--green)">A</div>
-      <div class="grade-sub" id="reportMsg">Excellent discipline! Keep it up.</div>
-    </div>
-  </div>
-</div>
-```
-
-  </div>
-</div>
-
-<!-- PROOF MODAL -->
-
-<div class="proof-modal" id="proofModal">
-  <div class="proof-card">
-    <div class="proof-title">⚠️ Proof Required Before Spending</div>
-    <div class="proof-sub" id="proofSubText">You are approaching your budget limit. Upload a photo or receipt proving this expense is necessary before proceeding.</div>
-    <div class="proof-upload" id="proofUploadArea">
-      <input type="file" id="proofFileInput" accept="image/*" onchange="handleProofUpload(this)" />
-      <div class="proof-upload-icon">📸</div>
-      <div class="proof-upload-text">Tap to upload a photo or receipt<br/><span>Click here to choose a file</span></div>
-    </div>
-    <img class="proof-preview" id="proofPreview" src="" alt="Proof" />
-    <div class="form-group">
-      <label>Written Justification (Required)</label>
-      <textarea id="proofJustification" placeholder="Explain in detail why this expense is absolutely necessary..." style="height:80px"></textarea>
-    </div>
-    <div class="proof-actions">
-      <button class="proof-cancel" onclick="cancelProof()">Cancel</button>
-      <button class="proof-submit" onclick="submitProof()">Submit Proof & Log Expense</button>
-    </div>
-  </div>
-</div>
-
-<!-- LOCKDOWN BANNER -->
-
-<div class="lockdown-banner" id="lockdownBanner">
-  <div class="lockdown-icon">🔒</div>
-  <div style="flex:1">
-    <div class="lockdown-title">Budget Exceeded — Spending Locked!</div>
-    <div class="lockdown-msg" id="lockdownMsg">You have exceeded your budget in one or more categories. You cannot log expenses in other categories until you acknowledge this overspend.</div>
-    <button class="lockdown-ack" onclick="acknowledgeLockdown()">I Acknowledge My Overspend</button>
   </div>
 </div>
 
 <!-- TOAST -->
 
 <div class="toast" id="warningToast">
-  <div class="toast-title">
-    ⚠️ <span id="toastTitle">Budget Warning</span>
-    <button class="toast-close" onclick="closeToast()">✕</button>
-  </div>
+  <div class="toast-title">⚠️ <span id="toastTitle">Warning</span><button class="toast-close" onclick="closeToast()">✕</button></div>
   <div class="toast-msg" id="toastMsg"></div>
 </div>
 
-<!-- ARCHIVE MODAL -->
+<!-- PROOF MODAL -->
 
-<div class="modal-overlay" id="archiveOverlay" style="z-index:250">
-  <div class="modal" style="max-width:500px;max-height:80vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-      <div class="modal-title" style="margin-bottom:0">📁 Past Months</div>
-      <button onclick="document.getElementById('archiveOverlay').classList.remove('active')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem">✕</button>
+<div class="proof-modal" id="proofModal">
+  <div class="proof-card">
+    <div class="proof-title">⚠️ Proof Required</div>
+    <div class="proof-sub" id="proofSubText">Upload a photo or receipt proving this expense is necessary.</div>
+    <div class="proof-upload" id="proofUploadArea">
+      <input type="file" id="proofFileInput" accept="image/*" onchange="handleProofUpload(this)" />
+      <div style="font-size:2rem;margin-bottom:0.5rem">📸</div>
+      <div style="font-size:0.88rem;color:var(--text-muted)">Tap to upload a photo or receipt</div>
     </div>
-    <div id="archiveList"></div>
+    <img class="proof-preview" id="proofPreview" src="" alt="Proof" />
+    <div class="form-group">
+      <label>Written Justification (Required)</label>
+      <textarea id="proofJustification" placeholder="Explain why this is absolutely necessary..." style="height:80px"></textarea>
+    </div>
+    <div class="proof-actions">
+      <button class="proof-cancel" onclick="cancelProof()">Cancel</button>
+      <button class="proof-submit" onclick="submitProof()">Submit Proof & Log</button>
+    </div>
   </div>
 </div>
 
@@ -367,7 +310,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     <div class="modal-title">Add Budget Category</div>
     <div class="form-group">
       <label>Category Name</label>
-      <input type="text" id="catName" placeholder="e.g. Food, Transport..." />
+      <input type="text" id="catName" placeholder="e.g. Savings, Transport..." />
     </div>
     <div class="form-group">
       <label>Pick an Icon</label>
@@ -384,37 +327,37 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   </div>
 </div>
 
+<!-- ARCHIVE MODAL -->
+
+<div class="modal-overlay" id="archiveOverlay" style="z-index:250">
+  <div class="modal" style="max-width:500px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <div class="modal-title" style="margin-bottom:0">📁 Past Months</div>
+      <button onclick="document.getElementById('archiveOverlay').classList.remove('active')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem">✕</button>
+    </div>
+    <div id="archiveList"></div>
+  </div>
+</div>
+
 <!-- WELCOME MODAL -->
 
 <div class="welcome-modal" id="welcomeModal" style="display:none">
   <div class="welcome-card">
     <div class="welcome-emoji">🎉</div>
     <h2 class="welcome-title">Welcome to <span>NoExcuse</span>!</h2>
-    <p class="welcome-desc">You've just taken the first step to financial discipline. Here's what makes NoExcuse different from every other budget app:</p>
+    <p class="welcome-desc">You have just taken the first step to financial discipline. Here is what makes NoExcuse different:</p>
     <div class="welcome-features">
-      <div class="welcome-feature">
-        <div class="feature-icon">🔐</div>
-        <span>You must <strong>justify every expense</strong> before logging it</span>
-      </div>
-      <div class="welcome-feature">
-        <div class="feature-icon">🚨</div>
-        <span>Get <strong>real time warnings</strong> at 70%, 90% and 100% of your budget</span>
-      </div>
-      <div class="welcome-feature">
-        <div class="feature-icon">😤</div>
-        <span><strong>Shame messages</strong> remind you of your goals when you overspend</span>
-      </div>
-      <div class="welcome-feature">
-        <div class="feature-icon">📊</div>
-        <span>Get a <strong>monthly report card</strong> grading your financial discipline</span>
-      </div>
+      <div class="welcome-feature"><div class="feature-icon">🔐</div><span>Justify <strong>every expense</strong> before logging it</span></div>
+      <div class="welcome-feature"><div class="feature-icon">🚨</div><span><strong>Real time warnings</strong> at 70%, 90% and 100%</span></div>
+      <div class="welcome-feature"><div class="feature-icon">😤</div><span><strong>Shame messages</strong> when you overspend</span></div>
+      <div class="welcome-feature"><div class="feature-icon">📊</div><span><strong>Monthly report card</strong> grading your discipline</span></div>
     </div>
     <button class="welcome-btn" onclick="beginTour()">Take a Quick Tour 🚀</button>
-    <button class="welcome-skip" onclick="skipTutorial()">Skip — I'll figure it out</button>
+    <button class="welcome-skip" onclick="skipTutorial()">Skip — I will figure it out</button>
   </div>
 </div>
 
-<!-- TUTORIAL OVERLAY -->
+<!-- TUTORIAL -->
 
 <div class="tutorial-overlay" id="tutorialOverlay"></div>
 <button class="tutorial-close" id="tutorialCloseBtn" onclick="skipTutorial()">✕</button>
@@ -425,445 +368,152 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   <div class="tooltip-desc" id="tooltipDesc"></div>
   <div class="tooltip-actions">
     <button class="tooltip-next" id="tooltipNextBtn" onclick="nextStep()">Next →</button>
-    <button class="tooltip-skip" onclick="skipTutorial()">Skip tour</button>
+    <button class="tooltip-skip" onclick="skipTutorial()">Skip</button>
     <button class="tooltip-quit" onclick="skipTutorial()">✕ Quit</button>
     <div class="tooltip-dots" id="tooltipDots"></div>
   </div>
 </div>
 
-<script>
-  const EMOJIS = ['🍽️','🚗','🎉','🏠','💊','👗','📚','💡','📱','✈️','🎮','☕','🛒','💰','🏋️','🎁'];
-  let selectedEmoji = '🍽️';
-  let categories = [];
-  let expenses = [];
-  let currentUser = null;
-  let tutorialStep = 0;
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  const TUTORIAL_STEPS = [
-    {
-      target: 'statsRow',
-      title: 'Your Budget Overview',
-      desc: 'This is your financial cockpit. See your total budget, how much you\'ve spent, and what\'s remaining — all at a glance.',
-      position: 'bottom'
-    },
-    {
-      target: 'categoriesTitle',
-      title: 'Budget Categories',
-      desc: 'Your spending is organized into categories like Food, Transport, and Entertainment. Each category has its own budget limit with a progress bar.',
-      position: 'bottom'
-    },
-    {
-      target: 'addCatBtn',
-      title: 'Add Your Own Categories',
-      desc: 'Click "+ Add Category" to create custom spending categories that match your lifestyle. Pick an icon, name it, and set a monthly limit.',
-      position: 'bottom'
-    },
-    {
-      target: 'logExpensePanel',
-      title: 'The Evidence Gate 🔐',
-      desc: 'This is NoExcuse\'s superpower. Before logging ANY expense, you MUST explain why you\'re spending. No reason = no entry. This stops impulse buying cold.',
-      position: 'left'
-    },
-    {
-      target: 'reportCardPanel',
-      title: 'Your Monthly Report Card',
-      desc: 'At the end of every month you\'re graded A to F on your financial discipline. The goal is simple — keep that grade as high as possible!',
-      position: 'left'
-    },
-    {
-      target: 'helpBtn',
-      title: 'Need Help Anytime?',
-      desc: 'Click the "?" button in the top right corner anytime to replay this tutorial. You\'re all set — now go take control of your money! 💪',
-      position: 'bottom'
-    }
-  ];
-
-
-  const MESSAGES = {
-    good: [
-      { emoji: '🏆', msg: 'You are an absolute legend with money!', sub: 'Your budget is looking fantastic this month.' },
-      { emoji: '🌟', msg: 'Wow. Look at you being financially responsible!', sub: 'Your future self is proud of you right now.' },
-      { emoji: '🎯', msg: 'On target, on budget, on point.', sub: 'Keep this energy going all month long!' },
-      { emoji: '💚', msg: 'Green across the board. You are winning!', sub: 'This is what financial discipline looks like.' },
-      { emoji: '🚀', msg: 'Your savings account is doing a happy dance!', sub: 'Seriously though — you are crushing it.' },
-      { emoji: '😎', msg: 'Budget? What budget? You make it look effortless.', sub: 'NoExcuse is proud of you today.' },
-      { emoji: '🌈', msg: 'Good vibes only. Your wallet agrees.', sub: 'Another great day of intentional spending ahead!' },
-      { emoji: '👑', msg: 'Financially disciplined royalty. That is you.', sub: 'Bow to no impulse purchase today!' },
-      { emoji: '🎉', msg: 'Not all heroes wear capes. Some just stick to their budget.', sub: 'You are that hero today.' },
-      { emoji: '💪', msg: 'Strong budget energy detected!', sub: 'You are building wealth one naira at a time.' },
-    ],
-    warning: [
-      { emoji: '⚠️', msg: 'Uh oh... your budget is sweating a little.', sub: 'Some categories need your attention today.' },
-      { emoji: '👀', msg: 'Your wallet is giving you the side eye right now.', sub: 'Time to slow down on spending a little.' },
-      { emoji: '🎭', msg: 'Plot twist: you might be spending too much.', sub: 'Check your categories and take it easy today.' },
-      { emoji: '🔥', msg: 'Your budget is getting a little... warm.', sub: 'Let's cool it down before things get spicy.' },
-      { emoji: '😅', msg: 'You are doing okay. Not great. But okay.', sub: 'A little discipline today goes a long way.' },
-      { emoji: '🤔', msg: 'Hmm. Your budget wants a word with you.', sub: 'Check in on those yellow categories.' },
-      { emoji: '📉', msg: 'Some categories are dropping faster than expected.', sub: 'Think twice before every spend today.' },
-      { emoji: '🚦', msg: 'Yellow light. Slow down, don\'t stop.', sub: 'You can still turn this month around!' },
-      { emoji: '💭', msg: 'Every naira you save today is future-you saying thank you.', sub: 'Make intentional choices today.' },
-      { emoji: '🧘', msg: 'Take a breath before any purchase today.', sub: 'Pause, think, then decide. You got this.' },
-    ],
-    danger: [
-      { emoji: '🚨', msg: 'BUDGET ALERT! We need to talk.', sub: 'You are over or very close to your limits. No more excuses.' },
-      { emoji: '😤', msg: 'Okay. What happened? We set those limits together.', sub: 'Time to get serious and stop the bleeding.' },
-      { emoji: '💀', msg: 'Your budget called. It is not okay.', sub: 'Seriously though — you need to pump the brakes today.' },
-      { emoji: '🆘', msg: 'Mayday mayday! Budget overrun detected!', sub: 'No unnecessary spending today. At all.' },
-      { emoji: '😭', msg: 'Your savings goal is crying right now.', sub: 'You worked hard for this. Don't let impulse win.' },
-      { emoji: '🔒', msg: 'NoExcuse has entered strict mode.', sub: 'Every expense today needs a VERY good reason.' },
-      { emoji: '🪞', msg: 'Look in the mirror and ask: was it worth it?', sub: 'Today is about recovery. Spend nothing you don't need to.' },
-      { emoji: '⛔', msg: 'You said you wanted to save money. Remember?', sub: 'Today is the day you prove you meant it.' },
-      { emoji: '😡', msg: 'NoExcuse is disappointed. But not giving up on you.', sub: 'Come back from this. You absolutely can.' },
-      { emoji: '🌊', msg: 'You are in deep waters budget-wise.', sub: 'Swim back to shore. No impulse buys today.' },
-    ],
-    funny: [
-      { emoji: '🍔', msg: 'Did you NEED that last takeout? Did you though?', sub: 'Just asking questions. NoExcuse asks the hard ones.' },
-      { emoji: '👻', msg: 'Boo! It's your budget coming back to haunt you.', sub: 'Just kidding. But seriously, check your categories.' },
-      { emoji: '🎲', msg: 'Life is not a gamble. Neither should your budget be.', sub: 'Every naira has a purpose. Make it count.' },
-      { emoji: '🐢', msg: 'Slow and steady wins the savings race.', sub: 'Boring? Maybe. Effective? Absolutely.' },
-      { emoji: '☕', msg: 'Before you buy that coffee, open NoExcuse.', sub: 'We are not saying don\'t buy it. We are just saying... log it.' },
-      { emoji: '🎪', msg: 'Welcome back to the greatest budget show on earth!', sub: 'Today\'s performance: you vs impulse spending.' },
-      { emoji: '🦁', msg: 'Be a lion about your budget today.', sub: 'Fierce, focused, and financially disciplined.' },
-      { emoji: '🧠', msg: 'Big brain energy only today please.', sub: 'Think before you spend. Your future self will thank you.' },
-      { emoji: '🌍', msg: 'You could change your world with the money you save.', sub: 'One disciplined day at a time.' },
-      { emoji: '🎵', msg: 'Money, money, money... must be funny... when you SAVE it!', sub: 'ABBA understood budgeting. Now so do you.' },
-    ]
+  const firebaseConfig = {
+    apiKey: "AIzaSyCXaFZ-tHwK4FXO6ZQ6VZ5_xQxo0mXwPas",
+    authDomain: "noexcuse-ac153.firebaseapp.com",
+    projectId: "noexcuse-ac153",
+    storageBucket: "noexcuse-ac153.firebasestorage.app",
+    messagingSenderId: "773313862174",
+    appId: "1:773313862174:web:f451fdcee73d378e1aac0f"
   };
 
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-
-
-
-  function showDailyMessage() {
-    const totalBudget = categories.reduce(function(s,c){ return s + (c.budget||0); },0);
-    const totalSpent = categories.reduce(function(s,c){ return s + (c.spent||0); },0);
-    const pct = totalBudget > 0 ? (totalSpent/totalBudget)*100 : 0;
-
-    const MSGS = {
-      good: [
-        { emoji:'🏆', msg:'You are an absolute legend with money!', sub:'Your future self is proud of you right now.' },
-        { emoji:'🌟', msg:'Wow. Look at you being financially responsible!', sub:'Keep this energy going all month long!' },
-        { emoji:'🎯', msg:'On target, on budget, on point.', sub:'This is what financial discipline looks like.' },
-        { emoji:'💚', msg:'Green across the board. You are winning!', sub:'NoExcuse is proud of you today.' },
-        { emoji:'🚀', msg:'Your savings account is doing a happy dance!', sub:'Seriously though — you are crushing it.' },
-        { emoji:'😎', msg:'Budget? You make it look effortless.', sub:'Bow to no impulse purchase today!' },
-        { emoji:'👑', msg:'Financially disciplined royalty. That is you.', sub:'Another great day of intentional spending ahead!' },
-        { emoji:'🎉', msg:'Not all heroes wear capes. Some stick to their budget.', sub:'You are that hero today.' },
-        { emoji:'💪', msg:'Strong budget energy detected!', sub:'You are building wealth one naira at a time.' },
-        { emoji:'🌈', msg:'Good vibes only. Your wallet agrees.', sub:'Keep making smart choices today!' },
-      ],
-      warning: [
-        { emoji:'⚠️', msg:'Your budget is sweating a little.', sub:'Some categories need your attention today.' },
-        { emoji:'👀', msg:'Your wallet is giving you the side eye.', sub:'Time to slow down on spending.' },
-        { emoji:'🔥', msg:'Your budget is getting a little warm.', sub:'Cool it down before things get spicy.' },
-        { emoji:'😅', msg:'You are doing okay. Not great. But okay.', sub:'A little discipline today goes a long way.' },
-        { emoji:'🚦', msg:'Yellow light. Slow down, don\'t stop.', sub:'You can still turn this month around!' },
-        { emoji:'🧘', msg:'Take a breath before any purchase today.', sub:'Pause, think, then decide. You got this.' },
-        { emoji:'💭', msg:'Every naira you save is future-you saying thank you.', sub:'Make intentional choices today.' },
-        { emoji:'🤔', msg:'Hmm. Your budget wants a word with you.', sub:'Check in on those yellow categories.' },
-      ],
-      danger: [
-        { emoji:'🚨', msg:'BUDGET ALERT! We need to talk.', sub:'You are over your limits. No more excuses.' },
-        { emoji:'😤', msg:'What happened? We set those limits together.', sub:'Time to get serious and stop the bleeding.' },
-        { emoji:'💀', msg:'Your budget called. It is not okay.', sub:'You need to pump the brakes today.' },
-        { emoji:'😭', msg:'Your savings goal is crying right now.', sub:'You worked hard for this. Don't let impulse win.' },
-        { emoji:'🔒', msg:'NoExcuse has entered strict mode.', sub:'Every expense today needs a VERY good reason.' },
-        { emoji:'⛔', msg:'You said you wanted to save money. Remember?', sub:'Today is the day you prove you meant it.' },
-        { emoji:'😡', msg:'NoExcuse is disappointed. But not giving up on you.', sub:'Come back from this. You absolutely can.' },
-      ],
-      funny: [
-        { emoji:'🍔', msg:'Did you NEED that last takeout? Did you though?', sub:'Just asking questions. NoExcuse asks the hard ones.' },
-        { emoji:'👻', msg:'Boo! It's your budget coming back to haunt you.', sub:'Just kidding. But seriously, check your categories.' },
-        { emoji:'🐢', msg:'Slow and steady wins the savings race.', sub:'Boring? Maybe. Effective? Absolutely.' },
-        { emoji:'☕', msg:'Before you buy that coffee, think twice.', sub:'We are not saying don\'t buy it. Just log it.' },
-        { emoji:'🎪', msg:'Welcome back to the greatest budget show on earth!', sub:'Today\'s performance: you vs impulse spending.' },
-        { emoji:'🦁', msg:'Be a lion about your budget today.', sub:'Fierce, focused, and financially disciplined.' },
-        { emoji:'🧠', msg:'Big brain energy only today please.', sub:'Think before you spend. Your future self thanks you.' },
-        { emoji:'🎵', msg:'Money money money... must be funny... when you SAVE it!', sub:'ABBA understood budgeting. Now so do you.' },
-      ]
-    };
-
-    let type;
-    const rand = Math.random();
-    if (totalSpent === 0) { type = rand > 0.5 ? 'funny' : 'good'; }
-    else if (pct >= 90) { type = rand > 0.3 ? 'danger' : 'funny'; }
-    else if (pct >= 60) { type = rand > 0.4 ? 'warning' : 'funny'; }
-    else { type = rand > 0.5 ? 'good' : 'funny'; }
-
-    const msgs = MSGS[type];
-    const msg = msgs[Math.floor(Math.random() * msgs.length)];
-
-    const colors = { good:'var(--green)', warning:'var(--gold)', danger:'var(--red)', funny:'var(--white)' };
-    document.getElementById('dailyMsgEmoji').textContent = msg.emoji;
-    document.getElementById('dailyMsgText').textContent = msg.msg;
-    document.getElementById('dailyMsgText').style.color = colors[type];
-    document.getElementById('dailyMsgSub').textContent = msg.sub;
-    document.getElementById('dailyMsgBanner').style.display = 'flex';
-  }
-
-
-  function checkMonthlyReset() {
-    const key = currentUser.email;
-    const now = new Date();
-    const currentMonth = now.getFullYear() + '-' + (now.getMonth() + 1);
-    const lastMonth = localStorage.getItem('noexcuse_month_' + key);
-
-    if (lastMonth && lastMonth !== currentMonth) {
-      // Archive last month
-      const archiveKey = 'noexcuse_archive_' + key + '_' + lastMonth;
-      const archive = {
-        month: lastMonth,
-        categories: JSON.parse(JSON.stringify(categories)),
-        expenses: JSON.parse(JSON.stringify(expenses))
-      };
-      localStorage.setItem(archiveKey, JSON.stringify(archive));
-
-      // Reset spent on all categories
-      categories = categories.map(function(c) {
-        return Object.assign({}, c, { spent: 0 });
-      });
-      expenses = [];
-      saveData();
-
-      // Show reset notice
-      showToast('🎉 New Month!', 'Happy new month! Your budgets have been reset. Last month has been archived.', false);
-    }
-
-    localStorage.setItem('noexcuse_month_' + key, currentMonth);
-  }
-
-  function getArchives() {
-    const key = currentUser.email;
-    const archives = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith('noexcuse_archive_' + key + '_')) {
-        try { archives.push(JSON.parse(localStorage.getItem(k))); } catch(e) {}
-      }
-    }
-    return archives.sort(function(a,b){ return b.month.localeCompare(a.month); });
-  }
-
-  function showArchiveModal() {
-    const archives = getArchives();
-    const overlay = document.getElementById('archiveOverlay');
-    const list = document.getElementById('archiveList');
-    if (archives.length === 0) {
-      list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem">No archived months yet. Archives appear after your first monthly reset.</p>';
-    } else {
-      list.innerHTML = archives.map(function(a) {
-        const totalBudget = a.categories.reduce(function(s,c){ return s+(c.budget||0); },0);
-        const totalSpent = a.categories.reduce(function(s,c){ return s+(c.spent||0); },0);
-        const pct = totalBudget > 0 ? ((totalSpent/totalBudget)*100).toFixed(0) : 0;
-        const grade = pct <= 50 ? 'A' : pct <= 70 ? 'B' : pct <= 85 ? 'C' : pct <= 100 ? 'D' : 'F';
-        const gradeColor = pct <= 50 ? '#2ecc71' : pct <= 70 ? '#7ed56f' : pct <= 85 ? '#e8b84b' : pct <= 100 ? '#e8844b' : '#e84b4b';
-        const months = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
-        const parts = a.month.split('-');
-        const monthName = months[parseInt(parts[1])] + ' ' + parts[0];
-        return '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.2rem;margin-bottom:0.8rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem"><div style="font-family:Syne,sans-serif;font-weight:700">' + monthName + '</div><div style="font-family:Syne,sans-serif;font-weight:800;font-size:1.5rem;color:' + gradeColor + '">' + grade + '</div></div><div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem">Spent ₦' + totalSpent.toLocaleString() + ' of ₦' + totalBudget.toLocaleString() + ' (' + pct + '%)</div>' + a.categories.map(function(c){ const cp = c.budget>0?Math.min(((c.spent||0)/c.budget)*100,100):0; return '<div style="display:flex;justify-content:space-between;font-size:0.82rem;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span>' + c.icon + ' ' + c.name + '</span><span style="color:' + (cp>=100?'#e84b4b':cp>=90?'#e8b84b':'#888') + '">₦' + (c.spent||0).toLocaleString() + '</span></div>'; }).join('') + '</div>';
-      }).join('');
-    }
-    overlay.classList.add('active');
-  }
-
-  const DEFAULT_CATEGORIES = [
+  const EMOJIS = ['🍽️','🚗','🎉','🏠','💊','👗','📚','💡','📱','✈️','🎮','☕','🛒','💰','🏋️','🎁'];
+  const DEFAULT_CATS = [
     { id: 1, name: 'Bills & Utilities', icon: '🏠', budget: 50000, spent: 0 },
     { id: 2, name: 'Food & Groceries', icon: '🍽️', budget: 40000, spent: 0 },
     { id: 3, name: 'Clothing', icon: '👗', budget: 20000, spent: 0 },
-    { id: 4, name: 'Miscellaneous', icon: '💰', budget: 15000, spent: 0 },
+    { id: 4, name: 'Miscellaneous', icon: '💰', budget: 15000, spent: 0 }
   ];
 
-  function init() {
-    currentUser = JSON.parse(localStorage.getItem('noexcuse_current_user') || 'null');
-    if (!currentUser || !currentUser.email) { window.location.href = 'login.html'; return; }
-    document.getElementById('navUserName').textContent = currentUser.name.split(' ')[0];
+  let currentUser = null;
+  let userDocRef = null;
+  let categories = [];
+  let expenses = [];
+  let selectedEmoji = '🍽️';
+  let pendingExpense = null;
+  let tutorialStep = 0;
+  let isSaving = false;
+
+  const TUTORIAL_STEPS = [
+    { target: 'statsRow', title: 'Your Budget Overview', desc: 'See your total budget, how much you spent, and what is remaining all at a glance.', position: 'bottom' },
+    { target: 'categoriesTitle', title: 'Budget Categories', desc: 'Your spending is split into categories. Each has its own limit and progress bar.', position: 'bottom' },
+    { target: 'addCatBtn', title: 'Add Your Own Categories', desc: 'Create custom spending categories that match your lifestyle.', position: 'bottom' },
+    { target: 'logExpensePanel', title: 'The Evidence Gate', desc: 'Before logging ANY expense you MUST explain why you are spending. No reason = no entry.', position: 'left' },
+    { target: 'reportCardPanel', title: 'Monthly Report Card', desc: 'You are graded A to F on your financial discipline every month.', position: 'left' },
+    { target: 'navUserName', title: 'Need Help Anytime?', desc: 'Click the Help button in the nav anytime to replay this tutorial. You are all set!', position: 'bottom' }
+  ];
+
+  // ── AUTH ──
+  onAuthStateChanged(auth, async function(user) {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    userDocRef = doc(db, 'users', user.uid);
+    document.getElementById('navUserName').textContent = user.displayName ? user.displayName.split(' ')[0] : 'there';
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('monthName').textContent = months[new Date().getMonth()];
-        loadData();
+    await loadData();
     renderEmojiGrid();
     renderAll();
-
-    checkMonthlyReset();
-    // Show daily message
-    setTimeout(function() { showDailyMessage(); }, 300);
-
-    // Show welcome modal only on first login
-    const hasSeenTutorial = localStorage.getItem('noexcuse_tutorial_' + currentUser.email);
+    document.getElementById('loadingScreen').style.display = 'none';
+    setTimeout(function() { showDailyMessage(); }, 400);
+    const hasSeenTutorial = localStorage.getItem('noexcuse_tutorial_' + user.uid);
     if (!hasSeenTutorial) {
-      setTimeout(function() {
-        document.getElementById('welcomeModal').style.display = 'flex';
-      }, 600);
+      setTimeout(function() { document.getElementById('welcomeModal').style.display = 'flex'; }, 800);
     }
-  }
+  });
 
-  function beginTour() {
-    document.getElementById('welcomeModal').style.display = 'none';
-    tutorialStep = 0;
-    startTutorial();
-  }
-
-  function startTutorial() {
-    tutorialStep = 0;
-    document.getElementById('tutorialOverlay').classList.add('active');
-    document.getElementById('tutorialSpotlight').style.display = 'block';
-    document.getElementById('tutorialTooltip').style.display = 'block';
-    document.getElementById('tutorialCloseBtn').classList.add('active');
-    showStep(tutorialStep);
-  }
-
-  function showStep(step) {
-    if (step >= TUTORIAL_STEPS.length) { endTutorial(); return; }
-    const s = TUTORIAL_STEPS[step];
-    const el = document.getElementById(s.target);
-
-    // Update tooltip content
-    document.getElementById('tooltipStep').textContent = 'Step ' + (step + 1) + ' of ' + TUTORIAL_STEPS.length;
-    document.getElementById('tooltipTitle').textContent = s.title;
-    document.getElementById('tooltipDesc').textContent = s.desc;
-    document.getElementById('tooltipNextBtn').textContent = step === TUTORIAL_STEPS.length - 1 ? 'Finish 🎉' : 'Next →';
-
-    // Dots
-    const dots = document.getElementById('tooltipDots');
-    dots.innerHTML = TUTORIAL_STEPS.map(function(_, i) {
-      return '<div class="tooltip-dot ' + (i === step ? 'active' : '') + '"></div>';
-    }).join('');
-
-    if (el) {
-      // Scroll to element first
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-      setTimeout(function() {
-        const rect = el.getBoundingClientRect();
-        const pad = 8;
-
-        // Position spotlight
-        const spotlight = document.getElementById('tutorialSpotlight');
-        spotlight.style.top = (rect.top - pad + window.scrollY) + 'px';
-        spotlight.style.left = (rect.left - pad) + 'px';
-        spotlight.style.width = (rect.width + pad * 2) + 'px';
-        spotlight.style.height = (rect.height + pad * 2) + 'px';
-
-        // Position tooltip
-        const tooltip = document.getElementById('tutorialTooltip');
-        let top, left;
-        const tooltipWidth = 320;
-
-        if (s.position === 'bottom') {
-          top = rect.bottom + window.scrollY + 20;
-          left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-        } else {
-          // left side - if not enough room go right
-          top = rect.top + window.scrollY;
-          left = rect.left - tooltipWidth - 20;
-          if (left < 10) left = rect.right + 20;
-        }
-
-        // Keep on screen
-        left = Math.max(10, Math.min(left, window.innerWidth - tooltipWidth - 10));
-        top = Math.max(10, top);
-
-        tooltip.style.top = top + 'px';
-        tooltip.style.left = left + 'px';
-      }, 400);
-    }
-  }
-
-  function nextStep() {
-    tutorialStep++;
-    if (tutorialStep >= TUTORIAL_STEPS.length) { endTutorial(); return; }
-    showStep(tutorialStep);
-  }
-
-  function endTutorial() {
-    document.getElementById('tutorialOverlay').classList.remove('active');
-    document.getElementById('tutorialSpotlight').style.display = 'none';
-    document.getElementById('tutorialTooltip').style.display = 'none';
-    localStorage.setItem('noexcuse_tutorial_' + currentUser.email, 'done');
-    showToast('🎉 You\'re all set!', 'Tutorial complete! Click the "?" button anytime to replay it.', false);
-  }
-
-  function skipTutorial() {
-    document.getElementById('welcomeModal').style.display = 'none';
-    endTutorial();
-  }
-
-  function loadData() {
+  // ── DATA ──
+  async function loadData() {
     try {
-      const key = currentUser.email;
-      const storedCats = localStorage.getItem('noexcuse_cats_' + key);
-      const storedExp = localStorage.getItem('noexcuse_exp_' + key);
-      expenses = storedExp ? JSON.parse(storedExp) : [];
-
-      // Always start with defaults and merge any saved data on top
-      let saved = storedCats ? JSON.parse(storedCats) : [];
-      if (!Array.isArray(saved) || saved.length === 0) {
-        // No saved data — use defaults
-        categories = DEFAULT_CATEGORIES.map(function(c){ return Object.assign({}, c); });
-      } else {
-        // Merge saved spent values into defaults, keep any custom categories too
-        const defaultIds = DEFAULT_CATEGORIES.map(function(c){ return c.id; });
-        // Rebuild defaults with saved spent values
-        categories = DEFAULT_CATEGORIES.map(function(def) {
-          const savedCat = saved.find(function(s){ return s.id === def.id; });
-          return savedCat ? Object.assign({}, def, { spent: Number(savedCat.spent) || 0, budget: Number(savedCat.budget) || def.budget }) : Object.assign({}, def);
-        });
-        // Add any custom categories the user added
-        saved.forEach(function(s) {
-          if (defaultIds.indexOf(s.id) === -1) {
-            categories.push({ id: s.id, name: s.name, icon: s.icon, budget: Number(s.budget) || 0, spent: Number(s.spent) || 0 });
-          }
-        });
+      const snap = await getDoc(userDocRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        const currentMonth = new Date().getFullYear() + '-' + (new Date().getMonth() + 1);
+        // Monthly reset check
+        if (data.currentMonth && data.currentMonth !== currentMonth) {
+          // Archive old month
+          const archives = data.archives || [];
+          archives.unshift({ month: data.currentMonth, categories: data.categories || [], expenses: data.expenses || [] });
+          // Reset
+          categories = (data.categories || DEFAULT_CATS).map(function(c) { return Object.assign({}, c, { spent: 0 }); });
+          expenses = [];
+          await setDoc(userDocRef, Object.assign({}, data, { categories: categories, expenses: [], currentMonth: currentMonth, archives: archives }));
+          showToast('🎉 New Month!', 'Happy new month! Budgets have been reset. Last month is archived.', false);
+        } else {
+          categories = data.categories && data.categories.length > 0 ? data.categories : DEFAULT_CATS.map(function(c){ return Object.assign({},c); });
+          expenses = data.expenses || [];
+        }
+        if (!data.currentMonth) {
+          await updateDoc(userDocRef, { currentMonth: currentMonth });
+        }
       }
-      saveData();
     } catch(e) {
       console.error('loadData error:', e);
-      categories = DEFAULT_CATEGORIES.map(function(c){ return Object.assign({}, c); });
+      categories = DEFAULT_CATS.map(function(c){ return Object.assign({},c); });
       expenses = [];
-      saveData();
     }
   }
 
-  function saveData() {
-    const key = currentUser.email;
-    localStorage.setItem('noexcuse_cats_' + key, JSON.stringify(categories));
-    localStorage.setItem('noexcuse_exp_' + key, JSON.stringify(expenses));
+  async function saveData() {
+    if (isSaving) return;
+    isSaving = true;
+    try {
+      await updateDoc(userDocRef, { categories: categories, expenses: expenses });
+    } catch(e) {
+      console.error('saveData error:', e);
+    }
+    isSaving = false;
   }
 
-  function renderAll() { renderCategories(); renderStats(); renderExpenseDropdown(); renderRecentExpenses(); renderReportCard(); checkLockdown(); }
+  // ── RENDER ──
+  function renderAll() {
+    renderCategories();
+    renderStats();
+    renderExpenseDropdown();
+    renderRecentExpenses();
+    renderReportCard();
+    checkLockdown();
+  }
 
   function renderCategories() {
     const el = document.getElementById('categoriesList');
-    if (categories.length === 0) {
-      el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted)"><div style="font-size:2.5rem;margin-bottom:0.8rem">💸</div><p>No categories yet. Add one to get started!</p></div>';
+    if (!categories || categories.length === 0) {
+      el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted)"><div style="font-size:2.5rem;margin-bottom:0.8rem">💸</div><p>No categories yet.</p></div>';
       return;
     }
-    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + currentUser.email) || '[]');
+    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + (currentUser ? currentUser.uid : '')) || '[]');
     el.innerHTML = categories.map(function(cat) {
       const spent = cat.spent || 0;
       const pct = cat.budget > 0 ? Math.min((spent / cat.budget) * 100, 100) : 0;
       const barClass = pct >= 100 ? 'bar-danger' : pct >= 90 ? 'bar-warning' : 'bar-safe';
       const remaining = cat.budget - spent;
       const isExceeded = spent > cat.budget;
-      const isLocked = !isExceeded && categories.some(function(c) {
-        return c.id !== cat.id && (c.spent || 0) > c.budget && acked.indexOf(c.id) === -1;
-      });
+      const isLocked = !isExceeded && categories.some(function(c) { return c.id !== cat.id && (c.spent || 0) > c.budget && acked.indexOf(c.id) === -1; });
       const cardClass = isExceeded ? 'category-card exceeded' : isLocked ? 'category-card locked' : 'category-card';
-
       return [
         '<div class="' + cardClass + '">',
           '<div class="cat-header">',
-            '<div class="cat-info">',
-              '<div class="cat-icon">' + cat.icon + '</div>',
-              '<div class="cat-name">' + cat.name + '</div>',
-            '</div>',
-            '<div class="cat-amounts">',
-              '<div class="cat-spent">₦' + spent.toLocaleString() + '</div>',
-              '<div class="cat-budget">of ₦' + cat.budget.toLocaleString() + '</div>',
-            '</div>',
+            '<div class="cat-info"><div class="cat-icon">' + cat.icon + '</div><div class="cat-name">' + cat.name + '</div></div>',
+            '<div class="cat-amounts"><div class="cat-spent">₦' + spent.toLocaleString() + '</div><div class="cat-budget">of ₦' + cat.budget.toLocaleString() + '</div></div>',
           '</div>',
           '<div class="bar-track"><div class="bar-fill ' + barClass + '" style="width:' + pct + '%"></div></div>',
           '<div class="cat-footer">',
-            '<div class="cat-percent">' + pct.toFixed(0) + '% used · ₦' + remaining.toLocaleString() + ' left</div>',
+            '<div class="cat-percent">' + pct.toFixed(0) + '% · ₦' + remaining.toLocaleString() + ' left</div>',
             '<div style="display:flex;gap:0.5rem">',
               '<button class="log-btn" onclick="editCategoryBudget(' + cat.id + ',' + cat.budget + ')">✏️ Edit</button>',
               '<button class="log-btn" onclick="quickLog(' + cat.id + ')">+ Log</button>',
@@ -875,8 +525,8 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   }
 
   function renderStats() {
-    const totalBudget = categories.reduce(function(s,c){ return s + c.budget; }, 0);
-    const totalSpent = categories.reduce(function(s,c){ return s + (c.spent || 0); }, 0);
+    const totalBudget = categories.reduce(function(s,c){ return s+(c.budget||0); },0);
+    const totalSpent = categories.reduce(function(s,c){ return s+(c.spent||0); },0);
     const remaining = totalBudget - totalSpent;
     document.getElementById('totalBudget').textContent = '₦' + totalBudget.toLocaleString();
     document.getElementById('totalSpent').textContent = '₦' + totalSpent.toLocaleString();
@@ -893,148 +543,116 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
       { id: 3, icon: '👗', name: 'Clothing' },
       { id: 4, icon: '💰', name: 'Miscellaneous' }
     ];
-    // Merge defaults with any custom categories
-    const defaultIds = [1, 2, 3, 4];
-    const custom = (categories || []).filter(function(c){ return defaultIds.indexOf(c.id) === -1; });
+    const custom = (categories || []).filter(function(c){ return [1,2,3,4].indexOf(c.id) === -1; });
     const all = defaults.concat(custom);
-    sel.innerHTML = all.map(function(c){
-      return '<option value="' + c.id + '">' + c.icon + ' ' + c.name + '</option>';
-    }).join('');
+    sel.innerHTML = all.map(function(c){ return '<option value="' + c.id + '">' + c.icon + ' ' + c.name + '</option>'; }).join('');
   }
 
   function renderRecentExpenses() {
     const el = document.getElementById('recentExpenses');
-    if (expenses.length === 0) {
+    if (!expenses || expenses.length === 0) {
       el.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">No expenses logged yet</p>';
       return;
     }
-    const recent = expenses.slice().reverse().slice(0, 5);
-    el.innerHTML = recent.map(function(e, i) {
+    el.innerHTML = expenses.slice().reverse().slice(0, 5).map(function(e, i) {
       const realIdx = expenses.length - 1 - i;
-      const cat = categories.find(function(c) { return c.id == e.catId; });
+      const cat = categories.find(function(c){ return c.id == e.catId; });
       return [
         '<div class="expense-item">',
-          '<div class="exp-left">',
-            '<div class="exp-icon">' + (cat ? cat.icon : '💸') + '</div>',
-            '<div>',
-              '<div class="exp-name">' + (cat ? cat.name : 'Unknown') + '</div>',
-              '<div class="exp-reason">' + e.reason.substring(0, 30) + (e.reason.length > 30 ? '...' : '') + '</div>',
-            '</div>',
-          '</div>',
+          '<div class="exp-left"><div class="exp-icon">' + (cat ? cat.icon : '💸') + '</div>',
+          '<div><div class="exp-name">' + (cat ? cat.name : 'Unknown') + '</div>',
+          '<div class="exp-reason">' + e.reason.substring(0, 30) + (e.reason.length > 30 ? '...' : '') + '</div></div></div>',
           '<div style="display:flex;align-items:center;gap:0.6rem">',
             '<div class="exp-amount">-₦' + e.amount.toLocaleString() + '</div>',
-            '<button onclick="deleteExpense(' + realIdx + ')" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;padding:0.2rem 0.4rem;border-radius:4px;transition:color 0.2s" onmouseover="this.style.color='#e84b4b'" onmouseout="this.style.color='#555'">✕</button>',
+            '<button onclick="deleteExpense(' + realIdx + ')" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem" onmouseover="this.style.color=\'#e84b4b\'" onmouseout="this.style.color=\'#555\'">✕</button>',
           '</div>',
         '</div>'
       ].join('');
     }).join('');
   }
 
-  function deleteExpense(idx) {
-    const exp = expenses[idx];
-    if (!exp) return;
-    if (!confirm('Delete this expense of ₦' + exp.amount.toLocaleString() + '?')) return;
-    const cat = categories.find(function(c) { return c.id == exp.catId; });
-    if (cat) cat.spent = Math.max(0, (cat.spent || 0) - exp.amount);
-    expenses.splice(idx, 1);
-    saveData();
-    renderAll();
-    showToast('🗑️ Deleted', 'Expense removed and budget updated.', false);
-  }
-
-  function editCategoryBudget(catId, currentBudget) {
-    const newBudget = prompt('Enter new monthly budget (₦):', currentBudget);
-    if (newBudget === null) return;
-    const parsed = parseFloat(newBudget);
-    if (!parsed || parsed <= 0) { alert('Please enter a valid amount.'); return; }
-    const cat = categories.find(function(c) { return c.id === catId; });
-    if (cat) {
-      cat.budget = parsed;
-      saveData();
-      renderAll();
-      showToast('✅ Budget Updated', cat.name + ' budget set to ₦' + parsed.toLocaleString(), false);
-    }
-  }
-
   function renderReportCard() {
-    const totalBudget = categories.reduce(function(s,c){ return s + c.budget; }, 0);
-    const totalSpent = categories.reduce(function(s,c){ return s + (c.spent || 0); }, 0);
-    const pct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+    const totalBudget = categories.reduce(function(s,c){ return s+(c.budget||0); },0);
+    const totalSpent = categories.reduce(function(s,c){ return s+(c.spent||0); },0);
+    const pct = totalBudget > 0 ? (totalSpent/totalBudget)*100 : 0;
     let grade, msg, color;
-    if (pct <= 50) { grade = 'A'; msg = 'Excellent discipline! You\'re crushing it.'; color = 'var(--green)'; }
-    else if (pct <= 70) { grade = 'B'; msg = 'Good job! Stay focused for the rest of the month.'; color = '#7ed56f'; }
-    else if (pct <= 85) { grade = 'C'; msg = 'Be careful — you\'re halfway through your budget.'; color = 'var(--gold)'; }
-    else if (pct <= 100) { grade = 'D'; msg = 'Warning! You\'re close to your limit. Slow down.'; color = '#e8844b'; }
-    else { grade = 'F'; msg = 'You\'ve exceeded your budget. No more excuses!'; color = 'var(--red)'; }
+    if (pct <= 50) { grade='A'; msg='Excellent discipline! You are crushing it.'; color='var(--green)'; }
+    else if (pct <= 70) { grade='B'; msg='Good job! Stay focused.'; color='#7ed56f'; }
+    else if (pct <= 85) { grade='C'; msg='Be careful — halfway through your budget.'; color='var(--gold)'; }
+    else if (pct <= 100) { grade='D'; msg='Warning! Close to your limit. Slow down.'; color='#e8844b'; }
+    else { grade='F'; msg='You exceeded your budget. No more excuses!'; color='var(--red)'; }
     document.getElementById('reportGrade').textContent = grade;
     document.getElementById('reportGrade').style.color = color;
     document.getElementById('reportMsg').textContent = msg;
   }
 
-  // Pending expense waiting for proof
-  let pendingExpense = null;
-
-  function checkLockdown() {
-    const exceeded = categories.filter(function(c){ return (c.spent || 0) > c.budget; });
-    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + currentUser.email) || '[]');
-    const unacked = exceeded.filter(function(c){ return acked.indexOf(c.id) === -1; });
-    const banner = document.getElementById('lockdownBanner');
-    if (unacked.length > 0) {
-      banner.classList.add('active');
-      const names = unacked.map(function(c){ return c.name; }).join(', ');
-      document.getElementById('lockdownMsg').textContent = 'You exceeded your budget in: ' + names + '. You cannot log expenses in other categories until you acknowledge this overspend.';
-      return true;
-    }
-    banner.classList.remove('active');
-    return false;
-  }
-
-  function acknowledgeLockdown() {
-    const exceeded = categories.filter(function(c){ return (c.spent || 0) > c.budget; });
-    const acked = exceeded.map(function(c){ return c.id; });
-    localStorage.setItem('noexcuse_acked_' + currentUser.email, JSON.stringify(acked));
-    document.getElementById('lockdownBanner').classList.remove('active');
-    renderAll();
-    showToast('✅ Acknowledged', 'Lockdown lifted. Please be more careful with your remaining categories!', false);
-  }
-
-  function logExpense() {
+  // ── EXPENSE LOGIC ──
+  window.logExpense = function() {
     const catId = parseInt(document.getElementById('expCategory').value);
     const amount = parseFloat(document.getElementById('expAmount').value);
     const reason = document.getElementById('expReason').value.trim();
     if (!catId || !amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
-    if (!reason) { showToast('No Excuse Accepted! 🚫', 'You MUST provide a reason before logging any expense. That\'s the whole point of NoExcuse!', true); return; }
-
-    const cat = categories.find(function(c){ return c.id === catId; });
+    if (!reason) { showToast('No Excuse! 🚫', 'You MUST provide a reason before logging any expense.', true); return; }
+    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + currentUser.uid) || '[]');
+    const otherExceeded = categories.find(function(c){ return c.id !== catId && (c.spent||0) > c.budget && acked.indexOf(c.id)===-1; });
+    if (otherExceeded) { showToast('🔒 Locked!', 'Acknowledge your overspend in ' + otherExceeded.name + ' first.', true); return; }
+    const cat = categories.find(function(c){ return c.id===catId; });
     if (!cat) return;
-
-    // Check if OTHER categories are exceeded (lockdown)
-    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + currentUser.email) || '[]');
-    const otherExceeded = categories.find(function(c){ return c.id !== catId && (c.spent || 0) > c.budget && acked.indexOf(c.id) === -1; });
-    if (otherExceeded) {
-      showToast('🔒 Spending Locked!', 'You exceeded your ' + otherExceeded.name + ' budget. Acknowledge your overspend first before logging new expenses.', true);
-      document.getElementById('lockdownBanner').classList.add('active');
-      return;
-    }
-
-    const currentSpent = cat.spent || 0;
-    const newSpent = currentSpent + amount;
-    const currentPct = (currentSpent / cat.budget) * 100;
-    const newPct = (newSpent / cat.budget) * 100;
-
-    // Require proof if at 90% or about to exceed
+    const currentPct = cat.budget > 0 ? ((cat.spent||0)/cat.budget)*100 : 0;
+    const newPct = cat.budget > 0 ? (((cat.spent||0)+amount)/cat.budget)*100 : 0;
     if (currentPct >= 90 || newPct >= 90) {
-      pendingExpense = { catId: catId, amount: amount, reason: reason };
-      document.getElementById('proofSubText').textContent = 'You are at ' + currentPct.toFixed(0) + '% of your ' + cat.name + ' budget (₦' + cat.budget.toLocaleString() + '). Upload a photo receipt or proof that this expense of ₦' + amount.toLocaleString() + ' is absolutely necessary.';
+      pendingExpense = { catId, amount, reason };
+      document.getElementById('proofSubText').textContent = 'You are at ' + currentPct.toFixed(0) + '% of your ' + cat.name + ' budget. Upload proof that ₦' + amount.toLocaleString() + ' is necessary.';
       document.getElementById('proofModal').classList.add('active');
       return;
     }
-
-    // Normal log
-    finalizeExpense(catId, amount, reason, null);
+    finalizeExpense(catId, amount, reason);
   }
 
-  function handleProofUpload(input) {
+  window.deleteExpense = async function(idx) {
+    const exp = expenses[idx];
+    if (!exp) return;
+    if (!confirm('Delete this ₦' + exp.amount.toLocaleString() + ' expense?')) return;
+    const cat = categories.find(function(c){ return c.id==exp.catId; });
+    if (cat) cat.spent = Math.max(0, (cat.spent||0) - exp.amount);
+    expenses.splice(idx, 1);
+    await saveData();
+    renderAll();
+    showToast('🗑️ Deleted', 'Expense removed and budget updated.', false);
+  }
+
+  window.editCategoryBudget = async function(catId, current) {
+    const val = prompt('New monthly budget for this category (₦):', current);
+    if (val === null) return;
+    const parsed = parseFloat(val);
+    if (!parsed || parsed <= 0) { alert('Please enter a valid amount.'); return; }
+    const cat = categories.find(function(c){ return c.id===catId; });
+    if (cat) {
+      cat.budget = parsed;
+      await saveData();
+      renderAll();
+      showToast('✅ Updated', cat.name + ' budget set to ₦' + parsed.toLocaleString(), false);
+    }
+  }
+
+  async function finalizeExpense(catId, amount, reason) {
+    const cat = categories.find(function(c){ return c.id===catId; });
+    if (!cat) return;
+    const newSpent = (cat.spent||0) + amount;
+    const pct = (newSpent/cat.budget)*100;
+    if (pct >= 100) { showToast('🚨 Over Budget!', cat.name + ' budget exceeded! Other categories are now locked.'); }
+    else if (pct >= 90) { showToast('⚠️ 90% Warning', 'Only ₦' + (cat.budget-newSpent).toLocaleString() + ' left in ' + cat.name + '.'); }
+    else if (pct >= 70) { showToast('💛 70% Alert', 'You have used 70% of your ' + cat.name + ' budget.'); }
+    cat.spent = newSpent;
+    expenses.push({ catId, amount, reason, date: new Date().toLocaleDateString() });
+    document.getElementById('expAmount').value = '';
+    document.getElementById('expReason').value = '';
+    await saveData();
+    renderAll();
+  }
+
+  // ── PROOF ──
+  window.handleProofUpload = function(input) {
     const file = input.files[0];
     if (file) {
       const reader = new FileReader();
@@ -1048,19 +666,17 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     }
   }
 
-  function submitProof() {
+  window.submitProof = function() {
     const justification = document.getElementById('proofJustification').value.trim();
     const preview = document.getElementById('proofPreview');
     if (!justification) { alert('Please provide a written justification.'); return; }
-    if (preview.style.display === 'none' || !preview.src || preview.src === window.location.href) {
-      alert('Please upload a photo or receipt as proof.'); return;
-    }
+    if (!preview.src || preview.style.display === 'none') { alert('Please upload a photo or receipt.'); return; }
     if (!pendingExpense) return;
-    finalizeExpense(pendingExpense.catId, pendingExpense.amount, pendingExpense.reason + ' [PROOF: ' + justification + ']', preview.src);
+    finalizeExpense(pendingExpense.catId, pendingExpense.amount, pendingExpense.reason + ' [PROOF: ' + justification + ']');
     cancelProof();
   }
 
-  function cancelProof() {
+  window.cancelProof = function() {
     document.getElementById('proofModal').classList.remove('active');
     document.getElementById('proofPreview').style.display = 'none';
     document.getElementById('proofPreview').src = '';
@@ -1069,34 +685,144 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     pendingExpense = null;
   }
 
-  function finalizeExpense(catId, amount, reason, proof) {
-    const cat = categories.find(function(c){ return c.id === catId; });
-    if (!cat) return;
-    const newSpent = (cat.spent || 0) + amount;
-    const pct = (newSpent / cat.budget) * 100;
-    if (pct >= 100) {
-      showToast('🚨 Over Budget — ' + cat.name, 'You have exceeded your ₦' + cat.budget.toLocaleString() + ' ' + cat.name + ' budget! Other categories are now LOCKED until you acknowledge this.');
-      checkLockdown();
-    } else if (pct >= 90) {
-      showToast('⚠️ 90% — ' + cat.name, 'Only ₦' + (cat.budget - newSpent).toLocaleString() + ' left in ' + cat.name + '. Next expense will require proof again!');
-    } else if (pct >= 70) {
-      showToast('💛 70% Alert — ' + cat.name, 'You have used 70% of your ' + cat.name + ' budget. Stay disciplined!');
+  // ── LOCKDOWN ──
+  function checkLockdown() {
+    const exceeded = categories.filter(function(c){ return (c.spent||0)>c.budget; });
+    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + (currentUser?currentUser.uid:'')) || '[]');
+    const unacked = exceeded.filter(function(c){ return acked.indexOf(c.id)===-1; });
+    const banner = document.getElementById('lockdownBanner');
+    if (unacked.length > 0) {
+      banner.classList.add('active');
+      document.getElementById('lockdownMsg').textContent = 'You exceeded: ' + unacked.map(function(c){return c.name;}).join(', ') + '. Acknowledge to unlock other categories.';
+      return true;
     }
-    cat.spent = newSpent;
-    expenses.push({ catId: catId, amount: amount, reason: reason, proof: proof ? true : false, date: new Date().toLocaleDateString() });
-    document.getElementById('expAmount').value = '';
-    document.getElementById('expReason').value = '';
-    saveData();
-    renderAll();
-    checkLockdown();
+    banner.classList.remove('active');
+    return false;
   }
 
-  function quickLog(catId) {
+  window.acknowledgeLockdown = function() {
+    const exceeded = categories.filter(function(c){ return (c.spent||0)>c.budget; });
+    localStorage.setItem('noexcuse_acked_' + currentUser.uid, JSON.stringify(exceeded.map(function(c){return c.id;})));
+    document.getElementById('lockdownBanner').classList.remove('active');
+    renderAll();
+    showToast('✅ Acknowledged', 'Lockdown lifted. Be more careful with remaining categories.', false);
+  }
+
+  // ── ARCHIVE ──
+  window.showArchiveModal = async function() {
+    document.getElementById('archiveOverlay').classList.add('active');
+    const list = document.getElementById('archiveList');
+    list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem">Loading...</p>';
+    try {
+      const snap = await getDoc(userDocRef);
+      const archives = snap.exists() ? (snap.data().archives || []) : [];
+      if (archives.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem">No archived months yet. Archives appear after your first monthly reset.</p>';
+        return;
+      }
+      const monthNames = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
+      list.innerHTML = archives.map(function(a) {
+        const totalBudget = (a.categories||[]).reduce(function(s,c){return s+(c.budget||0);},0);
+        const totalSpent = (a.categories||[]).reduce(function(s,c){return s+(c.spent||0);},0);
+        const pct = totalBudget > 0 ? ((totalSpent/totalBudget)*100).toFixed(0) : 0;
+        const grade = pct<=50?'A':pct<=70?'B':pct<=85?'C':pct<=100?'D':'F';
+        const color = pct<=50?'#2ecc71':pct<=70?'#7ed56f':pct<=85?'#e8b84b':pct<=100?'#e8844b':'#e84b4b';
+        const parts = (a.month||'').split('-');
+        const label = (monthNames[parseInt(parts[1])]||'') + ' ' + (parts[0]||'');
+        return '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.2rem;margin-bottom:0.8rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem"><div style="font-family:Syne,sans-serif;font-weight:700">' + label + '</div><div style="font-family:Syne,sans-serif;font-weight:800;font-size:1.5rem;color:' + color + '">' + grade + '</div></div><div style="font-size:0.85rem;color:var(--text-muted)">Spent ₦' + totalSpent.toLocaleString() + ' of ₦' + totalBudget.toLocaleString() + ' (' + pct + '%)</div></div>';
+      }).join('');
+    } catch(e) {
+      list.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem">Could not load archives.</p>';
+    }
+  }
+
+  // ── DAILY MESSAGE ──
+  function showDailyMessage() {
+    const totalBudget = categories.reduce(function(s,c){return s+(c.budget||0);},0);
+    const totalSpent = categories.reduce(function(s,c){return s+(c.spent||0);},0);
+    const pct = totalBudget > 0 ? (totalSpent/totalBudget)*100 : 0;
+    const MSGS = {
+      good: [
+        {emoji:'🏆',msg:'You are an absolute legend with money!',sub:'Your future self is proud of you right now.'},
+        {emoji:'🌟',msg:'Wow. Look at you being financially responsible!',sub:'Keep this energy going all month long!'},
+        {emoji:'🎯',msg:'On target, on budget, on point.',sub:'This is what financial discipline looks like.'},
+        {emoji:'💚',msg:'Green across the board. You are winning!',sub:'NoExcuse is proud of you today.'},
+        {emoji:'🚀',msg:'Your savings account is doing a happy dance!',sub:'Seriously though — you are crushing it.'},
+        {emoji:'👑',msg:'Financially disciplined royalty. That is you.',sub:'Bow to no impulse purchase today!'},
+        {emoji:'💪',msg:'Strong budget energy detected!',sub:'You are building wealth one naira at a time.'},
+      ],
+      warning: [
+        {emoji:'⚠️',msg:'Your budget is sweating a little.',sub:'Some categories need your attention today.'},
+        {emoji:'👀',msg:'Your wallet is giving you the side eye.',sub:'Time to slow down on spending.'},
+        {emoji:'🔥',msg:'Your budget is getting a little warm.',sub:'Cool it down before things get spicy.'},
+        {emoji:'🚦',msg:'Yellow light. Slow down, do not stop.',sub:'You can still turn this month around!'},
+        {emoji:'🧘',msg:'Take a breath before any purchase today.',sub:'Pause, think, then decide. You got this.'},
+      ],
+      danger: [
+        {emoji:'🚨',msg:'BUDGET ALERT! We need to talk.',sub:'You are over your limits. No more excuses.'},
+        {emoji:'😤',msg:'What happened? We set those limits together.',sub:'Time to get serious and stop the bleeding.'},
+        {emoji:'😭',msg:'Your savings goal is crying right now.',sub:'Do not let impulse win today.'},
+        {emoji:'⛔',msg:'You said you wanted to save money. Remember?',sub:'Today is the day you prove you meant it.'},
+        {emoji:'😡',msg:'NoExcuse is disappointed. But not giving up on you.',sub:'Come back from this. You absolutely can.'},
+      ],
+      funny: [
+        {emoji:'🍔',msg:'Did you NEED that last takeout? Did you though?',sub:'Just asking questions. NoExcuse asks the hard ones.'},
+        {emoji:'🐢',msg:'Slow and steady wins the savings race.',sub:'Boring? Maybe. Effective? Absolutely.'},
+        {emoji:'🎪',msg:'Welcome back to the greatest budget show on earth!',sub:'Today: you vs impulse spending.'},
+        {emoji:'🦁',msg:'Be a lion about your budget today.',sub:'Fierce, focused, and financially disciplined.'},
+        {emoji:'🧠',msg:'Big brain energy only today please.',sub:'Think before you spend. Your future self thanks you.'},
+        {emoji:'🎵',msg:'Money money money... when you SAVE it!',sub:'ABBA understood budgeting. Now so do you.'},
+      ]
+    };
+    let type;
+    const rand = Math.random();
+    if (totalSpent === 0) { type = rand > 0.5 ? 'funny' : 'good'; }
+    else if (pct >= 90) { type = rand > 0.3 ? 'danger' : 'funny'; }
+    else if (pct >= 60) { type = rand > 0.4 ? 'warning' : 'funny'; }
+    else { type = rand > 0.5 ? 'good' : 'funny'; }
+    const msgs = MSGS[type];
+    const msg = msgs[Math.floor(Math.random() * msgs.length)];
+    const colors = { good:'var(--green)', warning:'var(--gold)', danger:'var(--red)', funny:'var(--white)' };
+    document.getElementById('dailyMsgEmoji').textContent = msg.emoji;
+    document.getElementById('dailyMsgText').textContent = msg.msg;
+    document.getElementById('dailyMsgText').style.color = colors[type];
+    document.getElementById('dailyMsgSub').textContent = msg.sub;
+    document.getElementById('dailyMsgBanner').style.display = 'flex';
+  }
+
+  // ── ADD CATEGORY ──
+  window.renderEmojiGrid = function() {
+    document.getElementById('emojiGrid').innerHTML = EMOJIS.map(function(e){
+      return '<button class="emoji-btn ' + (e===selectedEmoji?'selected':'') + '" onclick="selectEmoji(\'' + e + '\')">' + e + '</button>';
+    }).join('');
+  }
+  function renderEmojiGrid() { window.renderEmojiGrid(); }
+
+  window.selectEmoji = function(e) { selectedEmoji = e; renderEmojiGrid(); }
+  window.openAddCategory = function() { document.getElementById('modalOverlay').classList.add('active'); }
+  window.closeModal = function() {
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.getElementById('catName').value = '';
+    document.getElementById('catBudget').value = '';
+  }
+
+  window.addCategory = async function() {
+    const name = document.getElementById('catName').value.trim();
+    const budget = parseFloat(document.getElementById('catBudget').value);
+    if (!name || !budget || budget <= 0) { alert('Please fill in name and budget.'); return; }
+    categories.push({ id: Date.now(), name, icon: selectedEmoji, budget, spent: 0 });
+    await saveData();
+    window.closeModal();
+    renderAll();
+  }
+
+  window.quickLog = function(catId) {
     document.getElementById('expCategory').value = catId;
     document.getElementById('expAmount').focus();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // ── TOAST ──
   function showToast(title, msg, isError) {
     const toast = document.getElementById('warningToast');
     document.getElementById('toastTitle').textContent = title;
@@ -1105,28 +831,65 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     toast.classList.add('show');
     setTimeout(closeToast, 6000);
   }
+  window.closeToast = function() { document.getElementById('warningToast').classList.remove('show'); }
 
-  function closeToast() { document.getElementById('warningToast').classList.remove('show'); }
-
-  function renderEmojiGrid() {
-    document.getElementById('emojiGrid').innerHTML = EMOJIS.map(function(e){ return '<button class="emoji-btn ' + (e === selectedEmoji ? 'selected' : '') + '" onclick="selectEmoji(\'' + e + '\')">' + e + '</button>'; }).join('');
+  // ── LOGOUT ──
+  window.logout = async function() {
+    await signOut(auth);
+    window.location.replace('login.html');
   }
 
-  function selectEmoji(emoji) { selectedEmoji = emoji; renderEmojiGrid(); }
-  function openAddCategory() { document.getElementById('modalOverlay').classList.add('active'); }
-  function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); document.getElementById('catName').value = ''; document.getElementById('catBudget').value = ''; }
-
-  function addCategory() {
-    const name = document.getElementById('catName').value.trim();
-    const budget = parseFloat(document.getElementById('catBudget').value);
-    if (!name || !budget || budget <= 0) { alert('Please fill in category name and budget.'); return; }
-    categories.push({ id: Date.now(), name: name, icon: selectedEmoji, budget: budget, spent: 0 });
-    saveData(); closeModal(); renderAll();
+  // ── TUTORIAL ──
+  window.beginTour = function() { document.getElementById('welcomeModal').style.display = 'none'; tutorialStep = 0; startTutorial(); }
+  window.startTutorial = function() {
+    tutorialStep = 0;
+    document.getElementById('tutorialOverlay').classList.add('active');
+    document.getElementById('tutorialSpotlight').style.display = 'block';
+    document.getElementById('tutorialTooltip').style.display = 'block';
+    document.getElementById('tutorialCloseBtn').classList.add('active');
+    showStep(0);
   }
-
-  function logout() { localStorage.removeItem('noexcuse_current_user'); window.location.replace('login.html'); }
-
-  init();
+  function showStep(step) {
+    if (step >= TUTORIAL_STEPS.length) { endTutorial(); return; }
+    const s = TUTORIAL_STEPS[step];
+    const el = document.getElementById(s.target);
+    document.getElementById('tooltipStep').textContent = 'Step ' + (step+1) + ' of ' + TUTORIAL_STEPS.length;
+    document.getElementById('tooltipTitle').textContent = s.title;
+    document.getElementById('tooltipDesc').textContent = s.desc;
+    document.getElementById('tooltipNextBtn').textContent = step === TUTORIAL_STEPS.length-1 ? 'Finish 🎉' : 'Next →';
+    const dots = document.getElementById('tooltipDots');
+    dots.innerHTML = TUTORIAL_STEPS.map(function(_,i){ return '<div class="tooltip-dot ' + (i===step?'active':'') + '"></div>'; }).join('');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(function() {
+        const rect = el.getBoundingClientRect();
+        const pad = 8;
+        const spotlight = document.getElementById('tutorialSpotlight');
+        spotlight.style.top = (rect.top - pad + window.scrollY) + 'px';
+        spotlight.style.left = (rect.left - pad) + 'px';
+        spotlight.style.width = (rect.width + pad*2) + 'px';
+        spotlight.style.height = (rect.height + pad*2) + 'px';
+        const tooltip = document.getElementById('tutorialTooltip');
+        let top, left;
+        const tw = 320;
+        if (s.position === 'bottom') { top = rect.bottom + window.scrollY + 20; left = rect.left + (rect.width/2) - (tw/2); }
+        else { top = rect.top + window.scrollY; left = rect.left - tw - 20; if (left < 10) left = rect.right + 20; }
+        left = Math.max(10, Math.min(left, window.innerWidth - tw - 10));
+        tooltip.style.top = top + 'px';
+        tooltip.style.left = left + 'px';
+      }, 400);
+    }
+  }
+  window.nextStep = function() { tutorialStep++; showStep(tutorialStep); }
+  function endTutorial() {
+    document.getElementById('tutorialOverlay').classList.remove('active');
+    document.getElementById('tutorialSpotlight').style.display = 'none';
+    document.getElementById('tutorialTooltip').style.display = 'none';
+    document.getElementById('tutorialCloseBtn').classList.remove('active');
+    localStorage.setItem('noexcuse_tutorial_' + (currentUser?currentUser.uid:''), 'done');
+    showToast('🎉 All set!', 'Click the Help button anytime to replay this tour.', false);
+  }
+  window.skipTutorial = function() { document.getElementById('welcomeModal').style.display = 'none'; endTutorial(); }
 </script>
 
 </body>
