@@ -161,6 +161,37 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .welcome-skip { background: none; border: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif; }
 .welcome-skip:hover { color: var(--white); }
 
+
+/* PROOF MODAL */
+.proof-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+.proof-modal.active { display: flex; }
+.proof-card { background: #111; border: 1px solid rgba(232,184,75,0.3); border-radius: 20px; padding: 2rem; max-width: 460px; width: 100%; }
+.proof-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 0.4rem; color: var(--gold); }
+.proof-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+.proof-upload { border: 2px dashed rgba(232,184,75,0.3); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 1rem; position: relative; }
+.proof-upload:hover { border-color: var(--gold); background: rgba(232,184,75,0.05); }
+.proof-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.proof-upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.proof-upload-text { font-size: 0.88rem; color: var(--text-muted); }
+.proof-upload-text span { color: var(--gold); font-weight: 600; }
+.proof-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 1rem; display: none; }
+.proof-actions { display: flex; gap: 0.8rem; }
+.proof-cancel { flex: 1; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-family: "DM Sans", sans-serif; transition: all 0.2s; }
+.proof-cancel:hover { border-color: var(--red); color: var(--red); }
+.proof-submit { flex: 2; background: var(--gold); color: var(--black); border: none; padding: 0.75rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: "DM Sans", sans-serif; transition: all 0.2s; }
+.proof-submit:hover { background: var(--gold-dark); }
+
+/* LOCKDOWN BANNER */
+.lockdown-banner { background: linear-gradient(135deg, rgba(232,75,75,0.15), rgba(232,75,75,0.05)); border: 1px solid rgba(232,75,75,0.4); border-radius: 14px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; display: none; }
+.lockdown-banner.active { display: flex; align-items: center; gap: 1rem; }
+.lockdown-icon { font-size: 1.8rem; flex-shrink: 0; }
+.lockdown-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 1rem; color: var(--red); margin-bottom: 0.3rem; }
+.lockdown-msg { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
+.lockdown-ack { background: var(--red); color: var(--white); border: none; padding: 0.5rem 1.2rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-family: "DM Sans", sans-serif; font-size: 0.85rem; margin-top: 0.6rem; transition: all 0.2s; white-space: nowrap; }
+.lockdown-ack:hover { background: #c0392b; }
+.category-card.locked { opacity: 0.5; pointer-events: none; border-color: rgba(232,75,75,0.2); }
+.category-card.exceeded { border-color: rgba(232,75,75,0.5); background: rgba(232,75,75,0.05); }
+
 @media(max-width:768px) {
   .main-grid { grid-template-columns: 1fr; }
   .stats-row { grid-template-columns: 1fr 1fr; }
@@ -250,6 +281,40 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 </div>
 ```
 
+  </div>
+</div>
+
+<!-- PROOF MODAL -->
+
+<div class="proof-modal" id="proofModal">
+  <div class="proof-card">
+    <div class="proof-title">⚠️ Proof Required Before Spending</div>
+    <div class="proof-sub" id="proofSubText">You are approaching your budget limit. Upload a photo or receipt proving this expense is necessary before proceeding.</div>
+    <div class="proof-upload" id="proofUploadArea">
+      <input type="file" id="proofFileInput" accept="image/*" onchange="handleProofUpload(this)" />
+      <div class="proof-upload-icon">📸</div>
+      <div class="proof-upload-text">Tap to upload a photo or receipt<br/><span>Click here to choose a file</span></div>
+    </div>
+    <img class="proof-preview" id="proofPreview" src="" alt="Proof" />
+    <div class="form-group">
+      <label>Written Justification (Required)</label>
+      <textarea id="proofJustification" placeholder="Explain in detail why this expense is absolutely necessary..." style="height:80px"></textarea>
+    </div>
+    <div class="proof-actions">
+      <button class="proof-cancel" onclick="cancelProof()">Cancel</button>
+      <button class="proof-submit" onclick="submitProof()">Submit Proof & Log Expense</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOCKDOWN BANNER -->
+
+<div class="lockdown-banner" id="lockdownBanner">
+  <div class="lockdown-icon">🔒</div>
+  <div style="flex:1">
+    <div class="lockdown-title">Budget Exceeded — Spending Locked!</div>
+    <div class="lockdown-msg" id="lockdownMsg">You have exceeded your budget in one or more categories. You cannot log expenses in other categories until you acknowledge this overspend.</div>
+    <button class="lockdown-ack" onclick="acknowledgeLockdown()">I Acknowledge My Overspend</button>
   </div>
 </div>
 
@@ -512,7 +577,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     localStorage.setItem('noexcuse_exp_' + key, JSON.stringify(expenses));
   }
 
-  function renderAll() { renderCategories(); renderStats(); renderExpenseDropdown(); renderRecentExpenses(); renderReportCard(); }
+  function renderAll() { renderCategories(); renderStats(); renderExpenseDropdown(); renderRecentExpenses(); renderReportCard(); checkLockdown(); }
 
   function renderCategories() {
     const el = document.getElementById('categoriesList');
@@ -521,7 +586,11 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
       const pct = cat.budget > 0 ? Math.min(((cat.spent || 0) / cat.budget) * 100, 100) : 0;
       const barClass = pct >= 100 ? 'bar-danger' : pct >= 90 ? 'bar-warning' : 'bar-safe';
       const remaining = cat.budget - (cat.spent || 0);
-      return '<div class="category-card"><div class="cat-header"><div class="cat-info"><div class="cat-icon">' + cat.icon + '</div><div class="cat-name">' + cat.name + '</div></div><div class="cat-amounts"><div class="cat-spent">₦' + (cat.spent || 0).toLocaleString() + '</div><div class="cat-budget">of ₦' + cat.budget.toLocaleString() + '</div></div></div><div class="bar-track"><div class="bar-fill ' + barClass + '" style="width:' + pct + '%"></div></div><div class="cat-footer"><div class="cat-percent">' + pct.toFixed(0) + '% used · ₦' + remaining.toLocaleString() + ' left</div><button class="log-btn" onclick="quickLog(' + cat.id + ')">+ Log</button></div></div>';
+      const isExceeded = (cat.spent || 0) > cat.budget;
+      const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + currentUser.email) || '[]');
+      const isLocked = !isExceeded && categories.some(function(c){ return c.id !== cat.id && (c.spent || 0) > c.budget && acked.indexOf(c.id) === -1; });
+      const cardClass = isExceeded ? 'category-card exceeded' : isLocked ? 'category-card locked' : 'category-card';
+      return '<div class="' + cardClass + '"><div class="cat-header">'<div class="cat-info"><div class="cat-icon">' + cat.icon + '</div><div class="cat-name">' + cat.name + '</div></div><div class="cat-amounts"><div class="cat-spent">₦' + (cat.spent || 0).toLocaleString() + '</div><div class="cat-budget">of ₦' + cat.budget.toLocaleString() + '</div></div></div><div class="bar-track"><div class="bar-fill ' + barClass + '" style="width:' + pct + '%"></div></div><div class="cat-footer"><div class="cat-percent">' + pct.toFixed(0) + '% used · ₦' + remaining.toLocaleString() + ' left</div><button class="log-btn" onclick="quickLog(' + cat.id + ')">+ Log</button></div></div>';
     }).join('');
   }
 
@@ -565,25 +634,124 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     document.getElementById('reportMsg').textContent = msg;
   }
 
+  // Pending expense waiting for proof
+  let pendingExpense = null;
+
+  function checkLockdown() {
+    const exceeded = categories.filter(function(c){ return (c.spent || 0) > c.budget; });
+    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + currentUser.email) || '[]');
+    const unacked = exceeded.filter(function(c){ return acked.indexOf(c.id) === -1; });
+    const banner = document.getElementById('lockdownBanner');
+    if (unacked.length > 0) {
+      banner.classList.add('active');
+      const names = unacked.map(function(c){ return c.name; }).join(', ');
+      document.getElementById('lockdownMsg').textContent = 'You exceeded your budget in: ' + names + '. You cannot log expenses in other categories until you acknowledge this overspend.';
+      return true;
+    }
+    banner.classList.remove('active');
+    return false;
+  }
+
+  function acknowledgeLockdown() {
+    const exceeded = categories.filter(function(c){ return (c.spent || 0) > c.budget; });
+    const acked = exceeded.map(function(c){ return c.id; });
+    localStorage.setItem('noexcuse_acked_' + currentUser.email, JSON.stringify(acked));
+    document.getElementById('lockdownBanner').classList.remove('active');
+    renderAll();
+    showToast('✅ Acknowledged', 'Lockdown lifted. Please be more careful with your remaining categories!', false);
+  }
+
   function logExpense() {
     const catId = parseInt(document.getElementById('expCategory').value);
     const amount = parseFloat(document.getElementById('expAmount').value);
     const reason = document.getElementById('expReason').value.trim();
     if (!catId || !amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
     if (!reason) { showToast('No Excuse Accepted! 🚫', 'You MUST provide a reason before logging any expense. That\'s the whole point of NoExcuse!', true); return; }
+
+    const cat = categories.find(function(c){ return c.id === catId; });
+    if (!cat) return;
+
+    // Check if OTHER categories are exceeded (lockdown)
+    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + currentUser.email) || '[]');
+    const otherExceeded = categories.find(function(c){ return c.id !== catId && (c.spent || 0) > c.budget && acked.indexOf(c.id) === -1; });
+    if (otherExceeded) {
+      showToast('🔒 Spending Locked!', 'You exceeded your ' + otherExceeded.name + ' budget. Acknowledge your overspend first before logging new expenses.', true);
+      document.getElementById('lockdownBanner').classList.add('active');
+      return;
+    }
+
+    const currentSpent = cat.spent || 0;
+    const newSpent = currentSpent + amount;
+    const currentPct = (currentSpent / cat.budget) * 100;
+    const newPct = (newSpent / cat.budget) * 100;
+
+    // Require proof if at 90% or about to exceed
+    if (currentPct >= 90 || newPct >= 90) {
+      pendingExpense = { catId: catId, amount: amount, reason: reason };
+      document.getElementById('proofSubText').textContent = 'You are at ' + currentPct.toFixed(0) + '% of your ' + cat.name + ' budget (₦' + cat.budget.toLocaleString() + '). Upload a photo receipt or proof that this expense of ₦' + amount.toLocaleString() + ' is absolutely necessary.';
+      document.getElementById('proofModal').classList.add('active');
+      return;
+    }
+
+    // Normal log
+    finalizeExpense(catId, amount, reason, null);
+  }
+
+  function handleProofUpload(input) {
+    const file = input.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('proofPreview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        document.getElementById('proofUploadArea').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function submitProof() {
+    const justification = document.getElementById('proofJustification').value.trim();
+    const preview = document.getElementById('proofPreview');
+    if (!justification) { alert('Please provide a written justification.'); return; }
+    if (preview.style.display === 'none' || !preview.src || preview.src === window.location.href) {
+      alert('Please upload a photo or receipt as proof.'); return;
+    }
+    if (!pendingExpense) return;
+    finalizeExpense(pendingExpense.catId, pendingExpense.amount, pendingExpense.reason + ' [PROOF: ' + justification + ']', preview.src);
+    cancelProof();
+  }
+
+  function cancelProof() {
+    document.getElementById('proofModal').classList.remove('active');
+    document.getElementById('proofPreview').style.display = 'none';
+    document.getElementById('proofPreview').src = '';
+    document.getElementById('proofUploadArea').style.display = 'block';
+    document.getElementById('proofJustification').value = '';
+    pendingExpense = null;
+  }
+
+  function finalizeExpense(catId, amount, reason, proof) {
     const cat = categories.find(function(c){ return c.id === catId; });
     if (!cat) return;
     const newSpent = (cat.spent || 0) + amount;
     const pct = (newSpent / cat.budget) * 100;
-    if (pct >= 100) { showToast('🚨 Over Budget — ' + cat.name, 'You\'ve exceeded your ₦' + cat.budget.toLocaleString() + ' ' + cat.name + ' budget! You said you wanted to save money — this is exactly what NoExcuse is here to prevent.'); }
-    else if (pct >= 90) { showToast('⚠️ 90% Warning — ' + cat.name, 'You\'ve used 90% of your ' + cat.name + ' budget. Only ₦' + (cat.budget - newSpent).toLocaleString() + ' left. Think before your next spend!'); }
-    else if (pct >= 70) { showToast('💛 70% Alert — ' + cat.name, 'You\'ve used 70% of your ' + cat.name + ' budget. Stay disciplined for the rest of the month!'); }
+    if (pct >= 100) {
+      showToast('🚨 Over Budget — ' + cat.name, 'You have exceeded your ₦' + cat.budget.toLocaleString() + ' ' + cat.name + ' budget! Other categories are now LOCKED until you acknowledge this.');
+      checkLockdown();
+    } else if (pct >= 90) {
+      showToast('⚠️ 90% — ' + cat.name, 'Only ₦' + (cat.budget - newSpent).toLocaleString() + ' left in ' + cat.name + '. Next expense will require proof again!');
+    } else if (pct >= 70) {
+      showToast('💛 70% Alert — ' + cat.name, 'You have used 70% of your ' + cat.name + ' budget. Stay disciplined!');
+    }
     cat.spent = newSpent;
-    expenses.push({ catId: catId, amount: amount, reason: reason, date: new Date().toLocaleDateString() });
+    expenses.push({ catId: catId, amount: amount, reason: reason, proof: proof ? true : false, date: new Date().toLocaleDateString() });
     document.getElementById('expAmount').value = '';
     document.getElementById('expReason').value = '';
     saveData();
     renderAll();
+    checkLockdown();
   }
 
   function quickLog(catId) {
