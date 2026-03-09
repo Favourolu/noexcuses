@@ -446,6 +446,13 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     }
   ];
 
+  const DEFAULT_CATEGORIES = [
+    { id: 1, name: 'Bills & Utilities', icon: '🏠', budget: 50000, spent: 0 },
+    { id: 2, name: 'Food & Groceries', icon: '🍽️', budget: 40000, spent: 0 },
+    { id: 3, name: 'Clothing', icon: '👗', budget: 20000, spent: 0 },
+    { id: 4, name: 'Miscellaneous', icon: '💰', budget: 15000, spent: 0 },
+  ];
+
   function init() {
     currentUser = JSON.parse(localStorage.getItem('noexcuse_current_user') || 'null');
     if (!currentUser || !currentUser.email) { window.location.href = 'login.html'; return; }
@@ -557,16 +564,37 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   }
 
   function loadData() {
-    const key = currentUser.email;
-    categories = JSON.parse(localStorage.getItem('noexcuse_cats_' + key) || '[]');
-    expenses = JSON.parse(localStorage.getItem('noexcuse_exp_' + key) || '[]');
-    if (categories.length === 0) {
-      categories = [
-        { id: 1, name: 'Food & Groceries', icon: '🍽️', budget: 40000, spent: 0 },
-        { id: 2, name: 'Transport', icon: '🚗', budget: 20000, spent: 0 },
-        { id: 3, name: 'Entertainment', icon: '🎉', budget: 15000, spent: 0 },
-        { id: 4, name: 'Bills & Rent', icon: '🏠', budget: 80000, spent: 0 },
-      ];
+    try {
+      const key = currentUser.email;
+      const storedCats = localStorage.getItem('noexcuse_cats_' + key);
+      const storedExp = localStorage.getItem('noexcuse_exp_' + key);
+      expenses = storedExp ? JSON.parse(storedExp) : [];
+
+      // Always start with defaults and merge any saved data on top
+      let saved = storedCats ? JSON.parse(storedCats) : [];
+      if (!Array.isArray(saved) || saved.length === 0) {
+        // No saved data — use defaults
+        categories = DEFAULT_CATEGORIES.map(function(c){ return Object.assign({}, c); });
+      } else {
+        // Merge saved spent values into defaults, keep any custom categories too
+        const defaultIds = DEFAULT_CATEGORIES.map(function(c){ return c.id; });
+        // Rebuild defaults with saved spent values
+        categories = DEFAULT_CATEGORIES.map(function(def) {
+          const savedCat = saved.find(function(s){ return s.id === def.id; });
+          return savedCat ? Object.assign({}, def, { spent: Number(savedCat.spent) || 0, budget: Number(savedCat.budget) || def.budget }) : Object.assign({}, def);
+        });
+        // Add any custom categories the user added
+        saved.forEach(function(s) {
+          if (defaultIds.indexOf(s.id) === -1) {
+            categories.push({ id: s.id, name: s.name, icon: s.icon, budget: Number(s.budget) || 0, spent: Number(s.spent) || 0 });
+          }
+        });
+      }
+      saveData();
+    } catch(e) {
+      console.error('loadData error:', e);
+      categories = DEFAULT_CATEGORIES.map(function(c){ return Object.assign({}, c); });
+      expenses = [];
       saveData();
     }
   }
@@ -606,7 +634,14 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   }
 
   function renderExpenseDropdown() {
-    document.getElementById('expCategory').innerHTML = categories.map(function(c){ return '<option value="' + c.id + '">' + c.icon + ' ' + c.name + '</option>'; }).join('');
+    const sel = document.getElementById('expCategory');
+    if (!categories || categories.length === 0) {
+      sel.innerHTML = '<option value="">-- No categories yet --</option>';
+      return;
+    }
+    sel.innerHTML = categories.map(function(c){
+      return '<option value="' + c.id + '">' + c.icon + ' ' + c.name + '</option>';
+    }).join('');
   }
 
   function renderRecentExpenses() {
