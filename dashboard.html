@@ -16,22 +16,22 @@
 nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2.5rem; border-bottom: 1px solid rgba(232,184,75,0.1); background: rgba(10,10,10,0.95); position: sticky; top: 0; z-index: 100; }
 .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
 .logo span { color: var(--gold); }
-.nav-right { display: flex; align-items: center; gap: 1.5rem; }
+.nav-right { display: flex; align-items: center; gap: 1rem; }
 .user-name { font-size: 0.9rem; color: var(--text-muted); }
 .user-name span { color: var(--white); font-weight: 600; }
+.help-btn { background: rgba(232,184,75,0.1); border: 1px solid rgba(232,184,75,0.3); color: var(--gold); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+.help-btn:hover { background: rgba(232,184,75,0.2); }
 .logout-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; transition: all 0.2s; }
 .logout-btn:hover { border-color: var(--red); color: var(--red); }
 
 /* LAYOUT */
 .container { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
-
-/* GREETING */
 .greeting { margin-bottom: 2.5rem; }
 .greeting h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
 .greeting h1 span { color: var(--gold); }
 .greeting p { color: var(--text-muted); margin-top: 0.3rem; font-size: 0.95rem; }
 
-/* STATS ROW */
+/* STATS */
 .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
 .stat-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem; }
 .stat-card.highlight { border-color: rgba(232,184,75,0.2); background: linear-gradient(135deg, rgba(232,184,75,0.08), transparent); }
@@ -44,12 +44,11 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 
 /* MAIN GRID */
 .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; }
-
-/* BUDGET CATEGORIES */
 .section-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
 .btn-small { background: var(--gold); color: var(--black); border: none; padding: 0.45rem 1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
 .btn-small:hover { background: var(--gold-dark); }
 
+/* CATEGORIES */
 .category-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.3rem 1.5rem; margin-bottom: 0.8rem; transition: all 0.2s; }
 .category-card:hover { border-color: rgba(232,184,75,0.2); }
 .cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
@@ -69,13 +68,9 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .cat-percent { font-size: 0.78rem; color: var(--text-muted); }
 .log-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
 .log-btn:hover { border-color: var(--gold); color: var(--gold); }
-.empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
-.empty-state .big { font-size: 2.5rem; margin-bottom: 0.8rem; }
 
 /* RIGHT PANEL */
 .right-panel { display: flex; flex-direction: column; gap: 1.2rem; }
-
-/* ADD EXPENSE */
 .panel-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem; }
 .panel-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 1.2rem; }
 .form-group { margin-bottom: 1rem; }
@@ -88,7 +83,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .btn-full { width: 100%; background: var(--gold); color: var(--black); padding: 0.85rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
 .btn-full:hover { background: var(--gold-dark); }
 
-/* RECENT EXPENSES */
+/* RECENT */
 .expense-item { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
 .expense-item:last-child { border-bottom: none; }
 .exp-left { display: flex; align-items: center; gap: 0.7rem; }
@@ -97,12 +92,12 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .exp-reason { font-size: 0.75rem; color: var(--text-muted); }
 .exp-amount { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--red); }
 
-/* REPORT CARD */
+/* REPORT */
 .grade-display { text-align: center; padding: 1rem 0; }
 .grade { font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800; }
 .grade-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem; }
 
-/* WARNING TOAST */
+/* TOAST */
 .toast { position: fixed; bottom: 2rem; right: 2rem; background: #1a0a0a; border: 1px solid var(--red); border-radius: 14px; padding: 1.2rem 1.5rem; max-width: 360px; z-index: 999; animation: slideIn 0.4s ease; display: none; }
 .toast.show { display: block; }
 @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -122,11 +117,51 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .btn-cancel { flex: 1; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
 .btn-cancel:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
 
+/* ===================== TUTORIAL STYLES ===================== */
+/* Overlay */
+.tutorial-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 500; display: none; }
+.tutorial-overlay.active { display: block; }
+
+/* Spotlight - highlights element */
+.tutorial-spotlight { position: fixed; border: 3px solid var(--gold); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.75); z-index: 501; transition: all 0.4s ease; pointer-events: none; }
+
+/* Tooltip card */
+.tutorial-tooltip { position: fixed; background: #161616; border: 1px solid rgba(232,184,75,0.4); border-radius: 16px; padding: 1.5rem; max-width: 320px; z-index: 502; box-shadow: 0 20px 60px rgba(0,0,0,0.5); animation: tooltipIn 0.3s ease; }
+@keyframes tooltipIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.tooltip-step { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); font-weight: 700; margin-bottom: 0.6rem; }
+.tooltip-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.6rem; }
+.tooltip-desc { font-size: 0.88rem; color: #bbb; line-height: 1.6; margin-bottom: 1.2rem; }
+.tooltip-actions { display: flex; gap: 0.6rem; align-items: center; }
+.tooltip-next { background: var(--gold); color: var(--black); border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+.tooltip-next:hover { background: var(--gold-dark); }
+.tooltip-skip { background: none; border: none; color: var(--text-muted); font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.2s; }
+.tooltip-skip:hover { color: var(--white); }
+.tooltip-dots { display: flex; gap: 0.4rem; margin-left: auto; }
+.tooltip-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+.tooltip-dot.active { background: var(--gold); }
+
+/* Welcome modal - shown first */
+.welcome-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 600; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+.welcome-card { background: #111; border: 1px solid rgba(232,184,75,0.25); border-radius: 24px; padding: 2.5rem; max-width: 480px; width: 100%; text-align: center; animation: welcomeIn 0.5s ease; }
+@keyframes welcomeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+.welcome-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+.welcome-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.6rem; }
+.welcome-title span { color: var(--gold); }
+.welcome-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 2rem; }
+.welcome-features { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem; text-align: left; }
+.welcome-feature { display: flex; align-items: center; gap: 0.8rem; font-size: 0.9rem; }
+.feature-icon { width: 32px; height: 32px; background: rgba(232,184,75,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+.welcome-btn { width: 100%; background: var(--gold); color: var(--black); border: none; padding: 1rem; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-bottom: 0.8rem; }
+.welcome-btn:hover { background: var(--gold-dark); }
+.welcome-skip { background: none; border: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.welcome-skip:hover { color: var(--white); }
+
 @media(max-width:768px) {
   .main-grid { grid-template-columns: 1fr; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   nav { padding: 1rem 1.2rem; }
   .container { padding: 1.5rem 1rem; }
+  .tutorial-tooltip { max-width: 280px; }
 }
 ```
 
@@ -138,6 +173,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   <div class="logo">No<span>Excuse</span></div>
   <div class="nav-right">
     <div class="user-name">Hey, <span id="navUserName">there</span> 👋</div>
+    <button class="help-btn" onclick="startTutorial()" title="Help & Tutorial">?</button>
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </nav>
@@ -148,9 +184,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     <p id="greetingMsg">Track every naira. No excuses.</p>
   </div>
 
-  <!-- STATS -->
-
-  <div class="stats-row">
+  <div class="stats-row" id="statsRow">
     <div class="stat-card highlight">
       <div class="stat-label">Total Budget</div>
       <div class="stat-value gold" id="totalBudget">₦0</div>
@@ -169,21 +203,17 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   </div>
 
   <div class="main-grid">
-    <!-- LEFT: CATEGORIES -->
     <div>
-      <div class="section-title">
+      <div class="section-title" id="categoriesTitle">
         Budget Categories
-        <button class="btn-small" onclick="openAddCategory()">+ Add Category</button>
+        <button class="btn-small" id="addCatBtn" onclick="openAddCategory()">+ Add Category</button>
       </div>
       <div id="categoriesList"></div>
     </div>
 
 ```
-<!-- RIGHT PANEL -->
 <div class="right-panel">
-
-  <!-- LOG EXPENSE -->
-  <div class="panel-card">
+  <div class="panel-card" id="logExpensePanel">
     <div class="panel-title">📝 Log an Expense</div>
     <div class="form-group">
       <label>Category</label>
@@ -200,28 +230,25 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     <button class="btn-full" onclick="logExpense()">Log Expense</button>
   </div>
 
-  <!-- RECENT EXPENSES -->
   <div class="panel-card">
     <div class="panel-title">🧾 Recent Expenses</div>
     <div id="recentExpenses"><p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">No expenses logged yet</p></div>
   </div>
 
-  <!-- REPORT CARD -->
-  <div class="panel-card">
+  <div class="panel-card" id="reportCardPanel">
     <div class="panel-title">📊 Monthly Report Card</div>
     <div class="grade-display">
       <div class="grade" id="reportGrade" style="color:var(--green)">A</div>
       <div class="grade-sub" id="reportMsg">Excellent discipline! Keep it up.</div>
     </div>
   </div>
-
 </div>
 ```
 
   </div>
 </div>
 
-<!-- WARNING TOAST -->
+<!-- TOAST -->
 
 <div class="toast" id="warningToast">
   <div class="toast-title">
@@ -255,22 +282,200 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   </div>
 </div>
 
+<!-- WELCOME MODAL -->
+
+<div class="welcome-modal" id="welcomeModal" style="display:none">
+  <div class="welcome-card">
+    <div class="welcome-emoji">🎉</div>
+    <h2 class="welcome-title">Welcome to <span>NoExcuse</span>!</h2>
+    <p class="welcome-desc">You've just taken the first step to financial discipline. Here's what makes NoExcuse different from every other budget app:</p>
+    <div class="welcome-features">
+      <div class="welcome-feature">
+        <div class="feature-icon">🔐</div>
+        <span>You must <strong>justify every expense</strong> before logging it</span>
+      </div>
+      <div class="welcome-feature">
+        <div class="feature-icon">🚨</div>
+        <span>Get <strong>real time warnings</strong> at 70%, 90% and 100% of your budget</span>
+      </div>
+      <div class="welcome-feature">
+        <div class="feature-icon">😤</div>
+        <span><strong>Shame messages</strong> remind you of your goals when you overspend</span>
+      </div>
+      <div class="welcome-feature">
+        <div class="feature-icon">📊</div>
+        <span>Get a <strong>monthly report card</strong> grading your financial discipline</span>
+      </div>
+    </div>
+    <button class="welcome-btn" onclick="beginTour()">Take a Quick Tour 🚀</button>
+    <button class="welcome-skip" onclick="skipTutorial()">Skip — I'll figure it out</button>
+  </div>
+</div>
+
+<!-- TUTORIAL OVERLAY -->
+
+<div class="tutorial-overlay" id="tutorialOverlay"></div>
+<div class="tutorial-spotlight" id="tutorialSpotlight" style="display:none"></div>
+<div class="tutorial-tooltip" id="tutorialTooltip" style="display:none">
+  <div class="tooltip-step" id="tooltipStep">Step 1 of 6</div>
+  <div class="tooltip-title" id="tooltipTitle"></div>
+  <div class="tooltip-desc" id="tooltipDesc"></div>
+  <div class="tooltip-actions">
+    <button class="tooltip-next" id="tooltipNextBtn" onclick="nextStep()">Next →</button>
+    <button class="tooltip-skip" onclick="skipTutorial()">Skip tour</button>
+    <div class="tooltip-dots" id="tooltipDots"></div>
+  </div>
+</div>
+
 <script>
   const EMOJIS = ['🍽️','🚗','🎉','🏠','💊','👗','📚','💡','📱','✈️','🎮','☕','🛒','💰','🏋️','🎁'];
   let selectedEmoji = '🍽️';
   let categories = [];
   let expenses = [];
   let currentUser = null;
+  let tutorialStep = 0;
+
+  const TUTORIAL_STEPS = [
+    {
+      target: 'statsRow',
+      title: 'Your Budget Overview',
+      desc: 'This is your financial cockpit. See your total budget, how much you\'ve spent, and what\'s remaining — all at a glance.',
+      position: 'bottom'
+    },
+    {
+      target: 'categoriesTitle',
+      title: 'Budget Categories',
+      desc: 'Your spending is organized into categories like Food, Transport, and Entertainment. Each category has its own budget limit with a progress bar.',
+      position: 'bottom'
+    },
+    {
+      target: 'addCatBtn',
+      title: 'Add Your Own Categories',
+      desc: 'Click "+ Add Category" to create custom spending categories that match your lifestyle. Pick an icon, name it, and set a monthly limit.',
+      position: 'bottom'
+    },
+    {
+      target: 'logExpensePanel',
+      title: 'The Evidence Gate 🔐',
+      desc: 'This is NoExcuse\'s superpower. Before logging ANY expense, you MUST explain why you\'re spending. No reason = no entry. This stops impulse buying cold.',
+      position: 'left'
+    },
+    {
+      target: 'reportCardPanel',
+      title: 'Your Monthly Report Card',
+      desc: 'At the end of every month you\'re graded A to F on your financial discipline. The goal is simple — keep that grade as high as possible!',
+      position: 'left'
+    },
+    {
+      target: 'helpBtn',
+      title: 'Need Help Anytime?',
+      desc: 'Click the "?" button in the top right corner anytime to replay this tutorial. You\'re all set — now go take control of your money! 💪',
+      position: 'bottom'
+    }
+  ];
 
   function init() {
-    currentUser = JSON.parse(localStorage.getItem('noexcuse_current_user'));
-    if (!currentUser) { window.location.href = 'login.html'; return; }
+    currentUser = JSON.parse(localStorage.getItem('noexcuse_current_user') || 'null');
+    if (!currentUser || !currentUser.email) { window.location.href = 'login.html'; return; }
     document.getElementById('navUserName').textContent = currentUser.name.split(' ')[0];
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('monthName').textContent = months[new Date().getMonth()];
     loadData();
     renderEmojiGrid();
     renderAll();
+
+    // Show welcome modal only on first login
+    const hasSeenTutorial = localStorage.getItem('noexcuse_tutorial_' + currentUser.email);
+    if (!hasSeenTutorial) {
+      setTimeout(function() {
+        document.getElementById('welcomeModal').style.display = 'flex';
+      }, 600);
+    }
+  }
+
+  function beginTour() {
+    document.getElementById('welcomeModal').style.display = 'none';
+    tutorialStep = 0;
+    startTutorial();
+  }
+
+  function startTutorial() {
+    tutorialStep = 0;
+    document.getElementById('tutorialOverlay').classList.add('active');
+    document.getElementById('tutorialSpotlight').style.display = 'block';
+    document.getElementById('tutorialTooltip').style.display = 'block';
+    showStep(tutorialStep);
+  }
+
+  function showStep(step) {
+    if (step >= TUTORIAL_STEPS.length) { endTutorial(); return; }
+    const s = TUTORIAL_STEPS[step];
+    const el = document.getElementById(s.target);
+
+    // Update tooltip content
+    document.getElementById('tooltipStep').textContent = 'Step ' + (step + 1) + ' of ' + TUTORIAL_STEPS.length;
+    document.getElementById('tooltipTitle').textContent = s.title;
+    document.getElementById('tooltipDesc').textContent = s.desc;
+    document.getElementById('tooltipNextBtn').textContent = step === TUTORIAL_STEPS.length - 1 ? 'Finish 🎉' : 'Next →';
+
+    // Dots
+    const dots = document.getElementById('tooltipDots');
+    dots.innerHTML = TUTORIAL_STEPS.map(function(_, i) {
+      return '<div class="tooltip-dot ' + (i === step ? 'active' : '') + '"></div>';
+    }).join('');
+
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const pad = 8;
+
+      // Position spotlight
+      const spotlight = document.getElementById('tutorialSpotlight');
+      spotlight.style.top = (rect.top - pad + window.scrollY) + 'px';
+      spotlight.style.left = (rect.left - pad) + 'px';
+      spotlight.style.width = (rect.width + pad * 2) + 'px';
+      spotlight.style.height = (rect.height + pad * 2) + 'px';
+
+      // Scroll to element
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Position tooltip
+      const tooltip = document.getElementById('tutorialTooltip');
+      setTimeout(function() {
+        const tRect = el.getBoundingClientRect();
+        let top, left;
+        if (s.position === 'bottom') {
+          top = tRect.bottom + window.scrollY + 20;
+          left = Math.max(10, tRect.left + (tRect.width / 2) - 160);
+        } else {
+          top = tRect.top + window.scrollY;
+          left = Math.max(10, tRect.left - 340);
+        }
+        // Keep on screen
+        const maxLeft = window.innerWidth - 340;
+        left = Math.min(left, maxLeft);
+        tooltip.style.top = top + 'px';
+        tooltip.style.left = left + 'px';
+      }, 300);
+    }
+  }
+
+  function nextStep() {
+    tutorialStep++;
+    if (tutorialStep >= TUTORIAL_STEPS.length) { endTutorial(); return; }
+    showStep(tutorialStep);
+  }
+
+  function endTutorial() {
+    document.getElementById('tutorialOverlay').classList.remove('active');
+    document.getElementById('tutorialSpotlight').style.display = 'none';
+    document.getElementById('tutorialTooltip').style.display = 'none';
+    localStorage.setItem('noexcuse_tutorial_' + currentUser.email, 'done');
+    showToast('🎉 You\'re all set!', 'Tutorial complete! Click the "?" button anytime to replay it.', false);
+  }
+
+  function skipTutorial() {
+    document.getElementById('welcomeModal').style.display = 'none';
+    endTutorial();
   }
 
   function loadData() {
@@ -294,48 +499,22 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     localStorage.setItem('noexcuse_exp_' + key, JSON.stringify(expenses));
   }
 
-  function renderAll() {
-    renderCategories();
-    renderStats();
-    renderExpenseDropdown();
-    renderRecentExpenses();
-    renderReportCard();
-  }
+  function renderAll() { renderCategories(); renderStats(); renderExpenseDropdown(); renderRecentExpenses(); renderReportCard(); }
 
   function renderCategories() {
     const el = document.getElementById('categoriesList');
-    if (categories.length === 0) {
-      el.innerHTML = '<div class="empty-state"><div class="big">💸</div><p>No categories yet. Add one to get started!</p></div>';
-      return;
-    }
-    el.innerHTML = categories.map(cat => {
-      const pct = cat.budget > 0 ? Math.min((cat.spent / cat.budget) * 100, 100) : 0;
+    if (categories.length === 0) { el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted)"><div style="font-size:2.5rem;margin-bottom:0.8rem">💸</div><p>No categories yet. Add one to get started!</p></div>'; return; }
+    el.innerHTML = categories.map(function(cat) {
+      const pct = cat.budget > 0 ? Math.min(((cat.spent || 0) / cat.budget) * 100, 100) : 0;
       const barClass = pct >= 100 ? 'bar-danger' : pct >= 90 ? 'bar-warning' : 'bar-safe';
-      const remaining = cat.budget - cat.spent;
-      return `
-        <div class="category-card">
-          <div class="cat-header">
-            <div class="cat-info">
-              <div class="cat-icon">${cat.icon}</div>
-              <div class="cat-name">${cat.name}</div>
-            </div>
-            <div class="cat-amounts">
-              <div class="cat-spent">₦${(cat.spent || 0).toLocaleString()}</div>
-              <div class="cat-budget">of ₦${cat.budget.toLocaleString()}</div>
-            </div>
-          </div>
-          <div class="bar-track"><div class="bar-fill ${barClass}" style="width:${pct}%"></div></div>
-          <div class="cat-footer">
-            <div class="cat-percent">${pct.toFixed(0)}% used · ₦${remaining.toLocaleString()} left</div>
-            <button class="log-btn" onclick="quickLog(${cat.id})">+ Log</button>
-          </div>
-        </div>`;
+      const remaining = cat.budget - (cat.spent || 0);
+      return '<div class="category-card"><div class="cat-header"><div class="cat-info"><div class="cat-icon">' + cat.icon + '</div><div class="cat-name">' + cat.name + '</div></div><div class="cat-amounts"><div class="cat-spent">₦' + (cat.spent || 0).toLocaleString() + '</div><div class="cat-budget">of ₦' + cat.budget.toLocaleString() + '</div></div></div><div class="bar-track"><div class="bar-fill ' + barClass + '" style="width:' + pct + '%"></div></div><div class="cat-footer"><div class="cat-percent">' + pct.toFixed(0) + '% used · ₦' + remaining.toLocaleString() + ' left</div><button class="log-btn" onclick="quickLog(' + cat.id + ')">+ Log</button></div></div>';
     }).join('');
   }
 
   function renderStats() {
-    const totalBudget = categories.reduce((s, c) => s + c.budget, 0);
-    const totalSpent = categories.reduce((s, c) => s + c.spent, 0);
+    const totalBudget = categories.reduce(function(s,c){ return s + c.budget; }, 0);
+    const totalSpent = categories.reduce(function(s,c){ return s + (c.spent || 0); }, 0);
     const remaining = totalBudget - totalSpent;
     document.getElementById('totalBudget').textContent = '₦' + totalBudget.toLocaleString();
     document.getElementById('totalSpent').textContent = '₦' + totalSpent.toLocaleString();
@@ -345,35 +524,22 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   }
 
   function renderExpenseDropdown() {
-    const sel = document.getElementById('expCategory');
-    sel.innerHTML = categories.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+    document.getElementById('expCategory').innerHTML = categories.map(function(c){ return '<option value="' + c.id + '">' + c.icon + ' ' + c.name + '</option>'; }).join('');
   }
 
   function renderRecentExpenses() {
     const el = document.getElementById('recentExpenses');
-    const recent = [...expenses].reverse().slice(0, 5);
-    if (recent.length === 0) {
-      el.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">No expenses logged yet</p>';
-      return;
-    }
-    el.innerHTML = recent.map(e => {
-      const cat = categories.find(c => c.id == e.catId);
-      return `<div class="expense-item">
-        <div class="exp-left">
-          <div class="exp-icon">${cat ? cat.icon : '💸'}</div>
-          <div>
-            <div class="exp-name">${cat ? cat.name : 'Unknown'}</div>
-            <div class="exp-reason">${e.reason.substring(0, 30)}${e.reason.length > 30 ? '...' : ''}</div>
-          </div>
-        </div>
-        <div class="exp-amount">-₦${e.amount.toLocaleString()}</div>
-      </div>`;
+    const recent = expenses.slice().reverse().slice(0, 5);
+    if (recent.length === 0) { el.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">No expenses logged yet</p>'; return; }
+    el.innerHTML = recent.map(function(e) {
+      const cat = categories.find(function(c){ return c.id == e.catId; });
+      return '<div class="expense-item"><div class="exp-left"><div class="exp-icon">' + (cat ? cat.icon : '💸') + '</div><div><div class="exp-name">' + (cat ? cat.name : 'Unknown') + '</div><div class="exp-reason">' + e.reason.substring(0, 30) + (e.reason.length > 30 ? '...' : '') + '</div></div></div><div class="exp-amount">-₦' + e.amount.toLocaleString() + '</div></div>';
     }).join('');
   }
 
   function renderReportCard() {
-    const totalBudget = categories.reduce((s, c) => s + c.budget, 0);
-    const totalSpent = categories.reduce((s, c) => s + c.spent, 0);
+    const totalBudget = categories.reduce(function(s,c){ return s + c.budget; }, 0);
+    const totalSpent = categories.reduce(function(s,c){ return s + (c.spent || 0); }, 0);
     const pct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
     let grade, msg, color;
     if (pct <= 50) { grade = 'A'; msg = 'Excellent discipline! You\'re crushing it.'; color = 'var(--green)'; }
@@ -392,19 +558,15 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     const reason = document.getElementById('expReason').value.trim();
     if (!catId || !amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
     if (!reason) { showToast('No Excuse Accepted! 🚫', 'You MUST provide a reason before logging any expense. That\'s the whole point of NoExcuse!', true); return; }
-    const cat = categories.find(c => c.id === catId);
+    const cat = categories.find(function(c){ return c.id === catId; });
     if (!cat) return;
-    const newSpent = cat.spent + amount;
+    const newSpent = (cat.spent || 0) + amount;
     const pct = (newSpent / cat.budget) * 100;
-    if (pct >= 100) {
-      showToast(`🚨 Over Budget — ${cat.name}`, `You've exceeded your ₦${cat.budget.toLocaleString()} ${cat.name} budget! You said you wanted to save money — this is exactly what NoExcuse is here to prevent.`);
-    } else if (pct >= 90) {
-      showToast(`⚠️ 90% Warning — ${cat.name}`, `You've used 90% of your ${cat.name} budget. Only ₦${(cat.budget - newSpent).toLocaleString()} left. Think before your next spend!`);
-    } else if (pct >= 70) {
-      showToast(`💛 70% Alert — ${cat.name}`, `You've used 70% of your ${cat.name} budget. Stay disciplined for the rest of the month!`);
-    }
+    if (pct >= 100) { showToast('🚨 Over Budget — ' + cat.name, 'You\'ve exceeded your ₦' + cat.budget.toLocaleString() + ' ' + cat.name + ' budget! You said you wanted to save money — this is exactly what NoExcuse is here to prevent.'); }
+    else if (pct >= 90) { showToast('⚠️ 90% Warning — ' + cat.name, 'You\'ve used 90% of your ' + cat.name + ' budget. Only ₦' + (cat.budget - newSpent).toLocaleString() + ' left. Think before your next spend!'); }
+    else if (pct >= 70) { showToast('💛 70% Alert — ' + cat.name, 'You\'ve used 70% of your ' + cat.name + ' budget. Stay disciplined for the rest of the month!'); }
     cat.spent = newSpent;
-    expenses.push({ catId, amount, reason, date: new Date().toLocaleDateString() });
+    expenses.push({ catId: catId, amount: amount, reason: reason, date: new Date().toLocaleDateString() });
     document.getElementById('expAmount').value = '';
     document.getElementById('expReason').value = '';
     saveData();
@@ -417,7 +579,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function showToast(title, msg, isError = false) {
+  function showToast(title, msg, isError) {
     const toast = document.getElementById('warningToast');
     document.getElementById('toastTitle').textContent = title;
     document.getElementById('toastMsg').textContent = msg;
@@ -429,40 +591,22 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   function closeToast() { document.getElementById('warningToast').classList.remove('show'); }
 
   function renderEmojiGrid() {
-    const grid = document.getElementById('emojiGrid');
-    grid.innerHTML = EMOJIS.map(e => `<button class="emoji-btn ${e === selectedEmoji ? 'selected' : ''}" onclick="selectEmoji('${e}')">${e}</button>`).join('');
+    document.getElementById('emojiGrid').innerHTML = EMOJIS.map(function(e){ return '<button class="emoji-btn ' + (e === selectedEmoji ? 'selected' : '') + '" onclick="selectEmoji(\'' + e + '\')">' + e + '</button>'; }).join('');
   }
 
-  function selectEmoji(emoji) {
-    selectedEmoji = emoji;
-    renderEmojiGrid();
-  }
-
-  function openAddCategory() {
-    document.getElementById('modalOverlay').classList.add('active');
-  }
-
-  function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('active');
-    document.getElementById('catName').value = '';
-    document.getElementById('catBudget').value = '';
-  }
+  function selectEmoji(emoji) { selectedEmoji = emoji; renderEmojiGrid(); }
+  function openAddCategory() { document.getElementById('modalOverlay').classList.add('active'); }
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); document.getElementById('catName').value = ''; document.getElementById('catBudget').value = ''; }
 
   function addCategory() {
     const name = document.getElementById('catName').value.trim();
     const budget = parseFloat(document.getElementById('catBudget').value);
     if (!name || !budget || budget <= 0) { alert('Please fill in category name and budget.'); return; }
-    const newId = Date.now();
-    categories.push({ id: newId, name, icon: selectedEmoji, budget, spent: 0 });
-    saveData();
-    closeModal();
-    renderAll();
+    categories.push({ id: Date.now(), name: name, icon: selectedEmoji, budget: budget, spent: 0 });
+    saveData(); closeModal(); renderAll();
   }
 
-  function logout() {
-    localStorage.removeItem('noexcuse_current_user');
-    window.location.replace('login.html');
-  }
+  function logout() { localStorage.removeItem('noexcuse_current_user'); window.location.replace('login.html'); }
 
   init();
 </script>
