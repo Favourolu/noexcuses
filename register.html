@@ -4,15 +4,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NoExcuse — Create Account</title>
+  <title>NoExcuse — Register</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --black: #0a0a0a; --white: #f5f2eb; --gold: #e8b84b;
-      --gold-dark: #c49a2a; --red: #e84b4b; --green: #2ecc71;
-      --gray: #1a1a1a; --text-muted: #888;
-    }
+    :root { --black: #0a0a0a; --white: #f5f2eb; --gold: #e8b84b; --gold-dark: #c49a2a; --red: #e84b4b; --gray: #1a1a1a; --text-muted: #888; }
     body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
     nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 3rem; border-bottom: 1px solid rgba(232,184,75,0.1); }
     .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; text-decoration: none; color: var(--white); }
@@ -28,20 +24,20 @@
     .form-group input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 0.85rem 1rem; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
     .form-group input:focus { border-color: var(--gold); }
     .form-group input::placeholder { color: #555; }
-    .error-msg { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; color: #ff8080; margin-bottom: 1rem; display: none; }
+    .strength-bar { height: 4px; border-radius: 100px; margin-top: 0.5rem; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .strength-fill { height: 100%; border-radius: 100px; transition: all 0.3s; width: 0%; }
+    .strength-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
+    .msg { border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; display: none; }
+    .msg.error { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); color: #ff8080; display: block; }
+    .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: #2ecc71; display: block; }
     .btn { width: 100%; background: var(--gold); color: var(--black); padding: 1rem; border-radius: 10px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-top: 0.5rem; }
-    .btn:hover { background: var(--gold-dark); transform: translateY(-2px); }
+    .btn:hover { background: var(--gold-dark); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .divider { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin: 1.5rem 0; position: relative; }
     .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: rgba(255,255,255,0.08); }
     .divider::before { left: 0; } .divider::after { right: 0; }
     .login-link { text-align: center; font-size: 0.9rem; color: var(--text-muted); }
     .login-link a { color: var(--gold); text-decoration: none; font-weight: 600; }
-    .login-link a:hover { text-decoration: underline; }
-    .strength-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; margin-top: 0.5rem; overflow: hidden; }
-    .strength-fill { height: 100%; border-radius: 100px; transition: all 0.3s; width: 0%; }
-    .strength-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
-    .terms { font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 1rem; line-height: 1.6; }
-    .terms a { color: var(--gold); text-decoration: none; }
   </style>
 </head>
 <body>
@@ -51,76 +47,134 @@
   </nav>
   <div class="main">
     <div class="card">
-      <h1 class="card-title">Create your account 🚀</h1>
-      <p class="card-sub">Start taking control of your money today. No excuses.</p>
-      <div class="error-msg" id="errorMsg"></div>
+      <h1 class="card-title">Create your account</h1>
+      <p class="card-sub">Start your journey to financial discipline. No excuses.</p>
+      <div class="msg" id="msgBox"></div>
       <div class="form-group">
         <label>Full Name</label>
-        <input type="text" id="fullname" placeholder="e.g. Amaka Johnson" />
+        <input type="text" id="nameInput" placeholder="e.g. Oluwemimo Adeyemi" />
       </div>
       <div class="form-group">
         <label>Email Address</label>
-        <input type="email" id="email" placeholder="you@example.com" />
+        <input type="email" id="emailInput" placeholder="you@example.com" />
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input type="password" id="password" placeholder="Create a strong password" oninput="checkStrength(this.value)" />
+        <input type="password" id="passwordInput" placeholder="Min. 8 characters" oninput="checkStrength(this.value)" />
         <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
-        <div class="strength-text" id="strengthText"></div>
+        <div class="strength-label" id="strengthLabel"></div>
       </div>
       <div class="form-group">
         <label>Confirm Password</label>
-        <input type="password" id="confirmPassword" placeholder="Repeat your password" />
+        <input type="password" id="confirmInput" placeholder="Repeat your password" />
       </div>
-      <button class="btn" onclick="handleRegister()">Create Account</button>
-      <p class="terms">By signing up you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+      <button class="btn" id="registerBtn" onclick="register()">Create My Account</button>
       <div class="divider">or</div>
-      <div class="login-link">Already have an account? <a href="login.html">Login here</a></div>
+      <div class="login-link">Already have an account? <a href="login.html">Login</a></div>
     </div>
   </div>
-  <script>
-    function checkStrength(val) {
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXaFZ-tHwK4FXO6ZQ6VZ5_xQxo0mXwPas",
+      authDomain: "noexcuse-ac153.firebaseapp.com",
+      projectId: "noexcuse-ac153",
+      storageBucket: "noexcuse-ac153.firebasestorage.app",
+      messagingSenderId: "773313862174",
+      appId: "1:773313862174:web:f451fdcee73d378e1aac0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.checkStrength = function(val) {
       const fill = document.getElementById('strengthFill');
-      const text = document.getElementById('strengthText');
-      let strength = 0;
-      if (val.length >= 8) strength++;
-      if (/[A-Z]/.test(val)) strength++;
-      if (/[0-9]/.test(val)) strength++;
-      if (/[^A-Za-z0-9]/.test(val)) strength++;
-      const colors = ['#e84b4b','#e8b84b','#2ecc71','#2ecc71'];
-      const labels = ['Weak','Fair','Strong','Very Strong'];
-      const widths = ['25%','50%','75%','100%'];
-      if (val.length === 0) { fill.style.width = '0%'; text.textContent = ''; return; }
-      fill.style.background = colors[strength-1] || colors[0];
-      fill.style.width = widths[strength-1] || '25%';
-      text.textContent = labels[strength-1] || 'Weak';
-      text.style.color = colors[strength-1] || colors[0];
+      const label = document.getElementById('strengthLabel');
+      if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const levels = [
+        { w: '25%', color: '#e84b4b', text: 'Weak' },
+        { w: '50%', color: '#e8844b', text: 'Fair' },
+        { w: '75%', color: '#e8b84b', text: 'Strong' },
+        { w: '100%', color: '#2ecc71', text: 'Very Strong' }
+      ];
+      const l = levels[score - 1] || levels[0];
+      fill.style.width = l.w;
+      fill.style.background = l.color;
+      label.textContent = l.text;
+      label.style.color = l.color;
     }
-    function handleRegister() {
-      const name = document.getElementById('fullname').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const confirm = document.getElementById('confirmPassword').value;
-      const errorMsg = document.getElementById('errorMsg');
-      errorMsg.style.display = 'none';
-      if (!name || !email || !password || !confirm) {
-        errorMsg.textContent = 'Please fill in all fields.'; errorMsg.style.display = 'block'; return;
-      }
-      if (password.length < 8) {
-        errorMsg.textContent = 'Password must be at least 8 characters.'; errorMsg.style.display = 'block'; return;
-      }
-      if (password !== confirm) {
-        errorMsg.textContent = 'Passwords do not match.'; errorMsg.style.display = 'block'; return;
-      }
-      const users = JSON.parse(localStorage.getItem('noexcuse_users') || '[]');
-      if (users.find(u => u.email === email)) {
-        errorMsg.textContent = 'An account with this email already exists.'; errorMsg.style.display = 'block'; return;
-      }
-      users.push({ name, email, password });
-      localStorage.setItem('noexcuse_users', JSON.stringify(users));
-      localStorage.setItem('noexcuse_current_user', JSON.stringify({ name, email }));
-      window.location.href = 'dashboard.html';
+
+    function showMsg(msg, type) {
+      const el = document.getElementById('msgBox');
+      el.textContent = msg;
+      el.className = 'msg ' + type;
     }
+
+    window.register = async function() {
+      const name = document.getElementById('nameInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const confirm = document.getElementById('confirmInput').value;
+      const btn = document.getElementById('registerBtn');
+
+      if (!name) { showMsg('Please enter your full name.', 'error'); return; }
+      if (!email) { showMsg('Please enter your email.', 'error'); return; }
+      if (password.length < 8) { showMsg('Password must be at least 8 characters.', 'error'); return; }
+      if (password !== confirm) { showMsg('Passwords do not match.', 'error'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: name });
+
+        // Save user profile + default categories to Firestore
+        const defaultCats = [
+          { id: 1, name: 'Bills & Utilities', icon: '🏠', budget: 50000, spent: 0 },
+          { id: 2, name: 'Food & Groceries', icon: '🍽️', budget: 40000, spent: 0 },
+          { id: 3, name: 'Clothing', icon: '👗', budget: 20000, spent: 0 },
+          { id: 4, name: 'Miscellaneous', icon: '💰', budget: 15000, spent: 0 }
+        ];
+        const currentMonth = new Date().getFullYear() + '-' + (new Date().getMonth() + 1);
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          name: name,
+          email: email,
+          createdAt: new Date().toISOString(),
+          currentMonth: currentMonth,
+          categories: defaultCats,
+          expenses: []
+        });
+
+        showMsg('Account created! Taking you to your dashboard...', 'success');
+        setTimeout(function() { window.location.href = 'dashboard.html'; }, 1200);
+      } catch(e) {
+        btn.disabled = false;
+        btn.textContent = 'Create My Account';
+        if (e.code === 'auth/email-already-in-use') {
+          showMsg('An account with this email already exists. Please login.', 'error');
+        } else if (e.code === 'auth/invalid-email') {
+          showMsg('Please enter a valid email address.', 'error');
+        } else {
+          showMsg('Error: ' + e.message, 'error');
+        }
+      }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') window.register();
+    });
   </script>
+
 </body>
 </html>
