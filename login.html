@@ -25,17 +25,16 @@
     .form-group input:focus { border-color: var(--gold); }
     .form-group input::placeholder { color: #555; }
     .msg { border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; display: none; }
-    .msg.error { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); color: #ff8080; }
-    .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: #2ecc71; }
+    .msg.error { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); color: #ff8080; display: block; }
+    .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: #2ecc71; display: block; }
     .btn { width: 100%; background: var(--gold); color: var(--black); padding: 1rem; border-radius: 10px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-top: 0.5rem; }
-    .btn:hover { background: var(--gold-dark); transform: translateY(-2px); }
-    .btn:active { transform: translateY(0); }
+    .btn:hover { background: var(--gold-dark); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .divider { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin: 1.5rem 0; position: relative; }
     .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: rgba(255,255,255,0.08); }
     .divider::before { left: 0; } .divider::after { right: 0; }
     .register-link { text-align: center; font-size: 0.9rem; color: var(--text-muted); }
     .register-link a { color: var(--gold); text-decoration: none; font-weight: 600; }
-    .debug { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.75rem; font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; display: none; }
   </style>
 </head>
 <body>
@@ -47,8 +46,7 @@
     <div class="card">
       <h1 class="card-title">Welcome back 👋</h1>
       <p class="card-sub">Log in and keep your spending in check. No excuses today.</p>
-      <div class="msg error" id="errorMsg"></div>
-      <div class="msg success" id="successMsg"></div>
+      <div class="msg" id="msgBox"></div>
       <div class="form-group">
         <label>Email Address</label>
         <input type="email" id="emailInput" placeholder="you@example.com" />
@@ -57,93 +55,69 @@
         <label>Password</label>
         <input type="password" id="passwordInput" placeholder="Your password" />
       </div>
-      <button class="btn" id="loginBtn">Login to NoExcuse</button>
-      <div class="debug" id="debugInfo"></div>
+      <button class="btn" id="loginBtn" onclick="login()">Login to NoExcuse</button>
       <div class="divider">or</div>
       <div class="register-link">Don't have an account? <a href="register.html">Sign up free</a></div>
     </div>
   </div>
 
-  <script>
-    // Show debug info to help troubleshoot
-    function showDebug(msg) {
-      const el = document.getElementById('debugInfo');
-      el.style.display = 'block';
-      el.textContent = msg;
-    }
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    function showError(msg) {
-      const el = document.getElementById('errorMsg');
-      el.textContent = msg;
-      el.style.display = 'block';
-      document.getElementById('successMsg').style.display = 'none';
-    }
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXaFZ-tHwK4FXO6ZQ6VZ5_xQxo0mXwPas",
+      authDomain: "noexcuse-ac153.firebaseapp.com",
+      projectId: "noexcuse-ac153",
+      storageBucket: "noexcuse-ac153.firebasestorage.app",
+      messagingSenderId: "773313862174",
+      appId: "1:773313862174:web:f451fdcee73d378e1aac0f"
+    };
 
-    function showSuccess(msg) {
-      const el = document.getElementById('successMsg');
-      el.textContent = msg;
-      el.style.display = 'block';
-      document.getElementById('errorMsg').style.display = 'none';
-    }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-    document.getElementById('loginBtn').addEventListener('click', function() {
-      const email = document.getElementById('emailInput').value.trim().toLowerCase();
-      const password = document.getElementById('passwordInput').value;
-
-      // Clear messages
-      document.getElementById('errorMsg').style.display = 'none';
-      document.getElementById('successMsg').style.display = 'none';
-
-      // Basic validation
-      if (!email) { showError('Please enter your email address.'); return; }
-      if (!password) { showError('Please enter your password.'); return; }
-
-      // Get users from storage
-      let users = [];
-      try {
-        const stored = localStorage.getItem('noexcuse_users');
-        showDebug('Stored data: ' + (stored ? stored.substring(0, 100) : 'EMPTY - No accounts found!'));
-        users = JSON.parse(stored || '[]');
-      } catch(e) {
-        showError('Storage error: ' + e.message);
-        return;
-      }
-
-      if (users.length === 0) {
-        showError('No accounts found. Please register first!');
-        showDebug('localStorage is empty — you need to register on THIS browser first.');
-        return;
-      }
-
-      // Find user
-      const user = users.find(function(u) {
-        return u.email.trim().toLowerCase() === email && u.password === password;
-      });
-
-      if (!user) {
-        const emailOnly = users.find(function(u) {
-          return u.email.trim().toLowerCase() === email;
-        });
-        if (emailOnly) {
-          showError('Wrong password. Please check and try again.');
-        } else {
-          showError('No account found with this email. Please register first.');
-          showDebug('Registered emails: ' + users.map(function(u){ return u.email; }).join(', '));
-        }
-        return;
-      }
-
-      // Success!
-      showSuccess('Login successful! Taking you to your dashboard...');
-      localStorage.setItem('noexcuse_current_user', JSON.stringify({ name: user.name, email: user.email }));
-      setTimeout(function() {
-        window.location.href = 'dashboard.html';
-      }, 1000);
+    // Auto redirect if already logged in
+    onAuthStateChanged(auth, function(user) {
+      if (user) window.location.href = 'dashboard.html';
     });
 
-    // Enter key support
+    function showMsg(msg, type) {
+      const el = document.getElementById('msgBox');
+      el.textContent = msg;
+      el.className = 'msg ' + type;
+    }
+
+    window.login = async function() {
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const btn = document.getElementById('loginBtn');
+
+      if (!email) { showMsg('Please enter your email.', 'error'); return; }
+      if (!password) { showMsg('Please enter your password.', 'error'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Logging in...';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showMsg('Login successful! Redirecting...', 'success');
+        window.location.href = 'dashboard.html';
+      } catch(e) {
+        btn.disabled = false;
+        btn.textContent = 'Login to NoExcuse';
+        if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
+          showMsg('No account found with this email. Please register first.', 'error');
+        } else if (e.code === 'auth/wrong-password') {
+          showMsg('Wrong password. Please try again.', 'error');
+        } else {
+          showMsg('Error: ' + e.message, 'error');
+        }
+      }
+    }
+
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') document.getElementById('loginBtn').click();
+      if (e.key === 'Enter') window.login();
     });
   </script>
 
