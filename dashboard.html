@@ -164,7 +164,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 
 
 /* SPLASH SCREEN */
-.splash { position: fixed; inset: 0; background: var(--black); z-index: 1000; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; animation: splashFadeOut 0.5s ease 3.5s forwards; }
+.splash { position: fixed; inset: 0; background: var(--black); z-index: 1000; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; animation: splashFadeOut 0.8s ease 4.5s forwards; }
 @keyframes splashFadeOut { from { opacity: 1; pointer-events: all; } to { opacity: 0; pointer-events: none; } }
 .splash-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; margin-bottom: 2.5rem; }
 .splash-logo span { color: var(--gold); }
@@ -225,7 +225,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 
 <!-- SPLASH SCREEN -->
 
-<div class="splash" id="splashScreen">
+<div class="splash" id="splashScreen" style="display:flex">
   <div class="splash-logo">No<span>Excuse</span></div>
   <div class="splash-emoji" id="splashEmoji">💰</div>
   <div class="splash-msg" id="splashMsg">Loading your budget...</div>
@@ -539,7 +539,11 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     // Pick message type based on budget status
     let type;
     const rand = Math.random();
-    if (pct >= 90) {
+
+    if (totalSpent === 0) {
+      // Fresh start — alternate between funny and good
+      type = rand > 0.5 ? 'funny' : 'good';
+    } else if (pct >= 90) {
       type = rand > 0.3 ? 'danger' : 'funny';
     } else if (pct >= 60) {
       type = rand > 0.4 ? 'warning' : 'funny';
@@ -548,21 +552,24 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     }
 
     const msgs = MESSAGES[type];
-    // Use date-based index so message changes every login but is consistent same day
-    const idx = (new Date().getDate() + new Date().getMonth()) % msgs.length;
+    // Use random index so message changes every login
+    const idx = Math.floor(Math.random() * msgs.length);
     const msg = msgs[idx];
 
-    // Apply
+    // Apply message to splash
+    const splash = document.getElementById('splashScreen');
+    if (!splash) return;
     document.getElementById('splashEmoji').textContent = msg.emoji;
     document.getElementById('splashMsg').textContent = msg.msg;
     document.getElementById('splashMsg').className = 'splash-msg splash-type-' + type;
     document.getElementById('splashSub').textContent = msg.sub;
+    splash.style.display = 'flex';
 
-    // Remove splash after animation
+    // Remove splash after animation completes
     setTimeout(function() {
-      const splash = document.getElementById('splashScreen');
-      if (splash) splash.remove();
-    }, 4200);
+      const el = document.getElementById('splashScreen');
+      if (el) el.style.display = 'none';
+    }, 5500);
   }
 
 
