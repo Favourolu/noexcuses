@@ -253,7 +253,12 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     <div class="panel-title">📝 Log an Expense</div>
     <div class="form-group">
       <label>Category</label>
-      <select id="expCategory"></select>
+      <select id="expCategory">
+        <option value="1">🏠 Bills &amp; Utilities</option>
+        <option value="2">🍽️ Food &amp; Groceries</option>
+        <option value="3">👗 Clothing</option>
+        <option value="4">💰 Miscellaneous</option>
+      </select>
     </div>
     <div class="form-group">
       <label>Amount (₦)</label>
@@ -635,11 +640,17 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 
   function renderExpenseDropdown() {
     const sel = document.getElementById('expCategory');
-    if (!categories || categories.length === 0) {
-      sel.innerHTML = '<option value="">-- No categories yet --</option>';
-      return;
-    }
-    sel.innerHTML = categories.map(function(c){
+    const defaults = [
+      { id: 1, icon: '🏠', name: 'Bills & Utilities' },
+      { id: 2, icon: '🍽️', name: 'Food & Groceries' },
+      { id: 3, icon: '👗', name: 'Clothing' },
+      { id: 4, icon: '💰', name: 'Miscellaneous' }
+    ];
+    // Merge defaults with any custom categories
+    const defaultIds = [1, 2, 3, 4];
+    const custom = (categories || []).filter(function(c){ return defaultIds.indexOf(c.id) === -1; });
+    const all = defaults.concat(custom);
+    sel.innerHTML = all.map(function(c){
       return '<option value="' + c.id + '">' + c.icon + ' ' + c.name + '</option>';
     }).join('');
   }
