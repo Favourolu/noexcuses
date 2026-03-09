@@ -240,7 +240,7 @@ footer .footer-links a:hover { color: var(--white); }
       <li><a href="#how">How it works</a></li>
       <li><a href="#features">Features</a></li>
       <li><a href="#pricing">Pricing</a></li>
-      <li><a href="#" class="nav-cta" href="register.html">Get Early Access</a></li>
+      <li><a href="register.html" class="nav-cta">Get Early Access</a></li>
     </ul>
   </nav>
 
@@ -424,7 +424,7 @@ footer .footer-links a:hover { color: var(--white); }
           <li><span class="cross">✗</span> Shame messages</li>
           <li><span class="cross">✗</span> Accountability partner</li>
         </ul>
-        <button class="btn-secondary" style="width:100%" href="register.html">Get Started</button>
+        <button class="btn-secondary" style="width:100%" onclick="window.location.href='register.html'">Get Started</button>
       </div>
       <div class="pricing-card popular">
         <div class="popular-badge">Most Popular</div>
@@ -439,7 +439,7 @@ footer .footer-links a:hover { color: var(--white); }
           <li><span class="tick">✓</span> Monthly report card</li>
           <li><span class="tick">✓</span> Savings goals</li>
         </ul>
-        <button class="btn-primary" style="width:100%" href="register.html">Get Early Access</button>
+        <button class="btn-primary" style="width:100%" onclick="window.location.href='register.html'">Get Early Access</button>
       </div>
       <div class="pricing-card">
         <div class="plan-name">Pro</div>
@@ -453,7 +453,7 @@ footer .footer-links a:hover { color: var(--white); }
           <li><span class="tick">✓</span> Priority support</li>
           <li><span class="tick">✓</span> Export reports (PDF)</li>
         </ul>
-        <button class="btn-secondary" style="width:100%" href="register.html">Get Early Access</button>
+        <button class="btn-secondary" style="width:100%" onclick="window.location.href='register.html'">Get Early Access</button>
       </div>
     </div>
   </section>
@@ -509,7 +509,7 @@ footer .footer-links a:hover { color: var(--white); }
   </div>
 
   <script>
-    function openModal() { document.getElementById('modalOverlay').classList.add('active'); }
+    function openModal() { window.location.href = "register.html"; }
     function closeModal() {
       document.getElementById('modalOverlay').classList.remove('active');
       setTimeout(() => {
