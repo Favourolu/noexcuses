@@ -320,7 +320,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
               <div class="cat-name">${cat.name}</div>
             </div>
             <div class="cat-amounts">
-              <div class="cat-spent">₦${cat.spent.toLocaleString()}</div>
+              <div class="cat-spent">₦${(cat.spent || 0).toLocaleString()}</div>
               <div class="cat-budget">of ₦${cat.budget.toLocaleString()}</div>
             </div>
           </div>
