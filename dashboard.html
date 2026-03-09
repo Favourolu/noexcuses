@@ -131,14 +131,19 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .tooltip-step { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); font-weight: 700; margin-bottom: 0.6rem; }
 .tooltip-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.6rem; }
 .tooltip-desc { font-size: 0.88rem; color: #bbb; line-height: 1.6; margin-bottom: 1.2rem; }
-.tooltip-actions { display: flex; gap: 0.6rem; align-items: center; }
+.tooltip-actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
 .tooltip-next { background: var(--gold); color: var(--black); border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
 .tooltip-next:hover { background: var(--gold-dark); }
 .tooltip-skip { background: none; border: none; color: var(--text-muted); font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.2s; }
 .tooltip-skip:hover { color: var(--white); }
+.tooltip-quit { background: rgba(232,75,75,0.15); border: 1px solid rgba(232,75,75,0.3); color: var(--red); font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 0.4rem 0.8rem; border-radius: 6px; transition: all 0.2s; }
+.tooltip-quit:hover { background: rgba(232,75,75,0.25); }
 .tooltip-dots { display: flex; gap: 0.4rem; margin-left: auto; }
 .tooltip-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.15); }
 .tooltip-dot.active { background: var(--gold); }
+.tutorial-close { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 503; background: rgba(232,75,75,0.15); border: 1px solid rgba(232,75,75,0.4); color: var(--red); width: 40px; height: 40px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: none; align-items: center; justify-content: center; font-weight: 700; transition: all 0.2s; }
+.tutorial-close:hover { background: rgba(232,75,75,0.3); }
+.tutorial-close.active { display: flex; }
 
 /* Welcome modal - shown first */
 .welcome-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 600; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
@@ -315,6 +320,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 <!-- TUTORIAL OVERLAY -->
 
 <div class="tutorial-overlay" id="tutorialOverlay"></div>
+<button class="tutorial-close" id="tutorialCloseBtn" onclick="skipTutorial()">✕</button>
 <div class="tutorial-spotlight" id="tutorialSpotlight" style="display:none"></div>
 <div class="tutorial-tooltip" id="tutorialTooltip" style="display:none">
   <div class="tooltip-step" id="tooltipStep">Step 1 of 6</div>
@@ -323,6 +329,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
   <div class="tooltip-actions">
     <button class="tooltip-next" id="tooltipNextBtn" onclick="nextStep()">Next →</button>
     <button class="tooltip-skip" onclick="skipTutorial()">Skip tour</button>
+    <button class="tooltip-quit" onclick="skipTutorial()">✕ Quit</button>
     <div class="tooltip-dots" id="tooltipDots"></div>
   </div>
 </div>
@@ -404,6 +411,7 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     document.getElementById('tutorialOverlay').classList.add('active');
     document.getElementById('tutorialSpotlight').style.display = 'block';
     document.getElementById('tutorialTooltip').style.display = 'block';
+    document.getElementById('tutorialCloseBtn').classList.add('active');
     showStep(tutorialStep);
   }
 
@@ -425,37 +433,42 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
     }).join('');
 
     if (el) {
-      const rect = el.getBoundingClientRect();
-      const pad = 8;
-
-      // Position spotlight
-      const spotlight = document.getElementById('tutorialSpotlight');
-      spotlight.style.top = (rect.top - pad + window.scrollY) + 'px';
-      spotlight.style.left = (rect.left - pad) + 'px';
-      spotlight.style.width = (rect.width + pad * 2) + 'px';
-      spotlight.style.height = (rect.height + pad * 2) + 'px';
-
-      // Scroll to element
+      // Scroll to element first
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-      // Position tooltip
-      const tooltip = document.getElementById('tutorialTooltip');
       setTimeout(function() {
-        const tRect = el.getBoundingClientRect();
+        const rect = el.getBoundingClientRect();
+        const pad = 8;
+
+        // Position spotlight
+        const spotlight = document.getElementById('tutorialSpotlight');
+        spotlight.style.top = (rect.top - pad + window.scrollY) + 'px';
+        spotlight.style.left = (rect.left - pad) + 'px';
+        spotlight.style.width = (rect.width + pad * 2) + 'px';
+        spotlight.style.height = (rect.height + pad * 2) + 'px';
+
+        // Position tooltip
+        const tooltip = document.getElementById('tutorialTooltip');
         let top, left;
+        const tooltipWidth = 320;
+
         if (s.position === 'bottom') {
-          top = tRect.bottom + window.scrollY + 20;
-          left = Math.max(10, tRect.left + (tRect.width / 2) - 160);
+          top = rect.bottom + window.scrollY + 20;
+          left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
         } else {
-          top = tRect.top + window.scrollY;
-          left = Math.max(10, tRect.left - 340);
+          // left side - if not enough room go right
+          top = rect.top + window.scrollY;
+          left = rect.left - tooltipWidth - 20;
+          if (left < 10) left = rect.right + 20;
         }
+
         // Keep on screen
-        const maxLeft = window.innerWidth - 340;
-        left = Math.min(left, maxLeft);
+        left = Math.max(10, Math.min(left, window.innerWidth - tooltipWidth - 10));
+        top = Math.max(10, top);
+
         tooltip.style.top = top + 'px';
         tooltip.style.left = left + 'px';
-      }, 300);
+      }, 400);
     }
   }
 
