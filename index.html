@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NoExcuse — Spend With Purpose</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f2eb;
+      --gold: #e8b84b;
+      --gold-dark: #c49a2a;
+      --red: #e84b4b;
+      --green: #2ecc71;
+      --gray: #1a1a1a;
+      --gray-light: #2a2a2a;
+      --text-muted: #888;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
+
+```
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.5rem 4rem;
+  background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(232,184,75,0.1);
+}
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; }
+.logo span { color: var(--gold); }
+nav ul { display: flex; gap: 2.5rem; list-style: none; }
+nav ul a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+nav ul a:hover { color: var(--white); }
+.nav-cta { background: var(--gold); color: var(--black) !important; padding: 0.6rem 1.4rem; border-radius: 4px; font-weight: 600 !important; transition: background 0.2s !important; }
+.nav-cta:hover { background: var(--gold-dark) !important; }
+
+/* HERO */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+  padding: 8rem 4rem 4rem; position: relative; overflow: hidden;
+}
+.hero-bg-circle {
+  position: absolute; width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,184,75,0.08) 0%, transparent 70%);
+  top: -100px; right: -100px; pointer-events: none;
+}
+.hero-bg-circle-2 {
+  position: absolute; width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,75,75,0.05) 0%, transparent 70%);
+  bottom: 0; left: 100px; pointer-events: none;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(232,184,75,0.1); border: 1px solid rgba(232,184,75,0.3);
+  color: var(--gold); padding: 0.4rem 1rem; border-radius: 100px;
+  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
+  margin-bottom: 2rem; width: fit-content; animation: fadeUp 0.6s ease forwards;
+}
+.hero-tag::before {
+  content: ''; width: 6px; height: 6px; background: var(--gold);
+  border-radius: 50%; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
+h1 {
+  font-family: 'Syne', sans-serif; font-size: clamp(3rem, 7vw, 6.5rem);
+  font-weight: 800; line-height: 1.0; letter-spacing: -2px; max-width: 900px;
+  animation: fadeUp 0.7s ease 0.1s both;
+}
+h1 .highlight { color: var(--gold); }
+h1 .strike { position: relative; color: var(--text-muted); }
+h1 .strike::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 55%;
+  height: 3px; background: var(--red); transform: rotate(-2deg);
+}
+.hero-sub {
+  font-size: 1.15rem; color: var(--text-muted); max-width: 520px;
+  line-height: 1.7; margin-top: 1.8rem; font-weight: 300;
+  animation: fadeUp 0.7s ease 0.2s both;
+}
+.hero-actions { display: flex; gap: 1rem; margin-top: 2.5rem; animation: fadeUp 0.7s ease 0.3s both; }
+.btn-primary {
+  background: var(--gold); color: var(--black); padding: 0.9rem 2rem;
+  border-radius: 6px; font-weight: 700; font-size: 1rem; text-decoration: none;
+  transition: all 0.2s; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.btn-primary:hover { background: var(--gold-dark); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(232,184,75,0.3); }
+.btn-secondary {
+  background: transparent; color: var(--white); padding: 0.9rem 2rem;
+  border-radius: 6px; font-weight: 500; font-size: 1rem; text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.15); transition: all 0.2s; cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.btn-secondary:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
+.hero-stats {
+  display: flex; gap: 3rem; margin-top: 4rem; padding-top: 2.5rem;
+  border-top: 1px solid rgba(255,255,255,0.06); animation: fadeUp 0.7s ease 0.4s both;
+}
+.stat-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; }
+.stat-num span { color: var(--gold); }
+.stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* MARQUEE */
+.marquee-wrapper { background: var(--gold); padding: 0.8rem 0; overflow: hidden; white-space: nowrap; }
+.marquee-track { display: inline-flex; animation: marquee 20s linear infinite; }
+.marquee-track span { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; color: var(--black); text-transform: uppercase; letter-spacing: 1px; padding: 0 2rem; }
+.marquee-track span::before { content: '◆'; margin-right: 2rem; opacity: 0.4; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* SECTIONS */
+section { padding: 6rem 4rem; }
+.section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); font-weight: 600; margin-bottom: 1rem; }
+.section-title { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; letter-spacing: -1px; line-height: 1.1; max-width: 600px; }
+
+/* HOW IT WORKS */
+.how-it-works { background: var(--gray); }
+.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2px; margin-top: 3.5rem; }
+.step-card { background: var(--black); padding: 2.5rem; position: relative; overflow: hidden; transition: background 0.3s; }
+.step-card:hover { background: #111; }
+.step-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+}
+.step-card:hover::before { transform: scaleX(1); }
+.step-num { font-family: 'Syne', sans-serif; font-size: 3.5rem; font-weight: 800; color: rgba(232,184,75,0.12); line-height: 1; margin-bottom: 1.5rem; }
+.step-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+.step-title { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.8rem; }
+.step-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
+
+/* FEATURES */
+.features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3.5rem; }
+.feature-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 2rem; transition: all 0.3s; }
+.feature-card.featured { background: linear-gradient(135deg, rgba(232,184,75,0.1), rgba(232,184,75,0.03)); border-color: rgba(232,184,75,0.2); grid-column: span 2; }
+.feature-card:hover { border-color: rgba(232,184,75,0.3); transform: translateY(-4px); }
+.feature-icon { width: 44px; height: 44px; background: rgba(232,184,75,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 1.2rem; }
+.feature-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; }
+.feature-desc { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; }
+.badge-new { display: inline-block; background: var(--gold); color: var(--black); font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 0.5rem; vertical-align: middle; }
+
+/* DEMO */
+.demo-section { background: var(--gray); }
+.demo-container { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-top: 3rem; }
+.demo-phone { background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 2rem; }
+.demo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.demo-month { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; }
+.demo-total { font-size: 0.8rem; color: var(--text-muted); }
+.budget-bar-item { margin-bottom: 1.2rem; }
+.bar-info { display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+.bar-label { font-size: 0.85rem; font-weight: 500; }
+.bar-amount { font-size: 0.8rem; color: var(--text-muted); }
+.bar-track { height: 6px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 100px; }
+.bar-fill.safe { background: var(--green); }
+.bar-fill.warning { background: var(--gold); }
+.bar-fill.danger { background: var(--red); animation: flashRed 1s infinite; }
+@keyframes flashRed { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.warning-toast { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); border-radius: 10px; padding: 1rem; margin-top: 1.5rem; animation: shake 0.5s ease; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+.toast-title { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--red); display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem; }
+.toast-message { font-size: 0.8rem; color: #ccc; line-height: 1.6; }
+.demo-text h3 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 1rem; }
+.demo-text p { color: var(--text-muted); line-height: 1.8; margin-bottom: 1rem; font-size: 0.95rem; }
+.check-item { display: flex; align-items: flex-start; gap: 0.8rem; margin-bottom: 0.8rem; font-size: 0.9rem; }
+.check-icon { width: 20px; height: 20px; background: rgba(46,204,113,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--green); flex-shrink: 0; margin-top: 1px; }
+
+/* PRICING */
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3.5rem; }
+.pricing-card { border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 2.5rem; transition: all 0.3s; }
+.pricing-card.popular { border-color: var(--gold); background: linear-gradient(135deg, rgba(232,184,75,0.07), transparent); position: relative; }
+.popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--black); font-size: 0.7rem; font-weight: 700; padding: 0.25rem 1rem; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.plan-name { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1rem; }
+.plan-price { font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 0.3rem; }
+.plan-price sup { font-size: 1.2rem; letter-spacing: 0; vertical-align: super; }
+.plan-period { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2rem; }
+.plan-features { list-style: none; margin-bottom: 2rem; }
+.plan-features li { display: flex; align-items: center; gap: 0.7rem; font-size: 0.88rem; color: #ccc; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.plan-features li .tick { color: var(--green); font-size: 0.75rem; }
+.plan-features li .cross { color: var(--text-muted); font-size: 0.75rem; }
+
+/* CTA */
+.cta-section { text-align: center; background: linear-gradient(135deg, rgba(232,184,75,0.06), transparent, rgba(232,75,75,0.04)); border-top: 1px solid rgba(232,184,75,0.1); border-bottom: 1px solid rgba(232,184,75,0.1); }
+.cta-section h2 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 4rem); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 1.2rem; }
+.cta-section p { color: var(--text-muted); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.7; }
+
+/* FOOTER */
+footer { padding: 3rem 4rem; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; }
+footer p { font-size: 0.85rem; color: var(--text-muted); }
+footer .footer-links { display: flex; gap: 2rem; }
+footer .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+footer .footer-links a:hover { color: var(--white); }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+.modal { background: #111; border: 1px solid rgba(232,184,75,0.2); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 440px; transform: translateY(20px); transition: transform 0.3s; }
+.modal-overlay.active .modal { transform: translateY(0); }
+.modal h3 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+.modal p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.4rem; }
+.form-group input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.75rem 1rem; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+.form-group input:focus { border-color: var(--gold); }
+.form-group input::placeholder { color: #555; }
+.modal-actions { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+.modal-close { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.75rem 1.2rem; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; transition: all 0.2s; }
+.modal-close:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
+.success-msg { display: none; text-align: center; padding: 1rem; }
+.success-msg .big-check { font-size: 3rem; margin-bottom: 0.8rem; }
+.success-msg h4 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 0.5rem; }
+
+@media (max-width: 768px) {
+  nav { padding: 1.2rem 1.5rem; }
+  nav ul { display: none; }
+  .hero { padding: 7rem 1.5rem 3rem; }
+  section { padding: 4rem 1.5rem; }
+  .features-grid { grid-template-columns: 1fr; }
+  .feature-card.featured { grid-column: span 1; }
+  .demo-container { grid-template-columns: 1fr; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+  h1 { letter-spacing: -1px; }
+}
+```
+
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">No<span>Excuse</span></div>
+    <ul>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#" class="nav-cta" onclick="openModal()">Get Early Access</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg-circle"></div>
+    <div class="hero-bg-circle-2"></div>
+    <div class="hero-tag">Built for Africa 🌍</div>
+    <h1>No more <span class="strike">excuses</span><br/>for <span class="highlight">bad</span><br/>spending.</h1>
+    <p class="hero-sub">NoExcuse forces you to justify every purchase before you make it. Set limits, get flagged before you overstep, and finally take control of your money.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="openModal()">Start for Free</button>
+      <a href="#how" class="btn-secondary">See how it works →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">87<span>%</span></div>
+        <div class="stat-label">of people overspend monthly</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3<span>x</span></div>
+        <div class="stat-label">faster savings with limits</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0<span>₦</span></div>
+        <div class="stat-label">to get started</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee-wrapper">
+    <div class="marquee-track">
+      <span>No Excuses</span><span>Evidence-Based Spending</span><span>Real-Time Alerts</span>
+      <span>Shame Messages That Hit Different</span><span>Category Budgets</span>
+      <span>Monthly Report Card</span><span>Accountability Partner</span><span>Built for Africa</span>
+      <span>No Excuses</span><span>Evidence-Based Spending</span><span>Real-Time Alerts</span>
+      <span>Shame Messages That Hit Different</span><span>Category Budgets</span>
+      <span>Monthly Report Card</span><span>Accountability Partner</span><span>Built for Africa</span>
+    </div>
+  </div>
+
+  <section class="how-it-works" id="how">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Four steps to zero excuses</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">🎯</div>
+        <div class="step-title">Set Your Budget</div>
+        <p class="step-desc">Define monthly spending limits per category — food, transport, entertainment, bills, and more. You decide what matters.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">📋</div>
+        <div class="step-title">Justify Before You Spend</div>
+        <p class="step-desc">Before logging any expense, you must provide a reason. No justification, no record. This is where NoExcuse earns its name.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">🚨</div>
+        <div class="step-title">Get Flagged in Real Time</div>
+        <p class="step-desc">At 70%, 90%, and 100% of your limit, NoExcuse sends a stern, personalized message tied directly to your own financial goals.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-icon">📊</div>
+        <div class="step-title">Review Your Report Card</div>
+        <p class="step-desc">Every month, get graded A–F on your financial discipline. See your weak spots and watch yourself improve.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <div class="section-label">See it in action</div>
+    <div class="demo-container">
+      <div class="demo-phone">
+        <div class="demo-header">
+          <span class="demo-month">March 2026</span>
+          <span class="demo-total">₦180,000 budget</span>
+        </div>
+        <div class="budget-bar-item">
+          <div class="bar-info">
+            <span class="bar-label">🍽 Food & Groceries</span>
+            <span class="bar-amount">₦28,000 / ₦40,000</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill safe" style="width:70%"></div></div>
+        </div>
+        <div class="budget-bar-item">
+          <div class="bar-info">
+            <span class="bar-label">🚗 Transport</span>
+            <span class="bar-amount">₦18,000 / ₦20,000</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill warning" style="width:90%"></div></div>
+        </div>
+        <div class="budget-bar-item">
+          <div class="bar-info">
+            <span class="bar-label">🎉 Entertainment</span>
+            <span class="bar-amount">₦15,200 / ₦15,000</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill danger" style="width:100%"></div></div>
+        </div>
+        <div class="budget-bar-item">
+          <div class="bar-info">
+            <span class="bar-label">🏠 Rent & Bills</span>
+            <span class="bar-amount">₦60,000 / ₦80,000</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill safe" style="width:75%"></div></div>
+        </div>
+        <div class="warning-toast">
+          <div class="toast-title">⚠️ Budget Exceeded — Entertainment</div>
+          <div class="toast-message">You said you wanted to save ₦500,000 by December. This purchase puts that goal at serious risk. No excuse is good enough right now.</div>
+        </div>
+      </div>
+      <div class="demo-text">
+        <h3>The warning that makes you actually stop</h3>
+        <p>Other apps notify you after damage is done. NoExcuse intervenes in the moment — with a message that speaks directly to YOUR goals, in YOUR words.</p>
+        <div class="check-item">
+          <div class="check-icon">✓</div>
+          <span>Personalized messages tied to your savings targets</span>
+        </div>
+        <div class="check-item">
+          <div class="check-icon">✓</div>
+          <span>Visual bars that turn red as danger approaches</span>
+        </div>
+        <div class="check-item">
+          <div class="check-icon">✓</div>
+          <span>Alerts at 70%, 90%, and 100% of every category</span>
+        </div>
+        <div class="check-item">
+          <div class="check-icon">✓</div>
+          <span>Evidence gate that forces conscious decisions before spending</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything you need. No excuses.</h2>
+    <div class="features-grid">
+      <div class="feature-card featured">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-title">Evidence Gate <span class="badge-new">Unique</span></div>
+        <p class="feature-desc">Before any expense is logged, you must provide a reason or justification. This single feature eliminates unconscious impulse spending — something no other budget app does. You become fully aware of every financial decision you make.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">😤</div>
+        <div class="feature-title">Personalized Shame Messages</div>
+        <p class="feature-desc">We don't just notify you — we remind you of your own financial goals in the moment. It's designed to sting just enough to make you reconsider.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <div class="feature-title">Accountability Partner</div>
+        <p class="feature-desc">Add a trusted friend, spouse, or parent who gets notified when you exceed a category. Social accountability is the most powerful motivator.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <div class="feature-title">Monthly Report Card</div>
+        <p class="feature-desc">Get graded A–F on your financial discipline each month. See exactly which categories are your weakness and watch yourself improve over time.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-title">Savings Goals</div>
+        <p class="feature-desc">Link every budget category to a bigger savings goal. When you overspend, you'll see exactly how much further away that goal just became.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" style="background: var(--gray);">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Start free. No excuses not to.</h2>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price"><sup>₦</sup>0</div>
+        <div class="plan-period">forever</div>
+        <ul class="plan-features">
+          <li><span class="tick">✓</span> 5 budget categories</li>
+          <li><span class="tick">✓</span> Basic spending alerts</li>
+          <li><span class="tick">✓</span> Monthly summary</li>
+          <li><span class="cross">✗</span> Evidence gate</li>
+          <li><span class="cross">✗</span> Shame messages</li>
+          <li><span class="cross">✗</span> Accountability partner</li>
+        </ul>
+        <button class="btn-secondary" style="width:100%" onclick="openModal()">Get Started</button>
+      </div>
+      <div class="pricing-card popular">
+        <div class="popular-badge">Most Popular</div>
+        <div class="plan-name">NoExcuse</div>
+        <div class="plan-price"><sup>₦</sup>2,500</div>
+        <div class="plan-period">per month</div>
+        <ul class="plan-features">
+          <li><span class="tick">✓</span> Unlimited categories</li>
+          <li><span class="tick">✓</span> Evidence gate</li>
+          <li><span class="tick">✓</span> Personalized shame messages</li>
+          <li><span class="tick">✓</span> Accountability partner</li>
+          <li><span class="tick">✓</span> Monthly report card</li>
+          <li><span class="tick">✓</span> Savings goals</li>
+        </ul>
+        <button class="btn-primary" style="width:100%" onclick="openModal()">Get Early Access</button>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price"><sup>₦</sup>5,000</div>
+        <div class="plan-period">per month</div>
+        <ul class="plan-features">
+          <li><span class="tick">✓</span> Everything in NoExcuse</li>
+          <li><span class="tick">✓</span> Multiple accountability partners</li>
+          <li><span class="tick">✓</span> AI spending insights</li>
+          <li><span class="tick">✓</span> Family budget sharing</li>
+          <li><span class="tick">✓</span> Priority support</li>
+          <li><span class="tick">✓</span> Export reports (PDF)</li>
+        </ul>
+        <button class="btn-secondary" style="width:100%" onclick="openModal()">Get Early Access</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="section-label">Get started today</div>
+    <h2>Your money deserves<br/><span style="color:var(--gold)">no excuses.</span></h2>
+    <p>Join thousands of Africans taking control of their finances — one intentional spend at a time.</p>
+    <button class="btn-primary" onclick="openModal()">Start for Free — No Card Needed</button>
+  </section>
+
+  <footer>
+    <div class="logo">No<span style="color:var(--gold)">Excuse</span></div>
+    <p>© 2026 NoExcuse. Built for Africa.</p>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+
+  <!-- MODAL -->
+
+  <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+    <div class="modal">
+      <div id="formContent">
+        <h3>Get Early Access 🚀</h3>
+        <p>Be the first to know when NoExcuse launches. No spam, ever.</p>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="nameInput" placeholder="e.g. Amaka Johnson" />
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="emailInput" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label>Country</label>
+          <input type="text" id="countryInput" placeholder="e.g. Nigeria, Ghana, Kenya..." />
+        </div>
+        <div class="modal-actions">
+          <button class="modal-close" onclick="closeModal()">Cancel</button>
+          <button class="btn-primary" style="flex:1" onclick="submitForm()">Join Waitlist</button>
+        </div>
+      </div>
+      <div class="success-msg" id="successMsg">
+        <div class="big-check">🎉</div>
+        <h4>You're on the list!</h4>
+        <p style="color:var(--text-muted)">We'll notify you the moment NoExcuse goes live. No more excuses — your financial discipline journey starts now.</p>
+        <button class="btn-primary" style="margin-top:1.5rem; width:100%" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() { document.getElementById('modalOverlay').classList.add('active'); }
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+      setTimeout(() => {
+        document.getElementById('formContent').style.display = 'block';
+        document.getElementById('successMsg').style.display = 'none';
+      }, 300);
+    }
+    function handleOverlayClick(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+    function submitForm() {
+      const name = document.getElementById('nameInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
+      if (!name || !email) { alert('Please enter your name and email.'); return; }
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>
