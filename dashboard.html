@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NoExcuse — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --white: #f5f2eb; --gold: #e8b84b; --gold-dark: #c49a2a; --red: #e84b4b; --green: #2ecc71; --gray: #1a1a1a; --gray2: #222; --text-muted: #888; }
+    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+```
+/* NAV */
+nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2.5rem; border-bottom: 1px solid rgba(232,184,75,0.1); background: rgba(10,10,10,0.95); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
+.logo span { color: var(--gold); }
+.nav-right { display: flex; align-items: center; gap: 1.5rem; }
+.user-name { font-size: 0.9rem; color: var(--text-muted); }
+.user-name span { color: var(--white); font-weight: 600; }
+.logout-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; transition: all 0.2s; }
+.logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* LAYOUT */
+.container { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+/* GREETING */
+.greeting { margin-bottom: 2.5rem; }
+.greeting h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+.greeting h1 span { color: var(--gold); }
+.greeting p { color: var(--text-muted); margin-top: 0.3rem; font-size: 0.95rem; }
+
+/* STATS ROW */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
+.stat-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem; }
+.stat-card.highlight { border-color: rgba(232,184,75,0.2); background: linear-gradient(135deg, rgba(232,184,75,0.08), transparent); }
+.stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.6rem; }
+.stat-value { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+.stat-value.gold { color: var(--gold); }
+.stat-value.green { color: var(--green); }
+.stat-value.red { color: var(--red); }
+.stat-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem; }
+
+/* MAIN GRID */
+.main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; }
+
+/* BUDGET CATEGORIES */
+.section-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+.btn-small { background: var(--gold); color: var(--black); border: none; padding: 0.45rem 1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+.btn-small:hover { background: var(--gold-dark); }
+
+.category-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.3rem 1.5rem; margin-bottom: 0.8rem; transition: all 0.2s; }
+.category-card:hover { border-color: rgba(232,184,75,0.2); }
+.cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+.cat-info { display: flex; align-items: center; gap: 0.7rem; }
+.cat-icon { width: 36px; height: 36px; background: rgba(232,184,75,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+.cat-name { font-weight: 600; font-size: 0.95rem; }
+.cat-amounts { text-align: right; }
+.cat-spent { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+.cat-budget { font-size: 0.78rem; color: var(--text-muted); }
+.bar-track { height: 6px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 100px; transition: width 0.5s ease; }
+.bar-safe { background: var(--green); }
+.bar-warning { background: var(--gold); }
+.bar-danger { background: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.cat-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; }
+.cat-percent { font-size: 0.78rem; color: var(--text-muted); }
+.log-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+.log-btn:hover { border-color: var(--gold); color: var(--gold); }
+.empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+.empty-state .big { font-size: 2.5rem; margin-bottom: 0.8rem; }
+
+/* RIGHT PANEL */
+.right-panel { display: flex; flex-direction: column; gap: 1.2rem; }
+
+/* ADD EXPENSE */
+.panel-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem; }
+.panel-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 1.2rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.4rem; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.7rem 0.9rem; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+.form-group input::placeholder, .form-group textarea::placeholder { color: #555; }
+.form-group select option { background: #222; }
+.form-group textarea { resize: none; height: 70px; }
+.btn-full { width: 100%; background: var(--gold); color: var(--black); padding: 0.85rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+.btn-full:hover { background: var(--gold-dark); }
+
+/* RECENT EXPENSES */
+.expense-item { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.expense-item:last-child { border-bottom: none; }
+.exp-left { display: flex; align-items: center; gap: 0.7rem; }
+.exp-icon { width: 32px; height: 32px; background: rgba(232,184,75,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+.exp-name { font-size: 0.88rem; font-weight: 500; }
+.exp-reason { font-size: 0.75rem; color: var(--text-muted); }
+.exp-amount { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--red); }
+
+/* REPORT CARD */
+.grade-display { text-align: center; padding: 1rem 0; }
+.grade { font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800; }
+.grade-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem; }
+
+/* WARNING TOAST */
+.toast { position: fixed; bottom: 2rem; right: 2rem; background: #1a0a0a; border: 1px solid var(--red); border-radius: 14px; padding: 1.2rem 1.5rem; max-width: 360px; z-index: 999; animation: slideIn 0.4s ease; display: none; }
+.toast.show { display: block; }
+@keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast-title { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--red); font-size: 0.9rem; margin-bottom: 0.4rem; display: flex; justify-content: space-between; }
+.toast-msg { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
+.toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; }
+
+/* ADD CATEGORY MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+.modal { background: #161616; border: 1px solid rgba(232,184,75,0.2); border-radius: 18px; padding: 2rem; width: 100%; max-width: 400px; }
+.modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; margin-bottom: 1.5rem; }
+.emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+.emoji-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.5rem; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; text-align: center; }
+.emoji-btn:hover, .emoji-btn.selected { background: rgba(232,184,75,0.15); border-color: var(--gold); }
+.modal-actions { display: flex; gap: 0.8rem; margin-top: 1.2rem; }
+.btn-cancel { flex: 1; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+.btn-cancel:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
+
+@media(max-width:768px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  nav { padding: 1rem 1.2rem; }
+  .container { padding: 1.5rem 1rem; }
+}
+```
+
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">No<span>Excuse</span></div>
+  <div class="nav-right">
+    <div class="user-name">Hey, <span id="navUserName">there</span> 👋</div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="greeting">
+    <h1>Your Budget <span id="monthName"></span> 💰</h1>
+    <p id="greetingMsg">Track every naira. No excuses.</p>
+  </div>
+
+  <!-- STATS -->
+
+  <div class="stats-row">
+    <div class="stat-card highlight">
+      <div class="stat-label">Total Budget</div>
+      <div class="stat-value gold" id="totalBudget">₦0</div>
+      <div class="stat-sub">This month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Spent</div>
+      <div class="stat-value" id="totalSpent">₦0</div>
+      <div class="stat-sub">Across all categories</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Remaining</div>
+      <div class="stat-value green" id="totalRemaining">₦0</div>
+      <div class="stat-sub">Keep it up!</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- LEFT: CATEGORIES -->
+    <div>
+      <div class="section-title">
+        Budget Categories
+        <button class="btn-small" onclick="openAddCategory()">+ Add Category</button>
+      </div>
+      <div id="categoriesList"></div>
+    </div>
+
+```
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+
+  <!-- LOG EXPENSE -->
+  <div class="panel-card">
+    <div class="panel-title">📝 Log an Expense</div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="expCategory"></select>
+    </div>
+    <div class="form-group">
+      <label>Amount (₦)</label>
+      <input type="number" id="expAmount" placeholder="e.g. 5000" />
+    </div>
+    <div class="form-group">
+      <label>What is this for? (Required)</label>
+      <textarea id="expReason" placeholder="Explain why you're spending this money..."></textarea>
+    </div>
+    <button class="btn-full" onclick="logExpense()">Log Expense</button>
+  </div>
+
+  <!-- RECENT EXPENSES -->
+  <div class="panel-card">
+    <div class="panel-title">🧾 Recent Expenses</div>
+    <div id="recentExpenses"><p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">No expenses logged yet</p></div>
+  </div>
+
+  <!-- REPORT CARD -->
+  <div class="panel-card">
+    <div class="panel-title">📊 Monthly Report Card</div>
+    <div class="grade-display">
+      <div class="grade" id="reportGrade" style="color:var(--green)">A</div>
+      <div class="grade-sub" id="reportMsg">Excellent discipline! Keep it up.</div>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+</div>
+
+<!-- WARNING TOAST -->
+
+<div class="toast" id="warningToast">
+  <div class="toast-title">
+    ⚠️ <span id="toastTitle">Budget Warning</span>
+    <button class="toast-close" onclick="closeToast()">✕</button>
+  </div>
+  <div class="toast-msg" id="toastMsg"></div>
+</div>
+
+<!-- ADD CATEGORY MODAL -->
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title">Add Budget Category</div>
+    <div class="form-group">
+      <label>Category Name</label>
+      <input type="text" id="catName" placeholder="e.g. Food, Transport..." />
+    </div>
+    <div class="form-group">
+      <label>Pick an Icon</label>
+      <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+    <div class="form-group">
+      <label>Monthly Budget (₦)</label>
+      <input type="number" id="catBudget" placeholder="e.g. 50000" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-full" onclick="addCategory()" style="flex:2">Add Category</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const EMOJIS = ['🍽️','🚗','🎉','🏠','💊','👗','📚','💡','📱','✈️','🎮','☕','🛒','💰','🏋️','🎁'];
+  let selectedEmoji = '🍽️';
+  let categories = [];
+  let expenses = [];
+  let currentUser = null;
+
+  function init() {
+    currentUser = JSON.parse(localStorage.getItem('noexcuse_current_user'));
+    if (!currentUser) { window.location.href = 'login.html'; return; }
+    document.getElementById('navUserName').textContent = currentUser.name.split(' ')[0];
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('monthName').textContent = months[new Date().getMonth()];
+    loadData();
+    renderEmojiGrid();
+    renderAll();
+  }
+
+  function loadData() {
+    const key = currentUser.email;
+    categories = JSON.parse(localStorage.getItem('noexcuse_cats_' + key) || '[]');
+    expenses = JSON.parse(localStorage.getItem('noexcuse_exp_' + key) || '[]');
+    if (categories.length === 0) {
+      categories = [
+        { id: 1, name: 'Food & Groceries', icon: '🍽️', budget: 40000, spent: 0 },
+        { id: 2, name: 'Transport', icon: '🚗', budget: 20000, spent: 0 },
+        { id: 3, name: 'Entertainment', icon: '🎉', budget: 15000, spent: 0 },
+        { id: 4, name: 'Bills & Rent', icon: '🏠', budget: 80000, spent: 0 },
+      ];
+      saveData();
+    }
+  }
+
+  function saveData() {
+    const key = currentUser.email;
+    localStorage.setItem('noexcuse_cats_' + key, JSON.stringify(categories));
+    localStorage.setItem('noexcuse_exp_' + key, JSON.stringify(expenses));
+  }
+
+  function renderAll() {
+    renderCategories();
+    renderStats();
+    renderExpenseDropdown();
+    renderRecentExpenses();
+    renderReportCard();
+  }
+
+  function renderCategories() {
+    const el = document.getElementById('categoriesList');
+    if (categories.length === 0) {
+      el.innerHTML = '<div class="empty-state"><div class="big">💸</div><p>No categories yet. Add one to get started!</p></div>';
+      return;
+    }
+    el.innerHTML = categories.map(cat => {
+      const pct = cat.budget > 0 ? Math.min((cat.spent / cat.budget) * 100, 100) : 0;
+      const barClass = pct >= 100 ? 'bar-danger' : pct >= 90 ? 'bar-warning' : 'bar-safe';
+      const remaining = cat.budget - cat.spent;
+      return `
+        <div class="category-card">
+          <div class="cat-header">
+            <div class="cat-info">
+              <div class="cat-icon">${cat.icon}</div>
+              <div class="cat-name">${cat.name}</div>
+            </div>
+            <div class="cat-amounts">
+              <div class="cat-spent">₦${cat.spent.toLocaleString()}</div>
+              <div class="cat-budget">of ₦${cat.budget.toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="bar-track"><div class="bar-fill ${barClass}" style="width:${pct}%"></div></div>
+          <div class="cat-footer">
+            <div class="cat-percent">${pct.toFixed(0)}% used · ₦${remaining.toLocaleString()} left</div>
+            <button class="log-btn" onclick="quickLog(${cat.id})">+ Log</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderStats() {
+    const totalBudget = categories.reduce((s, c) => s + c.budget, 0);
+    const totalSpent = categories.reduce((s, c) => s + c.spent, 0);
+    const remaining = totalBudget - totalSpent;
+    document.getElementById('totalBudget').textContent = '₦' + totalBudget.toLocaleString();
+    document.getElementById('totalSpent').textContent = '₦' + totalSpent.toLocaleString();
+    const remEl = document.getElementById('totalRemaining');
+    remEl.textContent = '₦' + Math.abs(remaining).toLocaleString() + (remaining < 0 ? ' over!' : '');
+    remEl.className = 'stat-value ' + (remaining < 0 ? 'red' : 'green');
+  }
+
+  function renderExpenseDropdown() {
+    const sel = document.getElementById('expCategory');
+    sel.innerHTML = categories.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+  }
+
+  function renderRecentExpenses() {
+    const el = document.getElementById('recentExpenses');
+    const recent = [...expenses].reverse().slice(0, 5);
+    if (recent.length === 0) {
+      el.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">No expenses logged yet</p>';
+      return;
+    }
+    el.innerHTML = recent.map(e => {
+      const cat = categories.find(c => c.id == e.catId);
+      return `<div class="expense-item">
+        <div class="exp-left">
+          <div class="exp-icon">${cat ? cat.icon : '💸'}</div>
+          <div>
+            <div class="exp-name">${cat ? cat.name : 'Unknown'}</div>
+            <div class="exp-reason">${e.reason.substring(0, 30)}${e.reason.length > 30 ? '...' : ''}</div>
+          </div>
+        </div>
+        <div class="exp-amount">-₦${e.amount.toLocaleString()}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderReportCard() {
+    const totalBudget = categories.reduce((s, c) => s + c.budget, 0);
+    const totalSpent = categories.reduce((s, c) => s + c.spent, 0);
+    const pct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+    let grade, msg, color;
+    if (pct <= 50) { grade = 'A'; msg = 'Excellent discipline! You\'re crushing it.'; color = 'var(--green)'; }
+    else if (pct <= 70) { grade = 'B'; msg = 'Good job! Stay focused for the rest of the month.'; color = '#7ed56f'; }
+    else if (pct <= 85) { grade = 'C'; msg = 'Be careful — you\'re halfway through your budget.'; color = 'var(--gold)'; }
+    else if (pct <= 100) { grade = 'D'; msg = 'Warning! You\'re close to your limit. Slow down.'; color = '#e8844b'; }
+    else { grade = 'F'; msg = 'You\'ve exceeded your budget. No more excuses!'; color = 'var(--red)'; }
+    document.getElementById('reportGrade').textContent = grade;
+    document.getElementById('reportGrade').style.color = color;
+    document.getElementById('reportMsg').textContent = msg;
+  }
+
+  function logExpense() {
+    const catId = parseInt(document.getElementById('expCategory').value);
+    const amount = parseFloat(document.getElementById('expAmount').value);
+    const reason = document.getElementById('expReason').value.trim();
+    if (!catId || !amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
+    if (!reason) { showToast('No Excuse Accepted! 🚫', 'You MUST provide a reason before logging any expense. That\'s the whole point of NoExcuse!', true); return; }
+    const cat = categories.find(c => c.id === catId);
+    if (!cat) return;
+    const newSpent = cat.spent + amount;
+    const pct = (newSpent / cat.budget) * 100;
+    if (pct >= 100) {
+      showToast(`🚨 Over Budget — ${cat.name}`, `You've exceeded your ₦${cat.budget.toLocaleString()} ${cat.name} budget! You said you wanted to save money — this is exactly what NoExcuse is here to prevent.`);
+    } else if (pct >= 90) {
+      showToast(`⚠️ 90% Warning — ${cat.name}`, `You've used 90% of your ${cat.name} budget. Only ₦${(cat.budget - newSpent).toLocaleString()} left. Think before your next spend!`);
+    } else if (pct >= 70) {
+      showToast(`💛 70% Alert — ${cat.name}`, `You've used 70% of your ${cat.name} budget. Stay disciplined for the rest of the month!`);
+    }
+    cat.spent = newSpent;
+    expenses.push({ catId, amount, reason, date: new Date().toLocaleDateString() });
+    document.getElementById('expAmount').value = '';
+    document.getElementById('expReason').value = '';
+    saveData();
+    renderAll();
+  }
+
+  function quickLog(catId) {
+    document.getElementById('expCategory').value = catId;
+    document.getElementById('expAmount').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showToast(title, msg, isError = false) {
+    const toast = document.getElementById('warningToast');
+    document.getElementById('toastTitle').textContent = title;
+    document.getElementById('toastMsg').textContent = msg;
+    toast.style.borderColor = isError ? 'var(--gold)' : 'var(--red)';
+    toast.classList.add('show');
+    setTimeout(closeToast, 6000);
+  }
+
+  function closeToast() { document.getElementById('warningToast').classList.remove('show'); }
+
+  function renderEmojiGrid() {
+    const grid = document.getElementById('emojiGrid');
+    grid.innerHTML = EMOJIS.map(e => `<button class="emoji-btn ${e === selectedEmoji ? 'selected' : ''}" onclick="selectEmoji('${e}')">${e}</button>`).join('');
+  }
+
+  function selectEmoji(emoji) {
+    selectedEmoji = emoji;
+    renderEmojiGrid();
+  }
+
+  function openAddCategory() {
+    document.getElementById('modalOverlay').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.getElementById('catName').value = '';
+    document.getElementById('catBudget').value = '';
+  }
+
+  function addCategory() {
+    const name = document.getElementById('catName').value.trim();
+    const budget = parseFloat(document.getElementById('catBudget').value);
+    if (!name || !budget || budget <= 0) { alert('Please fill in category name and budget.'); return; }
+    const newId = Date.now();
+    categories.push({ id: newId, name, icon: selectedEmoji, budget, spent: 0 });
+    saveData();
+    closeModal();
+    renderAll();
+  }
+
+  function logout() {
+    localStorage.removeItem('noexcuse_current_user');
+    window.location.href = 'index.html';
+  }
+
+  init();
+</script>
+
+</body>
+</html>
