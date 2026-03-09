@@ -24,98 +24,128 @@
     .form-group input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 0.85rem 1rem; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
     .form-group input:focus { border-color: var(--gold); }
     .form-group input::placeholder { color: #555; }
-    .forgot { display: block; text-align: right; font-size: 0.82rem; color: var(--gold); text-decoration: none; margin-top: 0.4rem; }
-    .forgot:hover { text-decoration: underline; }
-    .error-msg { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; color: #ff8080; margin-bottom: 1rem; display: none; }
+    .msg { border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; display: none; }
+    .msg.error { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); color: #ff8080; }
+    .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: #2ecc71; }
     .btn { width: 100%; background: var(--gold); color: var(--black); padding: 1rem; border-radius: 10px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-top: 0.5rem; }
     .btn:hover { background: var(--gold-dark); transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
     .divider { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin: 1.5rem 0; position: relative; }
     .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: rgba(255,255,255,0.08); }
     .divider::before { left: 0; } .divider::after { right: 0; }
     .register-link { text-align: center; font-size: 0.9rem; color: var(--text-muted); }
     .register-link a { color: var(--gold); text-decoration: none; font-weight: 600; }
-    .register-link a:hover { text-decoration: underline; }
-    .welcome-back { background: rgba(232,184,75,0.08); border: 1px solid rgba(232,184,75,0.2); border-radius: 10px; padding: 0.9rem 1rem; font-size: 0.85rem; color: var(--gold); margin-bottom: 1.5rem; display: none; text-align: center; }
+    .debug { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.75rem; font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; display: none; }
   </style>
 </head>
 <body>
   <nav>
     <a href="index.html" class="logo">No<span>Excuse</span></a>
-    <a href="register.html" class="nav-link">No account yet? Sign up →</a>
+    <a href="register.html" class="nav-link">No account? Sign up →</a>
   </nav>
   <div class="main">
     <div class="card">
       <h1 class="card-title">Welcome back 👋</h1>
       <p class="card-sub">Log in and keep your spending in check. No excuses today.</p>
-      <div class="welcome-back" id="welcomeBack"></div>
-      <div class="error-msg" id="errorMsg"></div>
+      <div class="msg error" id="errorMsg"></div>
+      <div class="msg success" id="successMsg"></div>
       <div class="form-group">
         <label>Email Address</label>
-        <input type="email" id="email" placeholder="you@example.com" />
+        <input type="email" id="emailInput" placeholder="you@example.com" />
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input type="password" id="password" placeholder="Your password" />
-        <a href="#" class="forgot">Forgot password?</a>
+        <input type="password" id="passwordInput" placeholder="Your password" />
       </div>
-      <button class="btn" onclick="handleLogin()">Login to NoExcuse</button>
+      <button class="btn" id="loginBtn">Login to NoExcuse</button>
+      <div class="debug" id="debugInfo"></div>
       <div class="divider">or</div>
       <div class="register-link">Don't have an account? <a href="register.html">Sign up free</a></div>
     </div>
   </div>
+
   <script>
-    // Only redirect if explicitly logged in (not just any stored value)
-    try {
-      const current = JSON.parse(localStorage.getItem('noexcuse_current_user') || 'null');
-      if (current && current.email) { window.location.href = 'dashboard.html'; }
-    } catch(e) { localStorage.removeItem('noexcuse_current_user'); }
-
-```
-function handleLogin() {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const errorMsg = document.getElementById('errorMsg');
-  errorMsg.style.display = 'none';
-
-  if (!email || !password) {
-    errorMsg.textContent = 'Please enter your email and password.';
-    errorMsg.style.display = 'block'; return;
-  }
-
-  try {
-    const users = JSON.parse(localStorage.getItem('noexcuse_users') || '[]');
-    console.log('Users found:', users.length);
-    console.log('Looking for:', email);
-    
-    const user = users.find(u => u.email.toLowerCase().trim() === email.toLowerCase() && u.password === password);
-    
-    if (!user) {
-      // Check if email exists but wrong password
-      const emailExists = users.find(u => u.email.toLowerCase().trim() === email.toLowerCase());
-      if (emailExists) {
-        errorMsg.textContent = 'Wrong password. Please try again.';
-      } else {
-        errorMsg.textContent = 'No account found with this email. Please register first.';
-      }
-      errorMsg.style.display = 'block'; return;
+    // Show debug info to help troubleshoot
+    function showDebug(msg) {
+      const el = document.getElementById('debugInfo');
+      el.style.display = 'block';
+      el.textContent = msg;
     }
 
-    localStorage.setItem('noexcuse_current_user', JSON.stringify({ name: user.name, email: user.email }));
-    window.location.href = 'dashboard.html';
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('successMsg').style.display = 'none';
+    }
 
-  } catch(e) {
-    errorMsg.textContent = 'Something went wrong. Please try again.';
-    errorMsg.style.display = 'block';
-    console.error(e);
-  }
-}
+    function showSuccess(msg) {
+      const el = document.getElementById('successMsg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('errorMsg').style.display = 'none';
+    }
 
-// Allow pressing Enter to login
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') handleLogin();
-});
-```
+    document.getElementById('loginBtn').addEventListener('click', function() {
+      const email = document.getElementById('emailInput').value.trim().toLowerCase();
+      const password = document.getElementById('passwordInput').value;
 
+      // Clear messages
+      document.getElementById('errorMsg').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'none';
+
+      // Basic validation
+      if (!email) { showError('Please enter your email address.'); return; }
+      if (!password) { showError('Please enter your password.'); return; }
+
+      // Get users from storage
+      let users = [];
+      try {
+        const stored = localStorage.getItem('noexcuse_users');
+        showDebug('Stored data: ' + (stored ? stored.substring(0, 100) : 'EMPTY - No accounts found!'));
+        users = JSON.parse(stored || '[]');
+      } catch(e) {
+        showError('Storage error: ' + e.message);
+        return;
+      }
+
+      if (users.length === 0) {
+        showError('No accounts found. Please register first!');
+        showDebug('localStorage is empty — you need to register on THIS browser first.');
+        return;
+      }
+
+      // Find user
+      const user = users.find(function(u) {
+        return u.email.trim().toLowerCase() === email && u.password === password;
+      });
+
+      if (!user) {
+        const emailOnly = users.find(function(u) {
+          return u.email.trim().toLowerCase() === email;
+        });
+        if (emailOnly) {
+          showError('Wrong password. Please check and try again.');
+        } else {
+          showError('No account found with this email. Please register first.');
+          showDebug('Registered emails: ' + users.map(function(u){ return u.email; }).join(', '));
+        }
+        return;
+      }
+
+      // Success!
+      showSuccess('Login successful! Taking you to your dashboard...');
+      localStorage.setItem('noexcuse_current_user', JSON.stringify({ name: user.name, email: user.email }));
+      setTimeout(function() {
+        window.location.href = 'dashboard.html';
+      }, 1000);
+    });
+
+    // Enter key support
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') document.getElementById('loginBtn').click();
+    });
   </script>
+
 </body>
 </html>
