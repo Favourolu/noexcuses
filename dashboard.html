@@ -186,15 +186,13 @@
     .loading-logo span { color: var(--gold); }
     .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(232,184,75,0.15); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .desktop-only { display: flex; }
     @media(max-width:768px) {
+      .desktop-only { display: none !important; }
       .main-grid { grid-template-columns: 1fr; }
       .stats-row { grid-template-columns: 1fr 1fr; }
       nav { padding: 0.8rem 1rem; }
       .container { padding: 1.2rem 0.9rem; }
-      .nav-right { gap: 0.4rem; }
-      .nav-btn { font-size: 0.7rem; padding: 0 0.6rem; height: 28px; }
-      .logout-btn { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
-      .nav-btn[onclick*="privacy"], .nav-btn[onclick*="Delete"] { display: none; }
       .stat-value { font-size: 1.4rem; }
       .stat-label { font-size: 0.68rem; }
       .streak-num { font-size: 1.4rem; }
@@ -226,19 +224,25 @@
 <nav>
   <div class="logo">No<span>Excuse</span></div>
   <div class="nav-right">
-    <div class="user-name">Hey, <span id="navUserName">there</span> 👋</div>
-    <button class="nav-btn" onclick="showArchiveModal()">📁 History</button>
-    <button class="nav-btn" onclick="window.location.href='partner.html'" style="background:rgba(46,204,113,0.1);border-color:rgba(46,204,113,0.3);color:#2ecc71">👥 Partner</button>
-    <button class="nav-btn" onclick="startTutorial()">? Help</button>
-    <button class="nav-btn" onclick="window.location.href='privacy.html'" style="background:none;border-color:rgba(255,255,255,0.08);color:var(--text-muted)">Privacy</button>
-    <button class="nav-btn" onclick="confirmDeleteAccount()" style="background:rgba(232,75,75,0.08);border-color:rgba(232,75,75,0.2);color:#ff8080">🗑️ Delete Account</button>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <div class="user-name desktop-only">Hey, <span id="navUserName">there</span> 👋</div>
+    <button class="nav-btn desktop-only" onclick="showArchiveModal()">📁 History</button>
+    <button class="nav-btn desktop-only" onclick="window.location.href='partner.html'" style="background:rgba(46,204,113,0.1);border-color:rgba(46,204,113,0.3);color:#2ecc71">👥 Partner</button>
+    <button class="nav-btn desktop-only" onclick="startTutorial()">? Help</button>
+    <button class="nav-btn desktop-only" onclick="window.location.href='privacy.html'" style="background:none;border-color:rgba(255,255,255,0.08);color:var(--text-muted)">Privacy</button>
+    <button class="nav-btn desktop-only" onclick="confirmDeleteAccount()" style="background:rgba(232,75,75,0.08);border-color:rgba(232,75,75,0.2);color:#ff8080">🗑️ Delete</button>
+    <button class="logout-btn desktop-only" onclick="logout()">Logout</button>
     <!-- Mobile menu -->
-    <div style="position:relative;display:none" id="mobileMenuWrap" class="mobile-only">
-      <button onclick="toggleMobileMenu()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--white);padding:0.3rem 0.7rem;border-radius:6px;cursor:pointer;font-size:1rem">⋮</button>
-      <div id="mobileMenu" style="display:none;position:absolute;right:0;top:110%;background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.5rem;min-width:160px;z-index:200">
-        <button onclick="window.location.href='privacy.html'" style="display:block;width:100%;text-align:left;background:none;border:none;color:#888;padding:0.6rem 0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.85rem;border-radius:6px">🔒 Privacy</button>
-        <button onclick="confirmDeleteAccount()" style="display:block;width:100%;text-align:left;background:none;border:none;color:#ff8080;padding:0.6rem 0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.85rem;border-radius:6px">🗑️ Delete Account</button>
+    <div style="position:relative" id="mobileMenuWrap">
+      <button onclick="toggleMobileMenu()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--white);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:1.1rem;line-height:1">⋮</button>
+      <div id="mobileMenu" style="display:none;position:absolute;right:0;top:110%;background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:0.5rem;min-width:180px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
+        <div style="padding:0.5rem 0.8rem;font-size:0.75rem;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Hey, <span id="mobileNavName">there</span> 👋</div>
+        <button onclick="showArchiveModal();toggleMobileMenu()" style="display:block;width:100%;text-align:left;background:none;border:none;color:#ccc;padding:0.6rem 0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:6px">📁 History</button>
+        <button onclick="window.location.href='partner.html'" style="display:block;width:100%;text-align:left;background:none;border:none;color:#2ecc71;padding:0.6rem 0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:6px">👥 Partner</button>
+        <button onclick="startTutorial();toggleMobileMenu()" style="display:block;width:100%;text-align:left;background:none;border:none;color:#ccc;padding:0.6rem 0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:6px">? Help</button>
+        <button onclick="window.location.href='privacy.html'" style="display:block;width:100%;text-align:left;background:none;border:none;color:#888;padding:0.6rem 0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:6px">🔒 Privacy</button>
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin:0.3rem 0"></div>
+        <button onclick="confirmDeleteAccount()" style="display:block;width:100%;text-align:left;background:none;border:none;color:#ff8080;padding:0.6rem 0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:6px">🗑️ Delete Account</button>
+        <button onclick="logout()" style="display:block;width:100%;text-align:left;background:none;border:none;color:#888;padding:0.6rem 0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.88rem;border-radius:6px">← Logout</button>
       </div>
     </div>
   </div>
@@ -519,6 +523,8 @@
     currentUser = user;
     userDocRef = doc(db, 'users', user.uid);
     document.getElementById('navUserName').textContent = user.displayName ? user.displayName.split(' ')[0] : 'there';
+    const mobileNavName = document.getElementById('mobileNavName');
+    if (mobileNavName) mobileNavName.textContent = user.displayName ? user.displayName.split(' ')[0] : 'there';
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('monthName').textContent = months[new Date().getMonth()];
     await loadData();
