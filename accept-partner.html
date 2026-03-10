@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NoExcuse — Accept Partner Invite</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --white: #f5f2eb; --gold: #e8b84b; --gold-dark: #c49a2a; --red: #e84b4b; --green: #2ecc71; --gray: #1a1a1a; --text-muted: #888; }
+    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    .card { background: var(--gray); border: 1px solid rgba(232,184,75,0.2); border-radius: 24px; padding: 2.5rem; max-width: 460px; width: 100%; text-align: center; }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; margin-bottom: 2rem; }
+    .logo span { color: var(--gold); }
+    .emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+    .title { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.6rem; }
+    .title span { color: var(--gold); }
+    .sub { color: var(--text-muted); font-size: 0.92rem; line-height: 1.7; margin-bottom: 2rem; }
+    .invite-box { background: rgba(232,184,75,0.06); border: 1px solid rgba(232,184,75,0.2); border-radius: 14px; padding: 1.2rem; margin-bottom: 2rem; }
+    .invite-from { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--gold); margin-bottom: 0.3rem; }
+    .invite-detail { font-size: 0.85rem; color: var(--text-muted); }
+    .btn { width: 100%; background: var(--gold); color: var(--black); border: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-bottom: 0.8rem; }
+    .btn:hover { background: var(--gold-dark); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-outline { width: 100%; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.9rem; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .btn-outline:hover { border-color: var(--white); color: var(--white); }
+    .msg { border-radius: 10px; padding: 0.85rem 1rem; font-size: 0.88rem; margin-bottom: 1rem; display: none; }
+    .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: var(--green); display: block; }
+    .msg.error { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); color: #ff8080; display: block; }
+    .spinner { width: 36px; height: 36px; border: 3px solid rgba(232,184,75,0.15); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .features { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 2rem; text-align: left; }
+    .feature { display: flex; align-items: center; gap: 0.8rem; font-size: 0.88rem; }
+    .feature-icon { width: 30px; height: 30px; background: rgba(232,184,75,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">No<span>Excuse</span></div>
+    <div id="loadingState">
+      <div class="spinner"></div>
+      <p style="color:var(--text-muted)">Loading invitation...</p>
+    </div>
+    <div id="inviteState" style="display:none">
+      <div class="emoji">🤝</div>
+      <div class="title">You have been <span>invited!</span></div>
+      <p class="sub">Someone wants you to be their accountability partner on NoExcuse and help them stay financially disciplined.</p>
+      <div class="invite-box">
+        <div class="invite-from" id="inviteFromName">Loading...</div>
+        <div class="invite-detail" id="inviteDetail">wants you to keep them accountable</div>
+      </div>
+      <div class="features">
+        <div class="feature"><div class="feature-icon">👁️</div><span>See their spending summary in real time</span></div>
+        <div class="feature"><div class="feature-icon">🔔</div><span>Get notified when they overspend</span></div>
+        <div class="feature"><div class="feature-icon">💪</div><span>Help them stay on budget every month</span></div>
+      </div>
+      <div class="msg" id="msgBox"></div>
+      <button class="btn" id="acceptBtn" onclick="acceptInvite()">✅ Accept & Become Their Partner</button>
+      <button class="btn-outline" onclick="window.location.href='index.html'">Decline</button>
+    </div>
+    <div id="successState" style="display:none">
+      <div class="emoji">🎉</div>
+      <div class="title">You are now their <span>Partner!</span></div>
+      <p class="sub">You are now linked as their accountability partner. You will get notified when they overspend and can see their spending summary on your dashboard.</p>
+      <button class="btn" onclick="window.location.href='partner.html'">View Partner Dashboard →</button>
+    </div>
+    <div id="errorState" style="display:none">
+      <div class="emoji">😕</div>
+      <div class="title">Invalid <span>Link</span></div>
+      <p class="sub">This invitation link is invalid or has expired. Ask your friend to send you a new link.</p>
+      <button class="btn" onclick="window.location.href='index.html'">Go to NoExcuse</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXaFZ-tHwK4FXO6ZQ6VZ5_xQxo0mXwPas",
+      authDomain: "noexcuse-ac153.firebaseapp.com",
+      projectId: "noexcuse-ac153",
+      storageBucket: "noexcuse-ac153.firebasestorage.app",
+      messagingSenderId: "773313862174",
+      appId: "1:773313862174:web:f451fdcee73d378e1aac0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Get URL params
+    const params = new URLSearchParams(window.location.search);
+    const senderUid = params.get('uid');
+    const notifyLevel = params.get('notify') || '90';
+
+    let currentUser = null;
+    let senderData = null;
+
+    // ── LOAD INVITE ──
+    async function loadInvite() {
+      if (!senderUid) { showState('errorState'); return; }
+      try {
+        const snap = await getDoc(doc(db, 'users', senderUid));
+        if (!snap.exists()) { showState('errorState'); return; }
+        senderData = snap.data();
+        const notifyText = notifyLevel === 'all' ? 'every expense they log' : notifyLevel === '70' ? 'when they reach 70% of any budget' : notifyLevel === '90' ? 'when they reach 90% of any budget' : 'when they exceed a budget';
+        document.getElementById('inviteFromName').textContent = senderData.name || senderData.email || 'A NoExcuse user';
+        document.getElementById('inviteDetail').textContent = 'wants you to be notified ' + notifyText;
+        showState('inviteState');
+      } catch(e) {
+        showState('errorState');
+      }
+    }
+
+    // ── AUTH CHECK ──
+    onAuthStateChanged(auth, async function(user) {
+      currentUser = user;
+      await loadInvite();
+    });
+
+    // ── ACCEPT ──
+    window.acceptInvite = async function() {
+      if (!currentUser) {
+        // Not logged in — redirect to register then come back
+        localStorage.setItem('noexcuse_pending_invite', window.location.href);
+        window.location.href = 'register.html?redirect=' + encodeURIComponent(window.location.href);
+        return;
+      }
+
+      if (currentUser.uid === senderUid) {
+        showMsg('You cannot be your own accountability partner!', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('acceptBtn');
+      btn.disabled = true;
+      btn.textContent = 'Accepting...';
+
+      try {
+        // Update sender's partner status to active
+        const senderSnap = await getDoc(doc(db, 'users', senderUid));
+        const senderDoc = senderSnap.data();
+        const partners = senderDoc.partners || [];
+
+        // Check if already a partner
+        const existing = partners.find(function(p){ return p.email === currentUser.email; });
+        let updatedPartners;
+        if (existing) {
+          updatedPartners = partners.map(function(p) {
+            if (p.email === currentUser.email) {
+              return Object.assign({}, p, { status: 'active', name: currentUser.displayName || '' });
+            }
+            return p;
+          });
+        } else {
+          updatedPartners = partners.concat([{
+            email: currentUser.email,
+            name: currentUser.displayName || '',
+            notifyLevel: notifyLevel,
+            status: 'active',
+            addedAt: new Date().toISOString()
+          }]);
+        }
+
+        await updateDoc(doc(db, 'users', senderUid), { partners: updatedPartners });
+
+        // Add notification to current user's account
+        const notif = {
+          type: 'invite_accepted',
+          message: (senderData.name || 'Someone') + ' added you as their accountability partner. You can now see their spending summary.',
+          timestamp: new Date().toISOString()
+        };
+        await updateDoc(doc(db, 'users', currentUser.uid), { partnerNotifications: arrayUnion(notif) });
+
+        showState('successState');
+      } catch(e) {
+        btn.disabled = false;
+        btn.textContent = '✅ Accept & Become Their Partner';
+        showMsg('Error: ' + e.message, 'error');
+      }
+    }
+
+    function showState(state) {
+      ['loadingState', 'inviteState', 'successState', 'errorState'].forEach(function(s) {
+        document.getElementById(s).style.display = s === state ? 'block' : 'none';
+      });
+    }
+
+    function showMsg(msg, type) {
+      const el = document.getElementById('msgBox');
+      el.textContent = msg;
+      el.className = 'msg ' + type;
+    }
+
+    // Check for pending invite after login
+    const pendingInvite = localStorage.getItem('noexcuse_pending_invite');
+    if (pendingInvite && currentUser) {
+      localStorage.removeItem('noexcuse_pending_invite');
+    }
+  </script>
+
+</body>
+</html>
