@@ -586,6 +586,7 @@
       const partners = data.partners || [];
       const activePartners = partners.filter(function(p) {
         if (p.status !== 'active') return false;
+        if (!p.uid) return false; // skip old partners without uid
         if (p.notifyLevel === 'all') return true;
         if (p.notifyLevel === '70' && (type === '70' || type === '90' || type === 'exceeded')) return true;
         if (p.notifyLevel === '90' && (type === '90' || type === 'exceeded')) return true;
@@ -593,15 +594,12 @@
         return false;
       });
       for (const partner of activePartners) {
-        // Find partner user doc
-        const usersSnap = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(m => m.getDocs(m.collection(db, 'users')));
-        usersSnap.forEach(async function(d) {
-          if (d.data().email === partner.email) {
-            const notif = { type: type, message: (currentUser.displayName || 'Your partner') + ' ' + message, timestamp: new Date().toISOString() };
-            const { updateDoc, arrayUnion, doc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-            await updateDoc(doc(db, 'users', d.id), { partnerNotifications: arrayUnion(notif) });
-          }
-        });
+        try {
+          // Direct lookup by UID — no full scan needed
+          const partnerRef = doc(db, 'users', partner.uid);
+          const notif = { type: type, message: (currentUser.displayName || 'Your partner') + ' ' + message, timestamp: new Date().toISOString() };
+          await updateDoc(partnerRef, { partnerNotifications: arrayUnion(notif) });
+        } catch(inner) { console.log('notify partner error:', inner); }
       }
     } catch(e) { console.log('notify error:', e); }
   }
@@ -855,6 +853,7 @@
     if (cat) cat.spent = Math.max(0, (cat.spent||0) - exp.amount);
     expenses.splice(idx, 1);
     await saveData();
+    await updateStreak(false); // re-evaluate streak after deletion
     renderAll();
     showToast('🗑️ Deleted', 'Expense removed and budget updated.', false);
   }
@@ -873,7 +872,7 @@
     }
   }
 
-  async function finalizeExpense(catId, amount, reason) {
+  async function finalizeExpense(catId, amount, reason, proofText, proofImage) {
     const cat = categories.find(function(c){ return c.id===catId; });
     if (!cat) return;
     const newSpent = (cat.spent||0) + amount;
@@ -891,7 +890,10 @@
       notifyPartners('all', 'logged a new expense of ₦' + amount.toLocaleString() + ' in ' + cat.name + '.');
     }
     cat.spent = newSpent;
-    expenses.push({ catId, amount, reason, date: new Date().toLocaleDateString() });
+    const expObj = { catId, amount, reason, date: new Date().toLocaleDateString() };
+    if (proofText) expObj.proofText = proofText;
+    if (proofImage) expObj.proofImage = proofImage; // base64 saved to Firestore
+    expenses.push(expObj);
     document.getElementById('expAmount').value = '';
     document.getElementById('expReason').value = '';
     await saveData();
@@ -900,11 +902,20 @@
   }
 
   // ── PROOF ──
+  let proofImageBase64 = null;
+
   window.handleProofUpload = function(input) {
     const file = input.files[0];
     if (file) {
+      // Enforce max 2MB
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image too large. Please upload a photo under 2MB.');
+        input.value = '';
+        return;
+      }
       const reader = new FileReader();
       reader.onload = function(e) {
+        proofImageBase64 = e.target.result; // save base64 for Firestore
         const preview = document.getElementById('proofPreview');
         preview.src = e.target.result;
         preview.style.display = 'block';
@@ -918,9 +929,10 @@
     const justification = document.getElementById('proofJustification').value.trim();
     const preview = document.getElementById('proofPreview');
     if (!justification) { alert('Please provide a written justification.'); return; }
-    if (!preview.src || preview.style.display === 'none') { alert('Please upload a photo or receipt.'); return; }
+    if (!proofImageBase64 || preview.style.display === 'none') { alert('Please upload a photo or receipt.'); return; }
     if (!pendingExpense) return;
-    finalizeExpense(pendingExpense.catId, pendingExpense.amount, pendingExpense.reason + ' [PROOF: ' + justification + ']');
+    // Attach both text justification and image to the expense reason
+    finalizeExpense(pendingExpense.catId, pendingExpense.amount, pendingExpense.reason, justification, proofImageBase64);
     cancelProof();
   }
 
@@ -930,6 +942,7 @@
     document.getElementById('proofPreview').src = '';
     document.getElementById('proofUploadArea').style.display = 'block';
     document.getElementById('proofJustification').value = '';
+    proofImageBase64 = null;
     pendingExpense = null;
   }
 
