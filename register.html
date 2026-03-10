@@ -168,7 +168,15 @@
         });
 
         showMsg('Account created! Taking you to your dashboard...', 'success');
-        setTimeout(function() { window.location.href = 'dashboard.html'; }, 1200);
+        setTimeout(function() {
+          const pending = localStorage.getItem('noexcuse_pending_invite');
+          if (pending) {
+            localStorage.removeItem('noexcuse_pending_invite');
+            window.location.href = pending;
+          } else {
+            window.location.href = 'dashboard.html';
+          }
+        }, 1200);
       } catch(e) {
         btn.disabled = false;
         btn.textContent = 'Create My Account';
