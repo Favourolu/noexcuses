@@ -90,7 +90,15 @@
 
     // Auto redirect if already logged in
     onAuthStateChanged(auth, function(user) {
-      if (user) window.location.href = 'dashboard.html';
+      if (user) {
+        const pending = localStorage.getItem('noexcuse_pending_invite');
+        if (pending) {
+          localStorage.removeItem('noexcuse_pending_invite');
+          window.location.href = pending;
+        } else {
+          window.location.href = 'dashboard.html';
+        }
+      }
     });
 
     function showMsg(msg, type) {
@@ -113,7 +121,13 @@
       try {
         await signInWithEmailAndPassword(auth, email, password);
         showMsg('Login successful! Redirecting...', 'success');
-        window.location.href = 'dashboard.html';
+        const pending = localStorage.getItem('noexcuse_pending_invite');
+        if (pending) {
+          localStorage.removeItem('noexcuse_pending_invite');
+          window.location.href = pending;
+        } else {
+          window.location.href = 'dashboard.html';
+        }
       } catch(e) {
         btn.disabled = false;
         btn.textContent = 'Login to NoExcuse';
