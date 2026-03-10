@@ -236,6 +236,12 @@ footer .footer-links a:hover { color: var(--white); }
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#e8b84b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NoExcuse">
 </head>
 <body>
 
@@ -529,6 +535,12 @@ footer .footer-links a:hover { color: var(--white); }
       if (!name || !email) { alert('Please enter your name and email.'); return; }
       document.getElementById('formContent').style.display = 'none';
       document.getElementById('successMsg').style.display = 'block';
+    }
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/noexcuses/sw.js');
     }
   </script>
 
