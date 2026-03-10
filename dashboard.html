@@ -32,7 +32,29 @@
     .daily-msg-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
     .daily-msg-sub { font-size: 0.82rem; color: var(--text-muted); }
     /* STATS */
-    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
+    .streak-card { background: linear-gradient(135deg, rgba(232,75,75,0.12), rgba(232,184,75,0.06)); border: 1px solid rgba(232,75,75,0.25); border-radius: 14px; padding: 1.5rem; cursor: pointer; transition: all 0.2s; }
+    .streak-card:hover { border-color: rgba(232,75,75,0.5); }
+    .streak-fire { font-size: 1.6rem; margin-bottom: 0.3rem; }
+    .streak-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; color: #ff6b6b; }
+    .badge-shelf { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .badge { font-size: 1.1rem; cursor: default; }
+    /* STREAK MODAL */
+    .streak-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+    .streak-modal.open { display: flex; }
+    .streak-modal-inner { background: #111; border: 1px solid rgba(232,75,75,0.3); border-radius: 24px; padding: 2rem; max-width: 440px; width: 100%; max-height: 85vh; overflow-y: auto; }
+    .streak-modal-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .streak-big { font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800; color: #ff6b6b; text-align: center; line-height: 1; }
+    .streak-label { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .streak-rule { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 0.9rem 1rem; font-size: 0.85rem; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.8rem; }
+    .streak-rule-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .badge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-top: 1rem; }
+    .badge-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1rem; text-align: center; }
+    .badge-item.unlocked { border-color: rgba(232,184,75,0.3); background: rgba(232,184,75,0.05); }
+    .badge-item.locked { opacity: 0.4; }
+    .badge-emoji { font-size: 2rem; margin-bottom: 0.4rem; }
+    .badge-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; }
+    .badge-req { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
     .stat-card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem; }
     .stat-card.highlight { border-color: rgba(232,184,75,0.2); background: linear-gradient(135deg, rgba(232,184,75,0.08), transparent); }
     .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.6rem; }
@@ -231,6 +253,32 @@
       <div class="stat-label">Remaining</div>
       <div class="stat-value green" id="totalRemaining">₦0</div>
       <div class="stat-sub">Keep it up!</div>
+    </div>
+    <div class="streak-card" onclick="openStreakModal()">
+      <div class="streak-fire">🔥</div>
+      <div class="stat-label">Streak</div>
+      <div class="streak-num" id="streakNum">0</div>
+      <div class="stat-sub" id="streakSub">days</div>
+      <div class="badge-shelf" id="badgeShelf"></div>
+    </div>
+  </div>
+
+  <!-- STREAK MODAL -->
+
+  <div class="streak-modal" id="streakModal">
+    <div class="streak-modal-inner">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <div class="streak-modal-title">🔥 Your Streak</div>
+        <button onclick="closeStreakModal()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.3rem">✕</button>
+      </div>
+      <div class="streak-big" id="modalStreakNum">0</div>
+      <div class="streak-label" id="modalStreakLabel">days in a row</div>
+      <div class="streak-rule"><div class="streak-rule-icon">📝</div><div>Log at least one expense every day</div></div>
+      <div class="streak-rule"><div class="streak-rule-icon">✅</div><div>Stay under budget in ALL categories</div></div>
+      <div class="streak-rule"><div class="streak-rule-icon">⚠️</div><div>Miss a day or exceed a budget = streak resets</div></div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin:1.5rem 0 0.8rem">🏆 Badges</div>
+      <div class="badge-grid" id="badgeGrid"></div>
+      <button class="btn" style="width:100%;margin-top:1.5rem" onclick="shareStreak()">📤 Share My Streak</button>
     </div>
   </div>
 
@@ -435,6 +483,11 @@
     await loadData();
     renderEmojiGrid();
     renderAll();
+    // Load streak display
+    getDoc(userDocRef).then(function(snap) {
+      const data = snap.data() || {};
+      renderStreak(data.streak || 0, data.badges || []);
+    });
     document.getElementById('loadingScreen').style.display = 'none';
     setTimeout(function() { showDailyMessage(); }, 400);
     const hasSeenTutorial = localStorage.getItem('noexcuse_tutorial_' + user.uid);
@@ -503,6 +556,107 @@
       }
     } catch(e) { console.log('notify error:', e); }
   }
+
+  // ── STREAK ──
+  const BADGES = [
+    { emoji: '🌱', name: 'Getting Started', req: 3, days: 3 },
+    { emoji: '🔥', name: 'Getting Serious', req: 7, days: 7 },
+    { emoji: '⚡', name: 'Budget Warrior', req: 30, days: 30 },
+    { emoji: '💎', name: 'NoExcuse Legend', req: 100, days: 100 },
+    { emoji: '🏆', name: 'Unstoppable', req: 365, days: 365 },
+    { emoji: '🌟', name: 'Perfect Week', req: 7, days: 7, type: 'perfect' }
+  ];
+
+  async function updateStreak(expenseLogged) {
+    try {
+      const snap = await getDoc(userDocRef);
+      const data = snap.data() || {};
+      const today = new Date().toISOString().split('T')[0];
+      let streak = data.streak || 0;
+      let lastStreakDate = data.lastStreakDate || null;
+      let badges = data.badges || [];
+
+      // Check if ALL categories are under budget
+      const allUnder = categories.every(function(c) { return (c.spent || 0) < c.budget; });
+
+      if (expenseLogged && allUnder) {
+        if (lastStreakDate === today) {
+          // Already updated today — no change
+        } else {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+          if (lastStreakDate === yesterdayStr || lastStreakDate === null) {
+            streak += 1;
+          } else {
+            streak = 1; // missed a day
+          }
+          lastStreakDate = today;
+        }
+      } else if (!allUnder) {
+        streak = 0; // exceeded budget — reset
+        lastStreakDate = null;
+      }
+
+      // Check badges
+      BADGES.forEach(function(b) {
+        if (streak >= b.days && !badges.includes(b.name)) {
+          badges.push(b.name);
+          showToast('🏆 Badge Unlocked!', 'You earned the "' + b.name + '" badge ' + b.emoji);
+        }
+      });
+
+      await updateDoc(userDocRef, { streak: streak, lastStreakDate: lastStreakDate, badges: badges });
+      renderStreak(streak, badges);
+    } catch(e) { console.log('streak error:', e); }
+  }
+
+  function renderStreak(streak, badges) {
+    document.getElementById('streakNum').textContent = streak;
+    document.getElementById('streakSub').textContent = streak === 1 ? 'day 🔥' : 'days 🔥';
+    const shelf = document.getElementById('badgeShelf');
+    const earned = BADGES.filter(function(b) { return badges && badges.includes(b.name); });
+    shelf.innerHTML = earned.slice(0, 3).map(function(b) { return '<span class="badge" title="' + b.name + '">' + b.emoji + '</span>'; }).join('');
+  }
+
+  function openStreakModal() {
+    getDoc(userDocRef).then(function(snap) {
+      const data = snap.data() || {};
+      const streak = data.streak || 0;
+      const badges = data.badges || [];
+      document.getElementById('modalStreakNum').textContent = streak;
+      document.getElementById('modalStreakLabel').textContent = streak === 1 ? 'day in a row 🔥' : 'days in a row 🔥';
+      document.getElementById('badgeGrid').innerHTML = BADGES.map(function(b) {
+        const unlocked = badges.includes(b.name);
+        return [
+          '<div class="badge-item ' + (unlocked ? 'unlocked' : 'locked') + '">',
+            '<div class="badge-emoji">' + b.emoji + '</div>',
+            '<div class="badge-name">' + b.name + '</div>',
+            '<div class="badge-req">' + (unlocked ? '✅ Unlocked!' : b.days + ' day streak') + '</div>',
+          '</div>'
+        ].join('');
+      }).join('');
+      document.getElementById('streakModal').classList.add('open');
+    });
+  }
+
+  function closeStreakModal() { document.getElementById('streakModal').classList.remove('open'); }
+
+  function shareStreak() {
+    getDoc(userDocRef).then(function(snap) {
+      const streak = (snap.data() || {}).streak || 0;
+      const text = '🔥 I am on a ' + streak + ' day budget streak on NoExcuse! I log every expense AND stay under budget every day. Can you beat me? 💪\n\nTry it: favourolu.github.io/noexcuses';
+      if (navigator.share) {
+        navigator.share({ text: text });
+      } else {
+        navigator.clipboard.writeText(text).then(function() { showToast('✅ Copied!', 'Streak message copied — paste it anywhere!'); });
+      }
+    });
+  }
+
+  window.openStreakModal = openStreakModal;
+  window.closeStreakModal = closeStreakModal;
+  window.shareStreak = shareStreak;
 
   async function saveData() {
     if (isSaving) return;
@@ -692,6 +846,7 @@
     document.getElementById('expAmount').value = '';
     document.getElementById('expReason').value = '';
     await saveData();
+    await updateStreak(true);
     renderAll();
   }
 
