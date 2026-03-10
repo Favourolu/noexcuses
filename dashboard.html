@@ -187,8 +187,10 @@
     .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(232,184,75,0.15); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .desktop-only { display: flex; }
+    #mobileMenuWrap { display: none; }
     @media(max-width:768px) {
       .desktop-only { display: none !important; }
+      #mobileMenuWrap { display: block !important; }
       .main-grid { grid-template-columns: 1fr; }
       .stats-row { grid-template-columns: 1fr 1fr; }
       nav { padding: 0.8rem 1rem; }
