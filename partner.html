@@ -363,8 +363,8 @@
           };
           await updateDoc(doc(db, 'users', d.id), { partnerNotifications: arrayUnion(notif) });
 
-          // Auto accept if they are already a user
-          const updatedPartner = Object.assign({}, newPartner, { status: 'active', name: d.data().name || '' });
+          // Auto accept — store uid so dashboard can notify directly without scanning all users
+          const updatedPartner = Object.assign({}, newPartner, { status: 'active', name: d.data().name || '', uid: d.id });
           const currentPartners = userData.partners || [];
           const updatedPartners = currentPartners.filter(function(p){ return p.email !== email; });
           updatedPartners.push(updatedPartner);
