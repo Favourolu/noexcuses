@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NoExcuse — Accountability Partner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --black: #0a0a0a; --white: #f5f2eb; --gold: #e8b84b; --gold-dark: #c49a2a; --red: #e84b4b; --green: #2ecc71; --gray: #1a1a1a; --text-muted: #888; }
+    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2.5rem; border-bottom: 1px solid rgba(232,184,75,0.1); background: rgba(10,10,10,0.95); position: sticky; top: 0; z-index: 100; }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; text-decoration: none; color: var(--white); }
+    .logo span { color: var(--gold); }
+    .nav-right { display: flex; align-items: center; gap: 0.8rem; }
+    .back-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; transition: all 0.2s; text-decoration: none; display: inline-block; }
+    .back-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .container { max-width: 800px; margin: 0 auto; padding: 2.5rem 2rem; }
+    .page-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.4rem; }
+    .page-title span { color: var(--gold); }
+    .page-sub { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2.5rem; line-height: 1.6; }
+    /* CARDS */
+    .card { background: var(--gray); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.8rem; margin-bottom: 1.5rem; }
+    .card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.6rem; }
+    .card-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    /* FORM */
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .form-group input, .form-group select { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.85rem 1rem; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+    .form-group input::placeholder { color: #555; }
+    .form-group select option { background: #222; }
+    .btn { background: var(--gold); color: var(--black); border: none; padding: 0.85rem 1.5rem; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .btn:hover { background: var(--gold-dark); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-outline { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.85rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-red { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); color: var(--red); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .btn-red:hover { background: rgba(232,75,75,0.2); }
+    /* TABS */
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 0.4rem; }
+    .tab { flex: 1; text-align: center; padding: 0.7rem; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; color: var(--text-muted); transition: all 0.2s; border: none; background: none; font-family: 'DM Sans', sans-serif; }
+    .tab.active { background: var(--gold); color: var(--black); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    /* SHARE LINK */
+    .share-link-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1rem; display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; }
+    .share-link-text { flex: 1; font-size: 0.82rem; color: var(--text-muted); word-break: break-all; }
+    .copy-btn { background: rgba(232,184,75,0.1); border: 1px solid rgba(232,184,75,0.3); color: var(--gold); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: all 0.2s; }
+    .copy-btn:hover { background: rgba(232,184,75,0.2); }
+    /* PARTNER CARD */
+    .partner-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 1.2rem; margin-bottom: 0.8rem; }
+    .partner-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .partner-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: var(--black); flex-shrink: 0; }
+    .partner-name { font-weight: 700; font-size: 0.95rem; }
+    .partner-email { font-size: 0.8rem; color: var(--text-muted); }
+    .partner-status { margin-left: auto; }
+    .status-badge { padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+    .status-active { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.2); color: var(--green); }
+    .status-pending { background: rgba(232,184,75,0.1); border: 1px solid rgba(232,184,75,0.2); color: var(--gold); }
+    .partner-notify { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    .partner-notify span { color: var(--white); font-weight: 600; }
+    .partner-actions { display: flex; gap: 0.6rem; }
+    /* WATCHING CARD */
+    .watching-card { background: linear-gradient(135deg, rgba(232,184,75,0.08), rgba(232,184,75,0.02)); border: 1px solid rgba(232,184,75,0.2); border-radius: 12px; padding: 1.2rem; margin-bottom: 0.8rem; }
+    .watching-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; }
+    .watching-name { font-weight: 700; font-size: 0.95rem; }
+    .watching-sub { font-size: 0.8rem; color: var(--text-muted); }
+    .mini-bar-track { height: 5px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; margin: 0.3rem 0; }
+    .mini-bar-fill { height: 100%; border-radius: 100px; }
+    /* MSG */
+    .msg { border-radius: 10px; padding: 0.85rem 1rem; font-size: 0.88rem; margin-bottom: 1rem; display: none; }
+    .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: var(--green); display: block; }
+    .msg.error { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); color: #ff8080; display: block; }
+    /* NOTIFICATION ALERTS */
+    .notif-item { display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.9rem; background: rgba(255,255,255,0.02); border-radius: 10px; margin-bottom: 0.6rem; border: 1px solid rgba(255,255,255,0.05); }
+    .notif-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .notif-text { font-size: 0.85rem; line-height: 1.5; }
+    .notif-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
+    /* LOADING */
+    .spinner { width: 28px; height: 28px; border: 3px solid rgba(232,184,75,0.15); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 2rem auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media(max-width: 768px) { nav { padding: 1rem 1.2rem; } .container { padding: 1.5rem 1rem; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="dashboard.html" class="logo">No<span>Excuse</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="back-btn">← Dashboard</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-title">👥 Accountability <span>Partner</span></div>
+  <p class="page-sub">Add someone who keeps you financially accountable. They get notified when you overspend — so you think twice before every purchase.</p>
+
+  <div id="msgBox" class="msg"></div>
+
+  <!-- MY PARTNERS -->
+
+  <div class="card">
+    <div class="card-title">🤝 My Accountability Partners</div>
+    <div class="card-sub">People watching your budget and keeping you in check.</div>
+    <div id="myPartnersList"><div class="spinner"></div></div>
+    <button class="btn" onclick="showAddPartner()" id="addPartnerBtn" style="margin-top:1rem">+ Add Partner</button>
+  </div>
+
+  <!-- ADD PARTNER (hidden by default) -->
+
+  <div class="card" id="addPartnerCard" style="display:none">
+    <div class="card-title">➕ Add a New Partner</div>
+    <div class="card-sub">Choose how to invite your accountability partner.</div>
+
+```
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('email')">📧 By Email</button>
+  <button class="tab" onclick="switchTab('link')">🔗 By Link</button>
+</div>
+
+<!-- EMAIL TAB -->
+<div class="tab-content active" id="tab-email">
+  <div class="form-group">
+    <label>Partner's Email Address</label>
+    <input type="email" id="partnerEmail" placeholder="friend@example.com" />
+  </div>
+  <div class="form-group">
+    <label>Notify them when...</label>
+    <select id="notifyLevel">
+      <option value="all">Every expense I log</option>
+      <option value="70">I reach 70% of any budget</option>
+      <option value="90" selected>I reach 90% of any budget</option>
+      <option value="100">I exceed a budget limit</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Personal Message (Optional)</label>
+    <input type="text" id="partnerMsg" placeholder="e.g. Help me stay on track this month!" />
+  </div>
+  <div style="display:flex;gap:0.8rem">
+    <button class="btn" onclick="inviteByEmail()" id="inviteBtn">Send Invitation</button>
+    <button class="btn-outline" onclick="hideAddPartner()">Cancel</button>
+  </div>
+</div>
+
+<!-- LINK TAB -->
+<div class="tab-content" id="tab-link">
+  <div class="form-group">
+    <label>Notify them when...</label>
+    <select id="notifyLevelLink">
+      <option value="all">Every expense I log</option>
+      <option value="70">I reach 70% of any budget</option>
+      <option value="90" selected>I reach 90% of any budget</option>
+      <option value="100">I exceed a budget limit</option>
+    </select>
+  </div>
+  <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">Share this link with your accountability partner. When they click it and log in, they will be linked to your account automatically.</p>
+  <div class="share-link-box">
+    <div class="share-link-text" id="shareLinkText">Generating link...</div>
+    <button class="copy-btn" onclick="copyLink()">📋 Copy</button>
+  </div>
+  <div style="display:flex;gap:0.8rem;flex-wrap:wrap">
+    <button class="btn" onclick="shareOnWhatsApp()">💬 Share on WhatsApp</button>
+    <button class="btn-outline" onclick="hideAddPartner()">Cancel</button>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- WATCHING (I am partner for others) -->
+
+  <div class="card">
+    <div class="card-title">👁️ People I am Watching</div>
+    <div class="card-sub">Accounts you are an accountability partner for. Their spending alerts will appear here.</div>
+    <div id="watchingList"><div class="spinner"></div></div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+
+  <div class="card">
+    <div class="card-title">🔔 Recent Notifications</div>
+    <div class="card-sub">Alerts from the people you are watching.</div>
+    <div id="notifList"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove, addDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCXaFZ-tHwK4FXO6ZQ6VZ5_xQxo0mXwPas",
+    authDomain: "noexcuse-ac153.firebaseapp.com",
+    projectId: "noexcuse-ac153",
+    storageBucket: "noexcuse-ac153.firebasestorage.app",
+    messagingSenderId: "773313862174",
+    appId: "1:773313862174:web:f451fdcee73d378e1aac0f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  let currentUser = null;
+  let userData = null;
+
+  onAuthStateChanged(auth, async function(user) {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    await loadPage();
+    generateShareLink();
+  });
+
+  async function loadPage() {
+    const snap = await getDoc(doc(db, 'users', currentUser.uid));
+    userData = snap.exists() ? snap.data() : {};
+    renderMyPartners();
+    renderWatching();
+    renderNotifications();
+  }
+
+  // ── MY PARTNERS ──
+  function renderMyPartners() {
+    const el = document.getElementById('myPartnersList');
+    const partners = userData.partners || [];
+    if (partners.length === 0) {
+      el.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem;padding:1rem 0">No partners yet. Add someone to keep you accountable!</p>';
+      return;
+    }
+    el.innerHTML = partners.map(function(p) {
+      const notifyText = p.notifyLevel === 'all' ? 'Every expense' : p.notifyLevel === '70' ? 'At 70% budget' : p.notifyLevel === '90' ? 'At 90% budget' : 'When exceeded';
+      return [
+        '<div class="partner-card">',
+          '<div class="partner-header">',
+            '<div class="partner-avatar">' + (p.name || p.email)[0].toUpperCase() + '</div>',
+            '<div>',
+              '<div class="partner-name">' + (p.name || 'Pending') + '</div>',
+              '<div class="partner-email">' + p.email + '</div>',
+            '</div>',
+            '<div class="partner-status"><span class="status-badge ' + (p.status === 'active' ? 'status-active' : 'status-pending') + '">' + (p.status === 'active' ? '✅ Active' : '⏳ Pending') + '</span></div>',
+          '</div>',
+          '<div class="partner-notify">Notified: <span>' + notifyText + '</span></div>',
+          '<div class="partner-actions">',
+            '<button class="btn-red" onclick="removePartner(\'' + p.email + '\')">Remove</button>',
+          '</div>',
+        '</div>'
+      ].join('');
+    }).join('');
+  }
+
+  // ── WATCHING ──
+  async function renderWatching() {
+    const el = document.getElementById('watchingList');
+    try {
+      const usersSnap = await getDocs(collection(db, 'users'));
+      const watching = [];
+      usersSnap.forEach(function(d) {
+        const data = d.data();
+        const partners = data.partners || [];
+        const isPartner = partners.find(function(p) { return p.email === currentUser.email && p.status === 'active'; });
+        if (isPartner) watching.push({ id: d.id, ...data, notifyLevel: isPartner.notifyLevel });
+      });
+      if (watching.length === 0) {
+        el.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem;padding:1rem 0">You are not watching anyone yet.</p>';
+        return;
+      }
+      el.innerHTML = watching.map(function(u) {
+        const totalBudget = (u.categories||[]).reduce(function(s,c){return s+(c.budget||0);},0);
+        const totalSpent = (u.categories||[]).reduce(function(s,c){return s+(c.spent||0);},0);
+        const pct = totalBudget > 0 ? Math.min((totalSpent/totalBudget)*100, 100) : 0;
+        const barColor = pct >= 100 ? '#e84b4b' : pct >= 90 ? '#e8b84b' : '#2ecc71';
+        return [
+          '<div class="watching-card">',
+            '<div class="watching-header">',
+              '<div class="partner-avatar" style="width:36px;height:36px;font-size:0.85rem">' + (u.name||'?')[0].toUpperCase() + '</div>',
+              '<div>',
+                '<div class="watching-name">' + (u.name||'Unknown') + '</div>',
+                '<div class="watching-sub">' + pct.toFixed(0) + '% of budget used this month</div>',
+              '</div>',
+            '</div>',
+            '<div class="mini-bar-track"><div class="mini-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>',
+            '<div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.3rem">₦' + totalSpent.toLocaleString() + ' spent of ₦' + totalBudget.toLocaleString() + '</div>',
+          '</div>'
+        ].join('');
+      }).join('');
+    } catch(e) {
+      el.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem">Could not load watching list.</p>';
+    }
+  }
+
+  // ── NOTIFICATIONS ──
+  async function renderNotifications() {
+    const el = document.getElementById('notifList');
+    try {
+      const notifs = userData.partnerNotifications || [];
+      if (notifs.length === 0) {
+        el.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem;padding:1rem 0">No notifications yet. When someone you watch overspends, you will see it here.</p>';
+        return;
+      }
+      const sorted = notifs.slice().reverse().slice(0, 10);
+      el.innerHTML = sorted.map(function(n) {
+        const icon = n.type === 'exceeded' ? '🚨' : n.type === '90' ? '⚠️' : n.type === '70' ? '💛' : '📝';
+        return [
+          '<div class="notif-item">',
+            '<div class="notif-icon">' + icon + '</div>',
+            '<div>',
+              '<div class="notif-text">' + n.message + '</div>',
+              '<div class="notif-time">' + new Date(n.timestamp).toLocaleString() + '</div>',
+            '</div>',
+          '</div>'
+        ].join('');
+      }).join('');
+    } catch(e) {
+      el.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem">Could not load notifications.</p>';
+    }
+  }
+
+  // ── INVITE BY EMAIL ──
+  window.inviteByEmail = async function() {
+    const email = document.getElementById('partnerEmail').value.trim().toLowerCase();
+    const notifyLevel = document.getElementById('notifyLevel').value;
+    const msg = document.getElementById('partnerMsg').value.trim();
+    const btn = document.getElementById('inviteBtn');
+
+    if (!email) { showMsg('Please enter a valid email address.', 'error'); return; }
+    if (email === currentUser.email) { showMsg('You cannot add yourself as a partner.', 'error'); return; }
+
+    const partners = userData.partners || [];
+    if (partners.find(function(p){ return p.email === email; })) {
+      showMsg('This person is already your accountability partner.', 'error'); return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+      // Add partner to user's doc
+      const newPartner = { email: email, name: '', notifyLevel: notifyLevel, status: 'pending', addedAt: new Date().toISOString() };
+      await updateDoc(doc(db, 'users', currentUser.uid), { partners: arrayUnion(newPartner) });
+
+      // Add notification to partner's account if they exist
+      const usersSnap = await getDocs(collection(db, 'users'));
+      let partnerFound = false;
+      for (const d of usersSnap.docs) {
+        if (d.data().email === email) {
+          partnerFound = true;
+          const notif = {
+            type: 'invite',
+            message: (userData.name || 'Someone') + ' has added you as their accountability partner on NoExcuse. ' + (msg ? '"' + msg + '"' : ''),
+            timestamp: new Date().toISOString(),
+            fromUid: currentUser.uid,
+            fromName: userData.name || currentUser.email
+          };
+          await updateDoc(doc(db, 'users', d.id), { partnerNotifications: arrayUnion(notif) });
+
+          // Auto accept if they are already a user
+          const updatedPartner = Object.assign({}, newPartner, { status: 'active', name: d.data().name || '' });
+          const currentPartners = userData.partners || [];
+          const updatedPartners = currentPartners.filter(function(p){ return p.email !== email; });
+          updatedPartners.push(updatedPartner);
+          await updateDoc(doc(db, 'users', currentUser.uid), { partners: updatedPartners });
+        }
+      }
+
+      userData.partners = userData.partners || [];
+      userData.partners.push(newPartner);
+
+      showMsg(partnerFound ? '✅ Partner added! They are already on NoExcuse and have been notified.' : '✅ Invitation sent! They will be linked when they sign up with this email.', 'success');
+      document.getElementById('partnerEmail').value = '';
+      document.getElementById('partnerMsg').value = '';
+      hideAddPartner();
+      await loadPage();
+    } catch(e) {
+      showMsg('Error: ' + e.message, 'error');
+    }
+    btn.disabled = false;
+    btn.textContent = 'Send Invitation';
+  }
+
+  // ── REMOVE PARTNER ──
+  window.removePartner = async function(email) {
+    if (!confirm('Remove ' + email + ' as your accountability partner?')) return;
+    try {
+      const partners = userData.partners || [];
+      const updated = partners.filter(function(p){ return p.email !== email; });
+      await updateDoc(doc(db, 'users', currentUser.uid), { partners: updated });
+      userData.partners = updated;
+      renderMyPartners();
+      showMsg('Partner removed.', 'success');
+    } catch(e) {
+      showMsg('Error: ' + e.message, 'error');
+    }
+  }
+
+  // ── SHARE LINK ──
+  function generateShareLink() {
+    const notifyLevel = document.getElementById('notifyLevelLink').value;
+    const link = 'favourolu.github.io/noexcuses/accept-partner.html?uid=' + (currentUser ? currentUser.uid : '') + '&notify=' + notifyLevel;
+    document.getElementById('shareLinkText').textContent = link;
+  }
+
+  window.copyLink = function() {
+    const link = document.getElementById('shareLinkText').textContent;
+    navigator.clipboard.writeText('https://' + link).then(function() {
+      showMsg('✅ Link copied to clipboard!', 'success');
+    });
+  }
+
+  window.shareOnWhatsApp = function() {
+    generateShareLink();
+    const link = 'https://' + document.getElementById('shareLinkText').textContent;
+    const text = 'Hey! I am using NoExcuse to manage my budget and I want you to be my accountability partner. Click the link to get started: ' + link;
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  }
+
+  document.getElementById('notifyLevelLink').addEventListener('change', generateShareLink);
+
+  // ── TABS ──
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
+    event.target.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+
+  window.showAddPartner = function() {
+    document.getElementById('addPartnerCard').style.display = 'block';
+    document.getElementById('addPartnerBtn').style.display = 'none';
+    document.getElementById('addPartnerCard').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  window.hideAddPartner = function() {
+    document.getElementById('addPartnerCard').style.display = 'none';
+    document.getElementById('addPartnerBtn').style.display = 'inline-block';
+  }
+
+  function showMsg(msg, type) {
+    const el = document.getElementById('msgBox');
+    el.textContent = msg;
+    el.className = 'msg ' + type;
+    setTimeout(function() { el.style.display = 'none'; }, 5000);
+  }
+</script>
+
+</body>
+</html>
