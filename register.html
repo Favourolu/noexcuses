@@ -81,7 +81,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -161,22 +161,8 @@
           expenses: []
         });
 
-        await sendEmailVerification(cred.user);
-
-        showMsg('✅ Account created! Please check your email to verify your account before logging in. Check your spam folder if you don\'t see it.', 'success');
-        btn.textContent = 'Account Created!';
-        // Hide form, show success state
-        setTimeout(function() {
-          document.getElementById('registerForm').innerHTML = `
-            <div style="text-align:center;padding:1.5rem 0">
-              <div style="font-size:3rem;margin-bottom:1rem">📧</div>
-              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:0.8rem">Check your email!</div>
-              <p style="color:#888;font-size:0.9rem;line-height:1.7;margin-bottom:1.5rem">We sent a verification link to <strong style="color:#f5f2eb">${email}</strong>.<br/>Click the link in that email to activate your account.</p>
-              <p style="color:#666;font-size:0.8rem;margin-bottom:1.5rem">⚠️ Check your <strong>spam or junk folder</strong> if you don't see it.</p>
-              <a href="login.html" style="display:block;background:#e8b84b;color:#0a0a0a;padding:0.9rem;border-radius:10px;font-weight:700;text-decoration:none;font-family:'DM Sans',sans-serif">Go to Login →</a>
-            </div>
-          `;
-        }, 500);
+        showMsg('Account created! Taking you to your dashboard...', 'success');
+        setTimeout(function() { window.location.href = 'dashboard.html'; }, 1200);
       } catch(e) {
         btn.disabled = false;
         btn.textContent = 'Create My Account';
