@@ -61,6 +61,10 @@
         <input type="password" id="passwordInput" placeholder="Your password" />
       </div>
       <button class="btn" id="loginBtn" onclick="login()">Login to NoExcuse</button>
+      <div id="resendSection" style="display:none;margin-top:1rem;background:rgba(232,184,75,0.06);border:1px solid rgba(232,184,75,0.2);border-radius:10px;padding:1rem;text-align:center">
+        <p style="font-size:0.85rem;color:#888;margin-bottom:0.8rem">Didn't get the verification email?</p>
+        <button onclick="resendVerify()" style="background:#e8b84b;color:#0a0a0a;border:none;padding:0.6rem 1.2rem;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;font-family:'DM Sans',sans-serif">📤 Resend Verification Email</button>
+      </div>
       <div class="divider">or</div>
       <div class="register-link">Don't have an account? <a href="register.html">Sign up free</a></div>
     </div>
@@ -68,7 +72,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCXaFZ-tHwK4FXO6ZQ6VZ5_xQxo0mXwPas",
@@ -105,7 +109,16 @@
       btn.textContent = 'Logging in...';
 
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        if (!cred.user.emailVerified) {
+          showMsg('⚠️ Please verify your email first. Check your inbox (and spam folder) for the verification link.', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Login';
+          // Show resend option
+          document.getElementById('resendSection').style.display = 'block';
+          window._unverifiedUser = cred.user;
+          return;
+        }
         showMsg('Login successful! Redirecting...', 'success');
         window.location.href = 'dashboard.html';
       } catch(e) {
@@ -124,6 +137,17 @@
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') window.login();
     });
+
+    window.resendVerify = async function() {
+      try {
+        if (window._unverifiedUser) {
+          await sendEmailVerification(window._unverifiedUser);
+          showMsg('✅ Verification email resent! Check your inbox and spam folder.', 'success');
+        }
+      } catch(e) {
+        showMsg('Error resending: ' + e.message, 'error');
+      }
+    }
   </script>
 
 </body>
