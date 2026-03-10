@@ -193,6 +193,12 @@
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#e8b84b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NoExcuse">
 </head>
 <body>
 
@@ -265,7 +271,17 @@
     </div>
   </div>
 
-  <!-- STREAK MODAL -->
+  <!-- PWA INSTALL BANNER -->
+
+  <div id="installBanner" style="display:none;position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid rgba(232,184,75,0.3);border-radius:16px;padding:1rem 1.5rem;z-index:999;align-items:center;gap:1rem;box-shadow:0 8px 32px rgba(0,0,0,0.4);max-width:380px;width:90%">
+    <div style="font-size:2rem">📱</div>
+    <div style="flex:1">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.2rem">Install NoExcuse</div>
+      <div style="font-size:0.78rem;color:#888">Add to your home screen for quick access</div>
+    </div>
+    <button onclick="installApp()" style="background:#e8b84b;color:#0a0a0a;border:none;padding:0.5rem 1rem;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">Install</button>
+    <button onclick="dismissInstall()" style="background:none;border:none;color:#555;cursor:pointer;font-size:1.1rem;padding:0.2rem">✕</button>
+  </div>
 
   <div class="streak-modal" id="streakModal">
     <div class="streak-modal-inner">
@@ -1124,6 +1140,43 @@
   }
   window.skipTutorial = function() { document.getElementById('welcomeModal').style.display = 'none'; endTutorial(); }
 </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/noexcuses/sw.js');
+    }
+
+    // PWA Install prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Show install banner after 3 seconds
+      setTimeout(function() {
+        const banner = document.getElementById('installBanner');
+        if (banner && !localStorage.getItem('noexcuse_install_dismissed')) {
+          banner.style.display = 'flex';
+        }
+      }, 3000);
+    });
+
+    window.installApp = function() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function(result) {
+          if (result.outcome === 'accepted') {
+            document.getElementById('installBanner').style.display = 'none';
+          }
+          deferredPrompt = null;
+        });
+      }
+    }
+
+    window.dismissInstall = function() {
+      document.getElementById('installBanner').style.display = 'none';
+      localStorage.setItem('noexcuse_install_dismissed', '1');
+    }
+  </script>
 
 </body>
 </html>
