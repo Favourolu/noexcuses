@@ -504,6 +504,7 @@
   let userDocRef = null;
   let categories = [];
   let expenses = [];
+  let userData = {}; // full Firestore doc — used for ackedLockdowns, etc.
   let selectedEmoji = '🍽️';
   let pendingExpense = null;
   let tutorialStep = 0;
@@ -551,6 +552,7 @@
       const snap = await getDoc(userDocRef);
       if (snap.exists()) {
         const data = snap.data();
+        userData = data; // keep full doc in memory
         const now = new Date();
         const currentMonth = now.getFullYear() + '-' + (now.getMonth() + 1);
         // Monthly reset check
@@ -746,7 +748,7 @@
       el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted)"><div style="font-size:2.5rem;margin-bottom:0.8rem">💸</div><p>No categories yet.</p></div>';
       return;
     }
-    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + (currentUser ? currentUser.uid : '')) || '[]');
+    const acked = (userData && userData.ackedLockdowns) ? userData.ackedLockdowns : [];
     el.innerHTML = categories.map(function(cat) {
       const spent = cat.spent || 0;
       const pct = cat.budget > 0 ? Math.min((spent / cat.budget) * 100, 100) : 0;
@@ -844,9 +846,11 @@
     const catId = parseInt(document.getElementById('expCategory').value);
     const amount = parseFloat(document.getElementById('expAmount').value);
     const reason = document.getElementById('expReason').value.trim();
-    if (!catId || !amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
+    if (!catId) { showToast('❌ Select Category', 'Please choose a category first.', true); return; }
+    if (!amount || amount <= 0 || !isFinite(amount)) { showToast('❌ Invalid Amount', 'Please enter a valid amount greater than ₦0.', true); return; }
+    if (amount > 100000000) { showToast('❌ Invalid Amount', 'That amount looks incorrect. Please check and try again.', true); return; }
     if (!reason) { showToast('No Excuse! 🚫', 'You MUST provide a reason before logging any expense.', true); return; }
-    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + currentUser.uid) || '[]');
+    const acked = (userData && userData.ackedLockdowns) ? userData.ackedLockdowns : [];
     const otherExceeded = categories.find(function(c){ return c.id !== catId && (c.spent||0) > c.budget && acked.indexOf(c.id)===-1; });
     if (otherExceeded) { showToast('🔒 Locked!', 'Acknowledge your overspend in ' + otherExceeded.name + ' first.', true); return; }
     const cat = categories.find(function(c){ return c.id===catId; });
@@ -890,6 +894,10 @@
   }
 
   async function finalizeExpense(catId, amount, reason, proofText, proofImage) {
+    // Prevent double-tap — disable button during save
+    const logBtn = document.querySelector('#logExpensePanel .btn-full');
+    if (logBtn) { logBtn.disabled = true; logBtn.textContent = 'Saving...'; }
+
     const cat = categories.find(function(c){ return c.id===catId; });
     if (!cat) return;
     const newSpent = (cat.spent||0) + amount;
@@ -916,6 +924,8 @@
     await saveData();
     await updateStreak(true);
     renderAll();
+    // Re-enable button
+    if (logBtn) { logBtn.disabled = false; logBtn.textContent = 'Log Expense'; }
   }
 
   // ── PROOF ──
@@ -966,8 +976,8 @@
   // ── LOCKDOWN ──
   function checkLockdown() {
     const exceeded = categories.filter(function(c){ return (c.spent||0)>c.budget; });
-    const acked = JSON.parse(localStorage.getItem('noexcuse_acked_' + (currentUser?currentUser.uid:'')) || '[]');
-    const unacked = exceeded.filter(function(c){ return acked.indexOf(c.id)===-1; });
+    const ackedIds = (userData && userData.ackedLockdowns) ? userData.ackedLockdowns : [];
+    const unacked = exceeded.filter(function(c){ return ackedIds.indexOf(c.id)===-1; });
     const banner = document.getElementById('lockdownBanner');
     if (unacked.length > 0) {
       banner.classList.add('active');
@@ -978,9 +988,12 @@
     return false;
   }
 
-  window.acknowledgeLockdown = function() {
+  window.acknowledgeLockdown = async function() {
     const exceeded = categories.filter(function(c){ return (c.spent||0)>c.budget; });
-    localStorage.setItem('noexcuse_acked_' + currentUser.uid, JSON.stringify(exceeded.map(function(c){return c.id;})));
+    const ackedIds = exceeded.map(function(c){ return c.id; });
+    // Save to Firestore so it works across all devices
+    userData.ackedLockdowns = ackedIds;
+    await updateDoc(userDocRef, { ackedLockdowns: ackedIds });
     document.getElementById('lockdownBanner').classList.remove('active');
     renderAll();
     showToast('✅ Acknowledged', 'Lockdown lifted. Be more careful with remaining categories.', false);
