@@ -432,7 +432,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut, deleteUser, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -477,17 +477,6 @@
   // ── AUTH ──
   onAuthStateChanged(auth, async function(user) {
     if (!user) { window.location.href = 'login.html'; return; }
-
-    // Check email verification — soft warning only
-    if (!user.emailVerified) {
-      // Show banner after dashboard loads — don't block existing users
-      setTimeout(function() {
-        const banner = document.createElement('div');
-        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#e8b84b;color:#0a0a0a;padding:0.7rem 1.5rem;text-align:center;font-size:0.85rem;font-weight:700;z-index:999;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap';
-        banner.innerHTML = '📧 Please verify your email to secure your account. <button onclick="sendVerifyEmail()" style="background:#0a0a0a;color:#e8b84b;border:none;padding:0.3rem 0.8rem;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.82rem">Send Verification Email</button> <button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#0a0a0a">✕</button>';
-        document.body.prepend(banner);
-      }, 1000);
-    }
 
     currentUser = user;
     userDocRef = doc(db, 'users', user.uid);
@@ -1047,38 +1036,6 @@
   window.closeToast = function() { document.getElementById('warningToast').classList.remove('show'); }
 
   // ── LOGOUT ──
-  window.sendVerifyEmail = async function() {
-    try {
-      await sendEmailVerification(auth.currentUser);
-      showToast('📧 Sent!', 'Verification email sent — check your inbox and spam folder.');
-    } catch(e) {
-      showToast('⚠️ Error', e.message);
-    }
-  }
-
-  window.resendVerification = async function() {
-    try {
-      await sendEmailVerification(auth.currentUser);
-      document.getElementById('verifyMsg').textContent = '✅ Verification email sent! Check your inbox and spam folder.';
-      document.getElementById('verifyMsg').style.display = 'block';
-    } catch(e) {
-      document.getElementById('verifyMsg').textContent = 'Error: ' + e.message;
-      document.getElementById('verifyMsg').style.color = '#ff8080';
-      document.getElementById('verifyMsg').style.display = 'block';
-    }
-  }
-
-  window.checkVerified = async function() {
-    await auth.currentUser.reload();
-    if (auth.currentUser.emailVerified) {
-      window.location.reload();
-    } else {
-      document.getElementById('verifyMsg').textContent = '⚠️ Email not verified yet. Please click the link in your email first.';
-      document.getElementById('verifyMsg').style.color = '#e8b84b';
-      document.getElementById('verifyMsg').style.display = 'block';
-    }
-  }
-
   window.logout = async function() {
     await signOut(auth);
     window.location.replace('login.html');
