@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NoExcuse — Login</title>
+  <title>NoExcuse — Register</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,6 +24,9 @@
     .form-group input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 0.85rem 1rem; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
     .form-group input:focus { border-color: var(--gold); }
     .form-group input::placeholder { color: #555; }
+    .strength-bar { height: 4px; border-radius: 100px; margin-top: 0.5rem; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .strength-fill { height: 100%; border-radius: 100px; transition: all 0.3s; width: 0%; }
+    .strength-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
     .msg { border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; display: none; }
     .msg.error { background: rgba(232,75,75,0.1); border: 1px solid rgba(232,75,75,0.3); color: #ff8080; display: block; }
     .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: #2ecc71; display: block; }
@@ -33,8 +36,8 @@
     .divider { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin: 1.5rem 0; position: relative; }
     .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: rgba(255,255,255,0.08); }
     .divider::before { left: 0; } .divider::after { right: 0; }
-    .register-link { text-align: center; font-size: 0.9rem; color: var(--text-muted); }
-    .register-link a { color: var(--gold); text-decoration: none; font-weight: 600; }
+    .login-link { text-align: center; font-size: 0.9rem; color: var(--text-muted); }
+    .login-link a { color: var(--gold); text-decoration: none; font-weight: 600; }
   </style>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -45,34 +48,41 @@
 <body>
   <nav>
     <a href="index.html" class="logo">No<span>Excuse</span></a>
-    <a href="register.html" class="nav-link">No account? Sign up →</a>
+    <a href="login.html" class="nav-link">Already have an account? Login →</a>
   </nav>
   <div class="main">
     <div class="card">
-      <h1 class="card-title">Welcome back 👋</h1>
-      <p class="card-sub">Log in and keep your spending in check. No excuses today.</p>
+      <h1 class="card-title">Create your account</h1>
+      <p class="card-sub">Start your journey to financial discipline. No excuses.</p>
       <div class="msg" id="msgBox"></div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="nameInput" placeholder="e.g. Oluwemimo Adeyemi" />
+      </div>
       <div class="form-group">
         <label>Email Address</label>
         <input type="email" id="emailInput" placeholder="you@example.com" />
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input type="password" id="passwordInput" placeholder="Your password" />
+        <input type="password" id="passwordInput" placeholder="Min. 8 characters" oninput="checkStrength(this.value)" />
+        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+        <div class="strength-label" id="strengthLabel"></div>
       </div>
-      <button class="btn" id="loginBtn" onclick="login()">Login to NoExcuse</button>
-      <div id="resendSection" style="display:none;margin-top:1rem;background:rgba(232,184,75,0.06);border:1px solid rgba(232,184,75,0.2);border-radius:10px;padding:1rem;text-align:center">
-        <p style="font-size:0.85rem;color:#888;margin-bottom:0.8rem">Didn't get the verification email?</p>
-        <button onclick="resendVerify()" style="background:#e8b84b;color:#0a0a0a;border:none;padding:0.6rem 1.2rem;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;font-family:'DM Sans',sans-serif">📤 Resend Verification Email</button>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="confirmInput" placeholder="Repeat your password" />
       </div>
+      <button class="btn" id="registerBtn" onclick="register()">Create My Account</button>
       <div class="divider">or</div>
-      <div class="register-link">Don't have an account? <a href="register.html">Sign up free</a></div>
+      <div class="login-link">Already have an account? <a href="login.html">Login</a></div>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCXaFZ-tHwK4FXO6ZQ6VZ5_xQxo0mXwPas",
@@ -85,11 +95,29 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    // Auto redirect if already logged in
-    onAuthStateChanged(auth, function(user) {
-      if (user) window.location.href = 'dashboard.html';
-    });
+    window.checkStrength = function(val) {
+      const fill = document.getElementById('strengthFill');
+      const label = document.getElementById('strengthLabel');
+      if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const levels = [
+        { w: '25%', color: '#e84b4b', text: 'Weak' },
+        { w: '50%', color: '#e8844b', text: 'Fair' },
+        { w: '75%', color: '#e8b84b', text: 'Strong' },
+        { w: '100%', color: '#2ecc71', text: 'Very Strong' }
+      ];
+      const l = levels[score - 1] || levels[0];
+      fill.style.width = l.w;
+      fill.style.background = l.color;
+      label.textContent = l.text;
+      label.style.color = l.color;
+    }
 
     function showMsg(msg, type) {
       const el = document.getElementById('msgBox');
@@ -97,37 +125,51 @@
       el.className = 'msg ' + type;
     }
 
-    window.login = async function() {
+    window.register = async function() {
+      const name = document.getElementById('nameInput').value.trim();
       const email = document.getElementById('emailInput').value.trim();
       const password = document.getElementById('passwordInput').value;
-      const btn = document.getElementById('loginBtn');
+      const confirm = document.getElementById('confirmInput').value;
+      const btn = document.getElementById('registerBtn');
 
+      if (!name) { showMsg('Please enter your full name.', 'error'); return; }
       if (!email) { showMsg('Please enter your email.', 'error'); return; }
-      if (!password) { showMsg('Please enter your password.', 'error'); return; }
+      if (password.length < 8) { showMsg('Password must be at least 8 characters.', 'error'); return; }
+      if (password !== confirm) { showMsg('Passwords do not match.', 'error'); return; }
 
       btn.disabled = true;
-      btn.textContent = 'Logging in...';
+      btn.textContent = 'Creating account...';
 
       try {
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        if (!cred.user.emailVerified) {
-          showMsg('⚠️ Please verify your email first. Check your inbox (and spam folder) for the verification link.', 'error');
-          btn.disabled = false;
-          btn.textContent = 'Login';
-          // Show resend option
-          document.getElementById('resendSection').style.display = 'block';
-          window._unverifiedUser = cred.user;
-          return;
-        }
-        showMsg('Login successful! Redirecting...', 'success');
-        window.location.href = 'dashboard.html';
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: name });
+
+        // Save user profile + default categories to Firestore
+        const defaultCats = [
+          { id: 1, name: 'Bills & Utilities', icon: '🏠', budget: 50000, spent: 0 },
+          { id: 2, name: 'Food & Groceries', icon: '🍽️', budget: 40000, spent: 0 },
+          { id: 3, name: 'Clothing', icon: '👗', budget: 20000, spent: 0 },
+          { id: 4, name: 'Miscellaneous', icon: '💰', budget: 15000, spent: 0 }
+        ];
+        const currentMonth = new Date().getFullYear() + '-' + (new Date().getMonth() + 1);
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          name: name,
+          email: email,
+          createdAt: new Date().toISOString(),
+          currentMonth: currentMonth,
+          categories: defaultCats,
+          expenses: []
+        });
+
+        showMsg('Account created! Taking you to your dashboard...', 'success');
+        setTimeout(function() { window.location.href = 'dashboard.html'; }, 1200);
       } catch(e) {
         btn.disabled = false;
-        btn.textContent = 'Login to NoExcuse';
-        if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
-          showMsg('No account found with this email. Please register first.', 'error');
-        } else if (e.code === 'auth/wrong-password') {
-          showMsg('Wrong password. Please try again.', 'error');
+        btn.textContent = 'Create My Account';
+        if (e.code === 'auth/email-already-in-use') {
+          showMsg('An account with this email already exists. Please login.', 'error');
+        } else if (e.code === 'auth/invalid-email') {
+          showMsg('Please enter a valid email address.', 'error');
         } else {
           showMsg('Error: ' + e.message, 'error');
         }
@@ -135,19 +177,8 @@
     }
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') window.login();
+      if (e.key === 'Enter') window.register();
     });
-
-    window.resendVerify = async function() {
-      try {
-        if (window._unverifiedUser) {
-          await sendEmailVerification(window._unverifiedUser);
-          showMsg('✅ Verification email resent! Check your inbox and spam folder.', 'success');
-        }
-      } catch(e) {
-        showMsg('Error resending: ' + e.message, 'error');
-      }
-    }
   </script>
 
 </body>
