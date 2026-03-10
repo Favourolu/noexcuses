@@ -551,7 +551,8 @@
       const snap = await getDoc(userDocRef);
       if (snap.exists()) {
         const data = snap.data();
-        const currentMonth = new Date().getFullYear() + '-' + (new Date().getMonth() + 1);
+        const now = new Date();
+        const currentMonth = now.getFullYear() + '-' + (now.getMonth() + 1);
         // Monthly reset check
         if (data.currentMonth && data.currentMonth !== currentMonth) {
           // Archive old month
@@ -614,11 +615,20 @@
     { emoji: '🌟', name: 'Perfect Week', req: 7, days: 7, type: 'perfect' }
   ];
 
+  // ── DATE HELPER — always use local timezone, never UTC ──
+  function localDateStr(d) {
+    d = d || new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
   async function updateStreak(expenseLogged) {
     try {
       const snap = await getDoc(userDocRef);
       const data = snap.data() || {};
-      const today = new Date().toISOString().split('T')[0];
+      const today = localDateStr();
       let streak = data.streak || 0;
       let lastStreakDate = data.lastStreakDate || null;
       let badges = data.badges || [];
@@ -628,21 +638,25 @@
 
       if (expenseLogged && allUnder) {
         if (lastStreakDate === today) {
-          // Already updated today — no change
+          // Already earned streak today — no change, can't re-earn or cheat by delete+re-log
         } else {
           const yesterday = new Date();
           yesterday.setDate(yesterday.getDate() - 1);
-          const yesterdayStr = yesterday.toISOString().split('T')[0];
+          const yesterdayStr = localDateStr(yesterday);
           if (lastStreakDate === yesterdayStr || lastStreakDate === null) {
             streak += 1;
           } else {
             streak = 1; // missed a day
           }
-          lastStreakDate = today;
+          lastStreakDate = today; // locked in for today — deleting won't undo this
         }
       } else if (!allUnder) {
-        streak = 0; // exceeded budget — reset
-        lastStreakDate = null;
+        // Only reset if streak was earned today (overspending same day kills it)
+        // If streak was earned on a previous day, keep it until end of day
+        if (lastStreakDate === today) {
+          streak = Math.max(0, streak - 1); // undo today's increment
+          lastStreakDate = null; // force re-earn tomorrow
+        }
       }
 
       // Check badges
@@ -811,12 +825,15 @@
     const totalBudget = categories.reduce(function(s,c){ return s+(c.budget||0); },0);
     const totalSpent = categories.reduce(function(s,c){ return s+(c.spent||0); },0);
     const pct = totalBudget > 0 ? (totalSpent/totalBudget)*100 : 0;
+    const anyExceeded = categories.some(function(c){ return (c.spent||0) > c.budget; });
     let grade, msg, color;
-    if (pct <= 50) { grade='A'; msg='Excellent discipline! You are crushing it.'; color='var(--green)'; }
-    else if (pct <= 70) { grade='B'; msg='Good job! Stay focused.'; color='#7ed56f'; }
-    else if (pct <= 85) { grade='C'; msg='Be careful — halfway through your budget.'; color='var(--gold)'; }
-    else if (pct <= 100) { grade='D'; msg='Warning! Close to your limit. Slow down.'; color='#e8844b'; }
-    else { grade='F'; msg='You exceeded your budget. No more excuses!'; color='var(--red)'; }
+    if (pct <= 50 && !anyExceeded) { grade='A'; msg='Excellent discipline! You are crushing it.'; color='var(--green)'; }
+    else if (pct <= 70 && !anyExceeded) { grade='B'; msg='Good job! Stay focused.'; color='#7ed56f'; }
+    else if (pct <= 85 && !anyExceeded) { grade='C'; msg='Be careful — getting close to your budget.'; color='var(--gold)'; }
+    else if (!anyExceeded) { grade='D'; msg='Warning! Close to your limit. Slow down.'; color='#e8844b'; }
+    else { grade='F'; msg='You exceeded a category budget. No more excuses!'; color='var(--red)'; }
+    // If overall pct is low but a category is blown, cap at D
+    if (anyExceeded && grade !== 'F') { grade='D'; color='#e8844b'; }
     document.getElementById('reportGrade').textContent = grade;
     document.getElementById('reportGrade').style.color = color;
     document.getElementById('reportMsg').textContent = msg;
@@ -890,7 +907,7 @@
       notifyPartners('all', 'logged a new expense of ₦' + amount.toLocaleString() + ' in ' + cat.name + '.');
     }
     cat.spent = newSpent;
-    const expObj = { catId, amount, reason, date: new Date().toLocaleDateString() };
+    const expObj = { catId, amount, reason, date: localDateStr() };
     if (proofText) expObj.proofText = proofText;
     if (proofImage) expObj.proofImage = proofImage; // base64 saved to Firestore
     expenses.push(expObj);
