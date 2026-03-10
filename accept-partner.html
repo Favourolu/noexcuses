@@ -152,7 +152,7 @@
         if (existing) {
           updatedPartners = partners.map(function(p) {
             if (p.email === currentUser.email) {
-              return Object.assign({}, p, { status: 'active', name: currentUser.displayName || '' });
+              return Object.assign({}, p, { status: 'active', name: currentUser.displayName || '', uid: currentUser.uid });
             }
             return p;
           });
@@ -162,6 +162,7 @@
             name: currentUser.displayName || '',
             notifyLevel: notifyLevel,
             status: 'active',
+            uid: currentUser.uid, // store uid for direct Firestore lookups
             addedAt: new Date().toISOString()
           }]);
         }
