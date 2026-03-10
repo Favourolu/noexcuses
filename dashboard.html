@@ -210,6 +210,8 @@
     <button class="nav-btn" onclick="showArchiveModal()">📁 History</button>
     <button class="nav-btn" onclick="window.location.href='partner.html'" style="background:rgba(46,204,113,0.1);border-color:rgba(46,204,113,0.3);color:#2ecc71">👥 Partner</button>
     <button class="nav-btn" onclick="startTutorial()">? Help</button>
+    <button class="nav-btn" onclick="window.location.href='privacy.html'" style="background:none;border-color:rgba(255,255,255,0.08);color:var(--text-muted)">Privacy</button>
+    <button class="nav-btn" onclick="confirmDeleteAccount()" style="background:rgba(232,75,75,0.08);border-color:rgba(232,75,75,0.2);color:#ff8080">🗑️ Delete Account</button>
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </nav>
@@ -430,8 +432,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCXaFZ-tHwK4FXO6ZQ6VZ5_xQxo0mXwPas",
@@ -1038,7 +1040,38 @@
     window.location.replace('login.html');
   }
 
-  // ── TUTORIAL ──
+  window.confirmDeleteAccount = function() {
+    const confirmed = confirm(
+      '⚠️ DELETE ACCOUNT\n\n' +
+      'This will permanently delete:\n' +
+      '• All your budget categories\n' +
+      '• All your expenses and history\n' +
+      '• Your streak and badges\n' +
+      '• Your account login\n\n' +
+      'This CANNOT be undone. Are you sure?'
+    );
+    if (confirmed) {
+      const doubleConfirm = confirm('Last warning — are you absolutely sure you want to delete everything?');
+      if (doubleConfirm) deleteAccount();
+    }
+  }
+
+  async function deleteAccount() {
+    try {
+      showToast('🗑️ Deleting...', 'Removing all your data. Please wait.');
+      await deleteDoc(doc(db, 'users', currentUser.uid));
+      await deleteUser(currentUser);
+      window.location.replace('index.html');
+    } catch(e) {
+      if (e.code === 'auth/requires-recent-login') {
+        alert('For security, please log out and log back in before deleting your account.');
+      } else {
+        alert('Error deleting account: ' + e.message);
+      }
+    }
+  }
+
+
   window.beginTour = function() { document.getElementById('welcomeModal').style.display = 'none'; tutorialStep = 0; startTutorial(); }
   window.startTutorial = function() {
     tutorialStep = 0;
