@@ -186,6 +186,7 @@
   <div class="nav-right">
     <div class="user-name">Hey, <span id="navUserName">there</span> 👋</div>
     <button class="nav-btn" onclick="showArchiveModal()">📁 History</button>
+    <button class="nav-btn" onclick="window.location.href='partner.html'" style="background:rgba(46,204,113,0.1);border-color:rgba(46,204,113,0.3);color:#2ecc71">👥 Partner</button>
     <button class="nav-btn" onclick="startTutorial()">? Help</button>
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
@@ -474,6 +475,35 @@
     }
   }
 
+
+  async function notifyPartners(type, message) {
+    try {
+      const snap = await getDoc(userDocRef);
+      if (!snap.exists()) return;
+      const data = snap.data();
+      const partners = data.partners || [];
+      const activePartners = partners.filter(function(p) {
+        if (p.status !== 'active') return false;
+        if (p.notifyLevel === 'all') return true;
+        if (p.notifyLevel === '70' && (type === '70' || type === '90' || type === 'exceeded')) return true;
+        if (p.notifyLevel === '90' && (type === '90' || type === 'exceeded')) return true;
+        if (p.notifyLevel === '100' && type === 'exceeded') return true;
+        return false;
+      });
+      for (const partner of activePartners) {
+        // Find partner user doc
+        const usersSnap = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(m => m.getDocs(m.collection(db, 'users')));
+        usersSnap.forEach(async function(d) {
+          if (d.data().email === partner.email) {
+            const notif = { type: type, message: (currentUser.displayName || 'Your partner') + ' ' + message, timestamp: new Date().toISOString() };
+            const { updateDoc, arrayUnion, doc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            await updateDoc(doc(db, 'users', d.id), { partnerNotifications: arrayUnion(notif) });
+          }
+        });
+      }
+    } catch(e) { console.log('notify error:', e); }
+  }
+
   async function saveData() {
     if (isSaving) return;
     isSaving = true;
@@ -645,9 +675,18 @@
     if (!cat) return;
     const newSpent = (cat.spent||0) + amount;
     const pct = (newSpent/cat.budget)*100;
-    if (pct >= 100) { showToast('🚨 Over Budget!', cat.name + ' budget exceeded! Other categories are now locked.'); }
-    else if (pct >= 90) { showToast('⚠️ 90% Warning', 'Only ₦' + (cat.budget-newSpent).toLocaleString() + ' left in ' + cat.name + '.'); }
-    else if (pct >= 70) { showToast('💛 70% Alert', 'You have used 70% of your ' + cat.name + ' budget.'); }
+    if (pct >= 100) {
+      showToast('🚨 Over Budget!', cat.name + ' budget exceeded! Other categories are now locked.');
+      notifyPartners('exceeded', 'has exceeded their ' + cat.name + ' budget of ₦' + cat.budget.toLocaleString() + '!');
+    } else if (pct >= 90) {
+      showToast('⚠️ 90% Warning', 'Only ₦' + (cat.budget-newSpent).toLocaleString() + ' left in ' + cat.name + '.');
+      notifyPartners('90', 'has used 90% of their ' + cat.name + ' budget.');
+    } else if (pct >= 70) {
+      showToast('💛 70% Alert', 'You have used 70% of your ' + cat.name + ' budget.');
+      notifyPartners('70', 'has used 70% of their ' + cat.name + ' budget.');
+    } else {
+      notifyPartners('all', 'logged a new expense of ₦' + amount.toLocaleString() + ' in ' + cat.name + '.');
+    }
     cat.spent = newSpent;
     expenses.push({ catId, amount, reason, date: new Date().toLocaleDateString() });
     document.getElementById('expAmount').value = '';
